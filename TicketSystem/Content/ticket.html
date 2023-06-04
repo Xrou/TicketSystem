@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../ticketStyles.css">
+    <title>Заявка</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2 id="ticket_id"></h2>
+
+        <div class="data_container">
+            <div class="sender_data_container">
+                <div>
+                    <span>Отправитель:</span>
+                    <span id="ticket_sender"></span>
+                </div>
+                <div>
+                    <span>Дата:</span>
+                    <span id="ticket_date"></span>
+                </div>
+            </div>
+            <div class="data_text_container">
+                <p class="data_text" id="ticket_text">
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <div id="comment_section" class="comment_section">
+                <h3>Комментарии</h3>
+                <!--
+                <div  class="comment_container">
+                    <span class="comment_username">Имя пользователя</span>
+                    <span class="comment_date">2023.06.03T16:17:22</span>
+                    <p class="comment_text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores obcaecati molestiae voluptas earum sunt error commodi ab dignissimos voluptatum? Distinctio iusto, debitis deleniti molestiae quo facilis veniam. Totam, perferendis natus.</p>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <div class="comment_form">
+            <h3>Оставить комментарий</h3>
+            <textarea name="comment_form_text" class="comment_form_text" id="comment_form_text"></textarea>
+            <button class="comment_form_send" onclick="add_comment()">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        ticket_id = window.location.pathname.split('/')[2];
+        
+        document.getElementById("ticket_id").innerHTML = `Заявка ${ticket_id}`;
+
+        var http = new XMLHttpRequest();
+        http.open('GET', `https://localhost:7177/api/tickets/${ticket_id}`, true);
+
+        var authToken = sessionStorage.getItem("access_token")
+
+        http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+        http.onreadystatechange = function () {
+            if (http.readyState == 4 && http.status == 200) {
+                var data = JSON.parse(http.responseText);
+
+                console.log(data);
+
+                document.getElementById("ticket_date").innerHTML = data.date;
+                document.getElementById("ticket_sender").innerHTML = data.userName;
+                document.getElementById("ticket_text").innerHTML = data.text;
+
+                getComments();
+            }
+
+            else if (http.readyState == 4 && http.status == 401) {
+                //showLoginMessage();
+            }
+        }
+
+        http.send();
+
+        function getComments()
+        {
+            var http = new XMLHttpRequest();
+            http.open('GET', `https://localhost:7177/api/comments/${ticket_id}`, true);
+
+            var authToken = sessionStorage.getItem("access_token")
+
+            http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+            http.onreadystatechange = function () {
+                if (http.readyState == 4 && http.status == 200) {
+                    var data = JSON.parse(http.responseText);
+
+                    console.log(data);
+                    
+                    var comment_section = document.getElementById("comment_section");
+
+                    for (var i = 0; i < data.length; i++) {
+                        var container = document.createElement("div");
+                        var span = document.createElement("span");
+                        var spanDate = document.createElement("span");
+                        var paragraph = document.createElement("p");
+
+                        container.className = "comment_container";
+                        span.className = "comment_username";
+                        spanDate.className = "comment_date";
+                        paragraph.className = "comment_text";
+
+                        span.innerHTML = data[i].UserName;
+                        spanDate.innerHTML = data[i].Date;
+                        paragraph.innerHTML = data[i].Text;
+
+                        container.appendChild(span);
+                        container.appendChild(spanDate);
+                        container.appendChild(paragraph);
+
+                        comment_section.appendChild(container);
+                    }
+                }
+
+                else if (http.readyState == 4 && http.status == 401) {
+                    //showLoginMessage();
+                }
+            }
+
+            http.send();
+        }
+
+        function add_comment()
+        {
+            var http = new XMLHttpRequest();
+            http.open('POST', 'https://localhost:7177/api/comments', true);
+            
+            var authToken = sessionStorage.getItem("access_token");
+            var text = document.getElementById("comment_form_text").value;
+            console.log(text);
+
+            var ticketData = JSON.stringify({
+                TicketId: ticket_id,
+                Text: text
+            });
+
+            http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+            http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            
+            http.onreadystatechange = function() {
+                if (http.readyState == 4 && http.status == 201)
+                {
+                    document.location.replace(`https://localhost:7177/ticket/${ticket_id}`);
+                }
+                else if (http.readyState == 4 && http.status == 401)
+                {
+                    showLoginMessage();
+                }
+            }
+
+            http.send(ticketData);
+        }
+    </script>
+
+</body>
+
+</html>

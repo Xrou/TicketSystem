@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="createTicketStyles.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="inputs">
+            <h2>Новая заявка</h2>
+            <span class="inputs_element">Текст заявки</span>
+            <textarea class="inputs_element" id="new_ticket_text" cols="30" rows="10"></textarea>
+            <button onclick="createTicket()" class="inputs_create_button inputs_element">Создать</button>
+        </div>
+    </div>
+    <div id="modal_window" class="modal_container">
+        <div class="modal_content">
+            <a href="https://localhost:7177/auth">Для продолжения работы необходимо авторизоваться</a>
+        </div>
+    </div>
+    <script>
+        function createTicket()
+        {
+            var http = new XMLHttpRequest();
+            http.open('POST', 'https://localhost:7177/api/tickets', true);
+            
+            var authToken = sessionStorage.getItem("access_token");
+            var text = document.getElementById("new_ticket_text").value;
+            console.log(text);
+
+            var ticketData = JSON.stringify({
+                Text: text
+            });
+
+            http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+            http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            
+            http.onreadystatechange = function() {
+                if (http.readyState == 4 && http.status == 201)
+                {
+                    document.location.replace("https://localhost:7177");
+                }
+                else if (http.readyState == 4 && http.status == 401)
+                {
+                    showLoginMessage();
+                }
+            }
+
+            http.send(ticketData);
+        }
+
+        function showLoginMessage() {
+            var modal = document.getElementById("modal_window");
+            modal.style.display = "flex";
+        }
+    </script>
+</body>
+</html>

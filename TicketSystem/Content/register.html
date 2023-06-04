@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="registerStyles.css">
+    <title>Регистрация</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Регистрация</h2>
+        <input class="reg_input" type="text" id="reg_login" placeholder="Логин">
+        <input class="reg_input" type="text" id="reg_password" placeholder="Пароль">
+        
+        <button onclick="register()">Создать учетную запись</button>
+
+    </div>
+
+    <script>
+        function register() {
+            var http = new XMLHttpRequest();
+
+            var login = document.getElementById("reg_login").value;
+            var password = document.getElementById("reg_password").value;
+
+            var data = JSON.stringify({"login": login, "password": password});
+            http.open('POST', 'https://localhost:7177/api/users/register', true);
+
+            http.setRequestHeader('Content-type', 'application/json');
+
+            http.onreadystatechange = function() {
+                if (http.readyState == 4 && http.status == 201) {
+                    document.location.replace("https://localhost:7177/auth");
+                }
+            }
+
+            http.send(data);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="indexStyles.css">
+    <title>СУЗ</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header_section">
+            <a href="https://localhost:7177/createTicket">Создать заявку</a>
+        </div>
+
+        <div class="filters_section">
+            <h2>Фильтры</h2>
+            <div class="filters_container">
+                <div class="filter_item">
+                    <label for="search_id">Номер заявки</label>
+                    <input id="search_id" type="text">
+                </div>
+
+                <div class="filter_item">
+                    <label for="search_sender">Отправитель</label>
+                    <input id="search_sender" type="text">
+                </div>
+
+                <div class="filter_item">
+                    <label for="search_performer">Исполнитель</label>
+                    <input id="search_performer" type="text">
+                </div>
+
+                <div class="filter_item">
+                    <label for="search_text">По тексту</label>
+                    <input id="search_text" type="text">
+                </div>
+
+                <button onclick="getTickets()">Поиск</button>
+            </div>
+        </div>
+
+        <table class="tickets_table" id="tickets_table">
+            <tr>
+                <th>Id</th>
+                <th>ФИО</th>
+                <th>Текст</th>
+                <th>Дата</th>
+            </tr>
+        </table>
+        <!--
+        <div class="tickets_list_section">
+            <ul class="tickets_list">
+                <li class="ticket_item" id="tickets">
+                    <div class="ticket_item_block">
+                        <div class="ticket_item_block_section">
+                            <span>Id</span>
+                        </div>
+                        <div class="ticket_item_block_section">
+                            <span>ФИО</span>
+                        </div>
+                        <div class="ticket_item_block_section">
+                            <span>Текст</span>
+                        </div>
+                        <div class="ticket_item_block_section">
+                            <span>Дата</span>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    -->
+        <div id="modal_window" class="modal_container">
+            <div class="modal_content">
+                <a href="https://localhost:7177/auth">Для продолжения работы необходимо авторизоваться</a>
+            </div>
+        </div>
+
+        <script>
+            getTickets();
+
+            function getTickets() {
+                var http = new XMLHttpRequest();
+                http.open('GET', 'https://localhost:7177/api/tickets', true);
+
+                var authToken = sessionStorage.getItem("access_token")
+
+                http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+                http.onreadystatechange = function () {
+                    if (http.readyState == 4 && http.status == 200) {
+                        var data = JSON.parse(http.responseText);
+
+                        var table = document.getElementById("tickets_table");
+
+                        for (var i = 0; i < data.length; i++) {
+                            var tr = document.createElement("tr");
+                            tr.className = "ticket_item";
+
+                            var td1 = document.createElement("td");
+                            var td2 = document.createElement("td");
+                            var td3 = document.createElement("td");
+                            var td4 = document.createElement("td");
+
+                            td1.setAttribute("id", data[i].Id);
+                            td2.setAttribute("id", data[i].Id);
+                            td3.setAttribute("id", data[i].Id);
+                            td4.setAttribute("id", data[i].Id);
+
+                            td1.innerText = data[i].Id;
+                            td2.innerText = data[i].UserName;
+                            td3.innerText = data[i].Text;
+                            td4.innerText = data[i].Date;
+
+                            tr.append(td1);
+                            tr.append(td2);
+                            tr.append(td3);
+                            tr.append(td4);
+
+                            table.appendChild(tr);
+                        }
+
+                        table.addEventListener('click', e => {
+                            var id = e.target.id;
+
+                            document.location.replace(`https://localhost:7177/ticket/${id}`);
+                        });
+                    }
+
+                    else if (http.readyState == 4 && http.status == 401) {
+                        showLoginMessage();
+                    }
+                }
+
+                http.send();
+            }
+
+            function openTicket(ticketItem) {
+                console.log("click");
+            }
+
+            function showLoginMessage() {
+                var modal = document.getElementById("modal_window");
+                modal.style.display = "flex";
+            }
+        </script>
+    </div>
+</body>
+
+</html>

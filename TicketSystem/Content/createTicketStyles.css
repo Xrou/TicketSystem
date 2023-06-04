@@ -1,0 +1,44 @@
+html {
+    background: #FCFCFF;
+}
+
+.container {
+    width: 20%;
+    margin: 0 auto;
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputs_element {
+    margin-top: 10px;
+}
+
+.inputs_create_button {    
+    width: 80px;
+}
+
+.modal_container {
+    display: none; /*switching to flex in script*/
+    justify-content: center;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index:99;
+
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal_content {
+    width: 400px;
+    height: 200px;
+    
+    margin-top: 100px;
+
+    background: #FFFFFF;
+}

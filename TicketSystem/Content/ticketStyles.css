@@ -1,0 +1,37 @@
+.container {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.data_container {
+    display: flex;
+}
+
+.data_text {
+    margin-top: 0;
+}
+
+.data_text_container {
+    margin-left: 20px;
+}
+
+.comment_section {
+    margin-top: 30px;
+}
+
+.comment_text {
+    margin-top: 0;
+}
+
+.comment_date {
+    margin-left: 10px;
+}
+
+.comment_form_text {
+    display: block;
+    width: 100%;
+}
+
+.comment_form_send {
+    margin-top: 10px;
+}
