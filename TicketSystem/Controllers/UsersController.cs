@@ -74,9 +74,14 @@ namespace TicketSystem.Controllers
             {
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(userToRegister.Password)));
 
-                long userId = context.Users.Max(x => x.Id) + 1;
+                long userId;
 
-                User newUser = new User() { Id = userId, Name = userToRegister.Login, PasswordHash = passwordHash };
+                if (context.Users.Count() != 0)
+                    userId = context.Users.Max(x => x.Id) + 1;
+                else
+                    userId = 1;
+
+                User newUser = new User() { Id = userId, Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash };
 
                 context.Users.Add(newUser);
                 await context.SaveChangesAsync();

@@ -55,7 +55,13 @@ namespace TicketSystem.Controllers
             if (idClaim == null || !long.TryParse(idClaim.Value, out userId))
                 return Results.Problem("Incorrectly authenticated user");
 
-            long commentId = context.Comments.Max(x => x.Id) + 1;
+            long commentId;
+
+            if (context.Comments.Count() > 0)
+                commentId = context.Comments.Max(x => x.Id) + 1;
+            else
+                commentId = 1;
+
             DateTime commentDate = DateTime.Now;
 
             if (context.Comments == null)

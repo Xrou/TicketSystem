@@ -104,7 +104,13 @@ namespace TicketSystem.Controllers
             if (idClaim == null || !long.TryParse(idClaim.Value, out userId))
                 return Results.Problem("Incorrectly authenticated user");
 
-            long ticketId = context.Tickets.Max(x => x.Id) + 1;
+            long ticketId;
+
+            if (context.Tickets.Count() != 0)
+                ticketId = context.Tickets.Max(x => x.Id) + 1;
+            else
+                ticketId = 1;
+            
             DateTime ticketDate = DateTime.Now;
 
             if (context.Tickets == null)
