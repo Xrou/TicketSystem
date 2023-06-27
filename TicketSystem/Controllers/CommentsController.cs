@@ -57,7 +57,7 @@ namespace TicketSystem.Controllers
 
             long commentId;
 
-            if (context.Comments.Count() > 0)
+            if (context.Comments.Any())
                 commentId = context.Comments.Max(x => x.Id) + 1;
             else
                 commentId = 1;

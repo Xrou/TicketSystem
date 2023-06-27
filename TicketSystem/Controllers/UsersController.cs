@@ -76,7 +76,7 @@ namespace TicketSystem.Controllers
 
                 long userId;
 
-                if (context.Users.Count() != 0)
+                if (context.Users.Any())
                     userId = context.Users.Max(x => x.Id) + 1;
                 else
                     userId = 1;

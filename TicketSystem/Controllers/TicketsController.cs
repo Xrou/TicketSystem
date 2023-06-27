@@ -106,7 +106,7 @@ namespace TicketSystem.Controllers
 
             long ticketId;
 
-            if (context.Tickets.Count() != 0)
+            if (context.Tickets.Any())
                 ticketId = context.Tickets.Max(x => x.Id) + 1;
             else
                 ticketId = 1;
