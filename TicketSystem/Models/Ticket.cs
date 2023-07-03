@@ -7,6 +7,8 @@
         public DateTime Date { get; set; }
 
         public long UserId { get; set; }
+        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+
         virtual public User User { get; set; } = null!;
 
         public SendTicket ToSend()

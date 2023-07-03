@@ -28,16 +28,19 @@ namespace TicketSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> GetTicketItems()
         {
-            if (context.Tickets == null)
-            {
-                return NotFound();
-            }
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
 
+            if (user == null)
+            {
+                return Problem("No user instance", statusCode: 500);
+            }
+             
             List<SendTicket> tickets = new List<SendTicket>();
 
             foreach (var ticket in context.Tickets)
             {
-                tickets.Add(ticket.ToSend());
+                if (InternalActions.CanUserAccessTicket(user, ticket))
+                    tickets.Add(ticket.ToSend());
             }
 
             return JsonConvert.SerializeObject(tickets);
@@ -47,10 +50,6 @@ namespace TicketSystem.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SendTicket>> GetTicket(long id)
         {
-            if (context.Tickets == null)
-            {
-                return NotFound();
-            }
             var ticket = await context.Tickets.FindAsync(id);
 
             if (ticket == null)
@@ -58,7 +57,15 @@ namespace TicketSystem.Controllers
                 return NotFound();
             }
 
-            return ticket.ToSend();
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            if (InternalActions.CanUserAccessTicket(user, ticket))
+                return ticket.ToSend();
+
+            return Forbid();
         }
 
         // PUT: api/Tickets/5
@@ -70,6 +77,14 @@ namespace TicketSystem.Controllers
             {
                 return BadRequest();
             }
+
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            if (!user.AccessGroup.CanEditTickets)
+                return Forbid();
 
             context.Entry(ticket).State = EntityState.Modified;
 
@@ -95,14 +110,12 @@ namespace TicketSystem.Controllers
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IResult> PostTicket(PostTicket ticket)
+        public async Task<IActionResult> PostTicket(PostTicket ticket)
         {
-            Claim? idClaim = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
 
-            long userId;
-
-            if (idClaim == null || !long.TryParse(idClaim.Value, out userId))
-                return Results.Problem("Incorrectly authenticated user");
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
 
             long ticketId;
 
@@ -110,31 +123,62 @@ namespace TicketSystem.Controllers
                 ticketId = context.Tickets.Max(x => x.Id) + 1;
             else
                 ticketId = 1;
-            
+
             DateTime ticketDate = DateTime.Now;
 
-            if (context.Tickets == null)
-            {
-                return Results.Problem("Entity set 'TicketContext.TicketItems'  is null.");
-            }
-
-            Ticket newTicket = new Ticket() { Id = ticketId, Date = ticketDate, Text = ticket.Text, UserId = userId };
+            Ticket newTicket = new Ticket() { Id = ticketId, Date = ticketDate, Text = ticket.Text, UserId = user.Id };
 
             context.Tickets.Add(newTicket);
             await context.SaveChangesAsync();
 
-            return Results.Created(new Uri("https://localhost:7177/api/tickets"), ticketId);
+            return Created(new Uri("https://localhost:7177/api/tickets"), ticketId);
+        }
+
+        [HttpGet("subscribe/{ticketId}")]
+        public async Task<ActionResult<SendTicket>> Subscribe(long ticketId)
+        {
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            if (!context.Tickets.Any(t => t.Id == ticketId))
+            {
+                return NotFound();
+            }
+
+            if (!InternalActions.CanUserAccessTicket(user, context.Tickets.First(t => t.Id == ticketId)))
+                return Forbid();
+
+            Subscription? alreadyCreatedSubscription = context.Subscriptions.FirstOrDefault(s => s.TicketId == ticketId && s.UserId == user.Id);
+
+            if (alreadyCreatedSubscription != null)
+                return Created(new Uri("https://localhost:7177/api/subscribe/"), alreadyCreatedSubscription.Id);
+
+            var newSubscription = new Subscription() { TicketId = ticketId, UserId = user.Id };
+
+            context.Subscriptions.Add(newSubscription);
+            await context.SaveChangesAsync();
+            
+            long subscriptionId = context.Subscriptions.First(s => s.TicketId == ticketId && s.UserId == user.Id).Id;
+
+            return Created(new Uri("https://localhost:7177/api/subscribe/"), subscriptionId);
         }
 
         // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(long id)
         {
-            if (context.Tickets == null)
-            {
-                return NotFound();
-            }
+            User? user = InternalActions.SelectUserGroupFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            if (!user.AccessGroup.CanDeleteTickets)
+                return Forbid();
+
             var ticket = await context.Tickets.FindAsync(id);
+
             if (ticket == null)
             {
                 return NotFound();

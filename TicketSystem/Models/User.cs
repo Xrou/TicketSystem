@@ -6,6 +6,11 @@
         public long CompanyId { get; set; }
         public string Name { get; set; }
         public string PasswordHash { get; set; }
+        public long AccessGroupId { get; set; }
+
+        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+
+        virtual public AccessGroup AccessGroup { get; set; } = null!;
 
         public SendUser ToSend()
         {

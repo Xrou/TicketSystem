@@ -15,6 +15,8 @@ namespace TicketSystem.Models
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<AccessGroup> AccessGroups { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +27,18 @@ namespace TicketSystem.Models
         {
             modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.User)
+                .AutoInclude();
+
+            modelBuilder.Entity<Ticket>()
+                .Navigation(e => e.Subscriptions)
+                .AutoInclude();
+
+            modelBuilder.Entity<User>()
+                .Navigation(e => e.AccessGroup)
+                .AutoInclude();
+
+            modelBuilder.Entity<User>()
+                .Navigation(e => e.Subscriptions)
                 .AutoInclude();
 
             modelBuilder.Entity<Comment>()

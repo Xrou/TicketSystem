@@ -81,7 +81,7 @@ namespace TicketSystem.Controllers
                 else
                     userId = 1;
 
-                User newUser = new User() { Id = userId, Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash };
+                User newUser = new User() { Id = userId, Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1 };
 
                 context.Users.Add(newUser);
                 await context.SaveChangesAsync();
