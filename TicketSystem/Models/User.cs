@@ -11,14 +11,15 @@
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         virtual public AccessGroup AccessGroup { get; set; } = null!;
+        virtual public Company Company { get; set; } = null!;
 
         public SendUser ToSend()
         {
-            return new SendUser(Id, Name);
+            return new SendUser(Id, Name, Company.Name, AccessGroup.Name);
         }
     }
 
     public record struct AuthorizeUser(string Login, string Password);
-    public record struct SendUser(long Id, string Name);
+    public record struct SendUser(long Id, string Name, string companyName, string accessGroupName);
 
 }

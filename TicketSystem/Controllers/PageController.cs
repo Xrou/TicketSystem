@@ -68,6 +68,18 @@ namespace TicketSystem.Controllers
             return ReadFile("Content/ticketStyles.css");
         }
 
+        [HttpGet("user")]
+        public IResult User()
+        {
+            return ReadFile("Content/user.html");
+        }
+
+        [HttpGet("UserStyles.css")]
+        public IResult UserStyles()
+        {
+            return ReadFile("Content/userStyles.css");
+        }
+
         private IResult ReadFile(string filePath)
         {
             string fileFormat = Path.GetExtension(filePath)[1..];

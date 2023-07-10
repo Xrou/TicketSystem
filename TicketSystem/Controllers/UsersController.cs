@@ -161,6 +161,20 @@ namespace TicketSystem.Controllers
             return user.ToSend();
         }
 
+        // GET: api/Users/me
+        [HttpGet("me")]
+        public async Task<ActionResult<SendUser>> GetMe()
+        {
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user.ToSend();
+        }
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

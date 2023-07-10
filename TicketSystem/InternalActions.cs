@@ -7,11 +7,12 @@ namespace TicketSystem
         public static bool CanUserAccessTicket(User user, Ticket ticket)
         {
             return
+                (user.AccessGroup.CanSeeAllTickets) ||
                 (user.AccessGroup.CanSeeHisTickets && user.Id == ticket.UserId) ||
                 (user.AccessGroup.CanSeeCompanyTickets && user.CompanyId == ticket.User.CompanyId);
         }
 
-        public static User? SelectUserGroupFromContext(HttpContext httpContext, Database context)
+        public static User? SelectUserFromContext(HttpContext httpContext, Database context)
         {
             if (httpContext.User.Identity == null)
                 return null;

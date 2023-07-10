@@ -23,10 +23,17 @@
                     <span>Дата:</span>
                     <span id="ticket_date"></span>
                 </div>
+                <div>
+                    <span>Исполнитель:</span>
+                    <span id="ticket_executor"></span>
+                </div>
             </div>
             <div class="data_text_container">
                 <p class="data_text" id="ticket_text">
                 </p>
+            </div>
+            <div class="action_container">
+                <button onclick="subscribe()">Подписаться</button>
             </div>
         </div>
 
@@ -71,6 +78,7 @@
                 document.getElementById("ticket_date").innerHTML = data.date;
                 document.getElementById("ticket_sender").innerHTML = data.userName;
                 document.getElementById("ticket_text").innerHTML = data.text;
+                document.getElementById("ticket_executor").innerHTML = data.executorUserName;
 
                 getComments();
             }
@@ -123,7 +131,7 @@
                 }
 
                 else if (http.readyState == 4 && http.status == 401) {
-                    //showLoginMessage();
+                    showLoginMessage();
                 }
             }
 
@@ -159,6 +167,29 @@
             }
 
             http.send(ticketData);
+        }
+
+        function subscribe()
+        {
+            var http = new XMLHttpRequest();
+            http.open('GET', `https://localhost:7177/api/tickets/subscribe/${ticket_id}`, true);
+
+            var authToken = sessionStorage.getItem("access_token")
+
+            http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+            http.onreadystatechange = function() {
+                if (http.readyState == 4 && http.status == 201)
+                {
+                    console.log("subscribed");
+                }
+                else if (http.readyState == 4 && http.status == 401)
+                {
+                    showLoginMessage();
+                }
+            }
+
+            http.send();
         }
     </script>
 

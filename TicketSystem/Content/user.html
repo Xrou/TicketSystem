@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="userStyles.css">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <span>ФИО</span>
+            <input type="text" id="UserName"/>
+        </div>
+        <div>
+            <span>Роль</span>
+            <input type="text" id="UserRole"/>
+        </div>
+        <div>
+            <span>Компания</span>
+            <input type="text" id="UserCompany"/>
+        </div>
+    </div>
+
+    <div id="modal_window" class="modal_container">
+        <div class="modal_content">
+            <a href="https://localhost:7177/auth">Для продолжения работы необходимо авторизоваться</a>
+        </div>
+    </div>
+
+    <script>
+        var http = new XMLHttpRequest();
+        http.open('GET', `https://localhost:7177/api/users/me`, true);
+
+        var authToken = sessionStorage.getItem("access_token")
+
+        http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+        http.send();
+
+        http.onreadystatechange = function () {
+            if (http.readyState == 4 && http.status == 200) {
+                var data = JSON.parse(http.responseText);
+
+                console.log(data);
+
+                document.getElementById("UserName").value = data.name;
+                document.getElementById("UserRole").value = data.accessGroupName;
+                document.getElementById("UserCompany").value = data.companyName;
+            }
+
+            else if (http.readyState == 4 && http.status == 401) {
+                showLoginMessage();
+            }
+
+            else if(http.readyState == 4)
+            {
+                console.log(http.status);
+            }
+        }
+
+    </script>
+</body>
+</html>

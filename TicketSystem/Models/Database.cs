@@ -17,6 +17,7 @@ namespace TicketSystem.Models
         public DbSet<Comment> Comments { get; set; }
         public DbSet<AccessGroup> AccessGroups { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +26,11 @@ namespace TicketSystem.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Ticket>()
+                .HasOne(e => e.ExecutorUser)
+                .WithMany()
+                .HasForeignKey(e => e.ExecutorId);
+
             modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.User)
                 .AutoInclude();
@@ -39,6 +45,10 @@ namespace TicketSystem.Models
 
             modelBuilder.Entity<User>()
                 .Navigation(e => e.Subscriptions)
+                .AutoInclude();
+
+            modelBuilder.Entity<User>()
+                .Navigation(e => e.Company)
                 .AutoInclude();
 
             modelBuilder.Entity<Comment>()
