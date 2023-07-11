@@ -193,10 +193,19 @@ namespace TicketSystem.Controllers
         [HttpPost("assignTicket")]
         public async Task<IActionResult> AssignTicket([FromBody] JsonObject json)
         {
-            long userId = json["userId"].GetValue<long>();
-            long ticketId = json["ticketId"].GetValue<long>();
+            long userId;
+            long ticketId;
 
-            if (!context.Tickets.Any(t => t.Id == ticketId))
+            if (!(
+                json.ContainsKey("userId") && long.TryParse(json["userId"]!.GetValue<string>(), out userId) &&
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"].GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+            
+            if (updateTicket == null)
             {
                 return NotFound();
             }
@@ -206,13 +215,35 @@ namespace TicketSystem.Controllers
                 return NotFound();
             }
 
-            var updateTicket = context.Tickets.First(t => t.Id == ticketId);
-
             updateTicket.ExecutorId = userId;
             context.Update(updateTicket);
             context.SaveChanges();
 
-            
+            return Ok();
+        }
+
+        //api/tickets/closeTicket
+        [HttpPost("closeTicket")]
+        public async Task<IActionResult> CloseTicket([FromBody] JsonObject json)
+        {
+            long ticketId;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"].GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (updateTicket == null)
+            {
+                return NotFound();
+            }
+
+            updateTicket.Finished = true;
+            context.Update(updateTicket);
+            context.SaveChanges();
 
             return Ok();
         }

@@ -34,6 +34,9 @@
             </div>
             <div class="action_container">
                 <button onclick="subscribe()">Подписаться</button>
+                <span>Назначить заявку (id пользователя)</span>
+                <input type="text" id="assign_user_input">
+                <button onclick="assignTicket()">Назначить</button>
             </div>
         </div>
 
@@ -190,6 +193,35 @@
             }
 
             http.send();
+        }
+
+        function assignTicket()
+        {
+            var http = new XMLHttpRequest();
+            http.open('POST', `https://localhost:7177/api/tickets/assignTicket`, true);
+
+            var authToken = sessionStorage.getItem("access_token")
+
+            http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+            http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+            var ticketData = JSON.stringify({
+                userId: document.getElementById("assign_user_input").value,
+                ticketId: ticket_id
+            });
+
+            http.onreadystatechange = function() {
+                if (http.readyState == 4 && http.status == 201)
+                {
+                    console.log("assigned");
+                }
+                else if (http.readyState == 4 && http.status == 401)
+                {
+                    showLoginMessage();
+                }
+            }
+
+            http.send(ticketData);
         }
     </script>
 

@@ -9,6 +9,7 @@ namespace TicketSystem.Models
         public long ExecutorId { get; set; }
         public string Text { get; set; }
         public DateTime Date { get; set; }
+        public bool Finished { get; set; }
 
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 

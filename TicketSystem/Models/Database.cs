@@ -32,6 +32,10 @@ namespace TicketSystem.Models
                 .HasForeignKey(e => e.ExecutorId);
 
             modelBuilder.Entity<Ticket>()
+                .Navigation(e => e.ExecutorUser)
+                .AutoInclude();
+
+            modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.User)
                 .AutoInclude();
 

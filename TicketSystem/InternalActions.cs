@@ -6,6 +6,9 @@ namespace TicketSystem
     {
         public static bool CanUserAccessTicket(User user, Ticket ticket)
         {
+            if (ticket.Finished)
+                return false;
+
             return
                 (user.AccessGroup.CanSeeAllTickets) ||
                 (user.AccessGroup.CanSeeHisTickets && user.Id == ticket.UserId) ||
