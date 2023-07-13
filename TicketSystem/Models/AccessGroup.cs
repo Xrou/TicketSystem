@@ -11,5 +11,6 @@
         public bool CanSeeAllTickets { get; set; }
         public bool CanEditTickets { get; set; }
         public bool CanDeleteTickets { get; set; }
+        public bool CanSeeServiceComments { get; set; }
     }
 }

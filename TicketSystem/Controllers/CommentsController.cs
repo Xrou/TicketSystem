@@ -34,10 +34,15 @@ namespace TicketSystem.Controllers
             }
 
             List<SendComment> comments = new List<SendComment>();
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
 
             foreach (var comment in context.Comments.Where(c => c.TicketId == ticketId).OrderBy(c => c.Date))
             {
-                comments.Add(comment.ToSend());
+                if (comment.CommentType != CommentType.Service || user.AccessGroup.CanSeeServiceComments)
+                    comments.Add(comment.ToSend());
             }
 
             return JsonConvert.SerializeObject(comments);
@@ -55,13 +60,6 @@ namespace TicketSystem.Controllers
             if (idClaim == null || !long.TryParse(idClaim.Value, out userId))
                 return Results.Problem("Incorrectly authenticated user");
 
-            long commentId;
-
-            if (context.Comments.Any())
-                commentId = context.Comments.Max(x => x.Id) + 1;
-            else
-                commentId = 1;
-
             DateTime commentDate = DateTime.Now;
 
             if (context.Comments == null)
@@ -69,12 +67,12 @@ namespace TicketSystem.Controllers
                 return Results.Problem("Entity set 'TicketContext.CommentItems' is null.");
             }
 
-            Comment newComment = new Comment() { Id = commentId, Text = comment.Text, Date = commentDate, TicketId = comment.TicketId, UserId = userId };
+            Comment newComment = new Comment() { Text = comment.Text, Date = commentDate, TicketId = comment.TicketId, UserId = userId, CommentType = (CommentType)comment.type };
 
             context.Comments.Add(newComment);
             await context.SaveChangesAsync();
 
-            return Results.Created(new Uri("https://localhost:7177/api/comments"), commentId);
+            return Results.Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);
         }
     }
 }

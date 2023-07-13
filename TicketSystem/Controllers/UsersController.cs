@@ -32,6 +32,9 @@ namespace TicketSystem.Controllers
         [AllowAnonymous]
         public async Task<IResult> Login(AuthorizeUser userToAuth)
         {
+            if (userToAuth.Login.ToLower() == "bot")
+                return Results.Forbid();
+
             try
             {
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(userToAuth.Password)));
@@ -74,19 +77,12 @@ namespace TicketSystem.Controllers
             {
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(userToRegister.Password)));
 
-                long userId;
-
-                if (context.Users.Any())
-                    userId = context.Users.Max(x => x.Id) + 1;
-                else
-                    userId = 1;
-
-                User newUser = new User() { Id = userId, Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1 };
+                User newUser = new User() { Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1 };
 
                 context.Users.Add(newUser);
                 await context.SaveChangesAsync();
 
-                return Results.Created(new Uri("https://localhost:7177/api/users/register"), userId);
+                return Results.Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
             catch (Exception e)
             {

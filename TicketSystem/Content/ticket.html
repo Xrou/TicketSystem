@@ -152,7 +152,8 @@
 
             var ticketData = JSON.stringify({
                 TicketId: ticket_id,
-                Text: text
+                Text: text,
+                Type: 1
             });
 
             http.setRequestHeader('Authorization', 'Bearer ' + authToken);
@@ -206,6 +207,7 @@
             http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
             var ticketData = JSON.stringify({
+                type: 1,
                 userId: document.getElementById("assign_user_input").value,
                 ticketId: ticket_id
             });

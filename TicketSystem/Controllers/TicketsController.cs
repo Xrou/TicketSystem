@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -95,7 +98,9 @@ namespace TicketSystem.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TicketExists(id))
+                var ticketExist = (context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
+
+                if (!ticketExist)
                 {
                     return NotFound();
                 }
@@ -118,21 +123,14 @@ namespace TicketSystem.Controllers
             if (user == null)
                 return Problem("No user instance", statusCode: 500);
 
-            long ticketId;
-
-            if (context.Tickets.Any())
-                ticketId = context.Tickets.Max(x => x.Id) + 1;
-            else
-                ticketId = 1;
-
             DateTime ticketDate = DateTime.Now;
 
-            Ticket newTicket = new Ticket() { Id = ticketId, Date = ticketDate, Text = ticket.Text, UserId = user.Id };
+            Ticket newTicket = new Ticket() { Date = ticketDate, Text = ticket.Text, UserId = user.Id };
 
             context.Tickets.Add(newTicket);
             await context.SaveChangesAsync();
 
-            return Created(new Uri("https://localhost:7177/api/tickets"), ticketId);
+            return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
         }
 
         // api/tickets/subscribe/3
@@ -204,7 +202,7 @@ namespace TicketSystem.Controllers
             }
 
             var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
-            
+
             if (updateTicket == null)
             {
                 return NotFound();
@@ -227,12 +225,18 @@ namespace TicketSystem.Controllers
         public async Task<IActionResult> CloseTicket([FromBody] JsonObject json)
         {
             long ticketId;
+            int finishStatus;
+            string commentText;
 
             if (!(
-                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"].GetValue<string>(), out ticketId)))
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
+                json.ContainsKey("finishStatus") && int.TryParse(json["finishStatus"]!.GetValue<string>(), out finishStatus) &&
+                json.ContainsKey("commentText")))
             {
                 return BadRequest();
             }
+
+            commentText = json["commentText"]!.GetValue<string>();
 
             var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
 
@@ -241,7 +245,17 @@ namespace TicketSystem.Controllers
                 return NotFound();
             }
 
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            Comment newComment = new Comment() { Text = "Пользователь завершил работу над заявкой:\n\n" + commentText, Date = DateTime.Now, TicketId = ticketId, UserId = user.Id, CommentType = CommentType.Official };
+
+            context.Comments.Add(newComment);
+
             updateTicket.Finished = true;
+            updateTicket.FinishStatus = (FinishStatus)finishStatus;
             context.Update(updateTicket);
             context.SaveChanges();
 
@@ -271,11 +285,6 @@ namespace TicketSystem.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool TicketExists(long id)
-        {
-            return (context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
