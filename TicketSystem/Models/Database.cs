@@ -18,6 +18,7 @@ namespace TicketSystem.Models
         public DbSet<AccessGroup> AccessGroups { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<UserGroup> UserGroups { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,6 +56,18 @@ namespace TicketSystem.Models
                 .Navigation(e => e.Company)
                 .AutoInclude();
 
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.UserGroups)
+                .WithMany(e => e.Users)
+                .UsingEntity("useringroup",
+                    l => l.HasOne(typeof(UserGroup)).WithMany().HasForeignKey("groupId"),
+                    r => r.HasOne(typeof(User)).WithMany().HasForeignKey("userId")
+                );
+
+            modelBuilder.Entity<User>()
+                .Navigation(e => e.UserGroups)
+                .AutoInclude();
+                        
             modelBuilder.Entity<Comment>()
                 .Navigation(e => e.User)
                 .AutoInclude();

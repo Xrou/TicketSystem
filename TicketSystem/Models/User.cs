@@ -8,7 +8,8 @@
         public string PasswordHash { get; set; }
         public long AccessGroupId { get; set; }
 
-        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public List<Subscription> Subscriptions { get; set; } = new();
+        public List<UserGroup> UserGroups { get; set; } = new();
 
         virtual public AccessGroup AccessGroup { get; set; } = null!;
         virtual public Company Company { get; set; } = null!;

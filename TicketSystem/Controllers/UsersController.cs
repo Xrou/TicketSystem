@@ -60,6 +60,7 @@ namespace TicketSystem.Controllers
                     access_token = encodedJwt,
                     username = userToAuth.Login
                 };
+
                 return Results.Json(response);
             }
             catch (Exception e)
