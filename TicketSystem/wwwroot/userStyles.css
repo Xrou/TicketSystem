@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.pages_block {
+    margin-left: 15%;
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: #E7EFF7;
+}
+
+.pages_list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pages_list_item {
+    margin-bottom: 5px;
+}
+
+.content_block {
+    height: 95vh;
+    width: 50vw;
+    
+    margin-left: 10px;
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: #E7EFF7;
+}
+
+.content_header {
+    margin-top: 0;
+}

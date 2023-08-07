@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="../ticketStyles.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="../ticketScript.js" defer></script>
+    <script src="../checkAuth.js" defer></script>
+    <title>Заявка НОМЕР ЗАЯВКИ</title>
+</head>
+
+<body>
+    <div class="navigation_bar">
+        <a class="navigation_bar_item" href="../">На главную</a>
+        <a class="navigation_bar_item" href="../createTicket">Создать заявку</a>
+        <a class="navigation_bar_item" href="../user">Мой аккаунт</a>
+    </div>
+
+    <div class="container">
+        <div class="action_section">
+            <button class="action_button" onclick="takeTicket()">Взять заявку</button>
+            <button class="action_button" onclick="assignTicket()">Назначить заявку</button>
+            <button class="action_button" onclick="subscribeTicket()">Подписаться</button>
+            <div class="action_grow"></div>
+            <div class="action_time" onmouseenter="showTimeSelector()" onmouseleave="hideTimeSelector()">
+                <div class="action_time_text">
+                    <span id="timer" class="action_timer"></span>
+                    <svg class="action_time_more" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path fill="#ffffff" d="M480-345 240-585l43-43 197 198 197-197 43 43-240 239Z"/></svg>
+                </div>
+                <div id="action_time_selector" class="action_time_selector">
+                    <span>Выберите дату</span>
+                    <input class="action_time_selector_calendar" type="datetime-local" name="" id="action_time_selector_calendar">
+                    <textarea class="action_time_selector_text" name="" id="action_time_selector_text" cols="30" rows="10"
+                        placeholder="Укажите причину переноса"></textarea>
+                    <div class="action_time_selector_buttons">
+                        <button class="action_time_selector_button" onclick="setDeadlineDate(1)">День</button>
+                        <button class="action_time_selector_button" onclick="setDeadlineDate(3)">3 дня</button>
+                        <button class="action_time_selector_button" onclick="setDeadlineDate(7)">Неделя</button>
+                        <button class="action_time_selector_button" onclick="setDeadlineDate(31)">Месяц</button>
+                    </div>
+                    <button class="action_time_selector_button action_time_selector_button_submit" onclick="setDeadline()">
+                        Перенести
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket_data">
+            <div class="ticket_info">
+                <div class="ticket_info_block">
+                    <span>Заявитель:</span>
+                    <span id="sender_name"></span>
+                </div>
+                <div class="ticket_info_block">
+                    <span>Компания:</span>
+                    <span id="sender_company"></span>
+                </div>
+                <div class="ticket_info_block">
+                    <span>Дата отправления:</span>
+                    <span id="ticket_date"></span>
+                </div>
+                <div class="ticket_info_block">
+                    <span>Назначенный исполнитель:</span>
+                    <span id="executor_name"></span>
+                </div>
+
+            </div>
+            <div class="ticket_content">
+                <p id="ticket_text">
+                </p>
+            </div>
+        </div>
+
+        <div class="write_comment">
+            <h4 class="write_comment_header">Добавить комментарий</h4>
+            <textarea id="write_comment_text" class="write_comment_text" cols="30" rows="10"></textarea>
+            <button class="write_comment_button" onclick="sendComment()">Ответить</button>
+        </div>
+
+        <div class="tabs">
+            <input type="radio" name="tab-btn" id="tab-btn-1" value="" checked>
+            <label for="tab-btn-1">Комментарии</label>
+            <input type="radio" name="tab-btn" id="tab-btn-2" value="">
+            <label for="tab-btn-2">Оффициальные комментарии</label>
+            <input type="radio" name="tab-btn" id="tab-btn-3" value="">
+            <label for="tab-btn-3">Системные комментарии</label>
+
+            <div id="content-1">
+                <ul id="standard_comments" class="comments_list">
+                    
+                </ul>
+            </div>
+            <div id="content-2">
+                <ul id="official_comments" class="comments_list">
+
+                </ul>
+            </div>
+            <div id="content-3">
+                <ul id="service_comments" class="comments_list">
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

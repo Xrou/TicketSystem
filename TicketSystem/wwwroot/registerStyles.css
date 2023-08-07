@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.inner_container {
+    width: 200px;
+    height: 200px;
+    
+    padding: 10px;
+
+    border-radius: 10px;
+    box-shadow: 0 0 5px gray;
+
+    background-color: white;
+}
+
+.login_input {
+    width: 193px;
+}
+
+.input_block {
+    margin-bottom: 10px;
+}
+
+.login_button {
+    width: 100%;
+    height: 25px;
+
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.login_link {
+    color: black;
+    font-size: 14px;
+}
+
+h3 {
+    margin: 0 0 20px 0;
+}

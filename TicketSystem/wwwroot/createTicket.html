@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="createTicketStyles.css" rel="stylesheet" type="text/css">
+    <script src="createTicketScript.js"></script>
+    <script src="checkAuth.js"></script>
+    <title>Создание заявки</title>
+</head>
+
+<body>
+    <div class="navigation_bar">
+        <a class="navigation_bar_item" href="./">На главную</a>
+        <a class="navigation_bar_item" href="./createTicket">Создать заявку</a>
+        <a class="navigation_bar_item" href="./user">Мой аккаунт</a>
+    </div>
+    <div class="container">
+        <div class="center_container">
+            <span class="text_input_legend">Введите текст заявки</span>
+            <textarea class="text_input" name="" id="text_input" cols="30" rows="10"></textarea>
+            <button class="create_button" onclick="createTicket()">Создать</button>
+        </div>
+    </div>
+</body>
+
+</html>

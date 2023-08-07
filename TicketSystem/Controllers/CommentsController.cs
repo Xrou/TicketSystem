@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,14 +25,12 @@ namespace TicketSystem.Controllers
             this.context = context;
         }
 
-        // GET: api/Comments/5      5 - ticketId
-        [HttpGet("{ticketId}")]
-        public async Task<ActionResult<string>> GetCommentsAtMessage(long ticketId)
+        // GET: api/Comments
+        [HttpGet]
+        public async Task<ActionResult<string>> GetCommentsAtMessage(string ticketId, string commentType)
         {
-            if (context.Comments == null)
-            {
-                return NotFound();
-            }
+            int commentTypeInt = int.Parse(commentType);
+            long ticketIdLong = long.Parse(ticketId);
 
             List<SendComment> comments = new List<SendComment>();
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
@@ -39,9 +38,15 @@ namespace TicketSystem.Controllers
             if (user == null)
                 return Problem("No user instance", statusCode: 500);
 
-            foreach (var comment in context.Comments.Where(c => c.TicketId == ticketId).OrderBy(c => c.Date))
+            if (!InternalActions.CanUserAccessTicket(user, context.Tickets.First(t => t.Id == ticketIdLong)))
+                return Forbid();
+
+            if (commentTypeInt == 3 && !user.AccessGroup.CanSeeServiceComments)
+                return Forbid();
+
+            foreach (var comment in context.Comments.Where(c => c.TicketId == ticketIdLong).OrderBy(c => c.Date))
             {
-                if (comment.CommentType != CommentType.Service || user.AccessGroup.CanSeeServiceComments)
+                if ((int)comment.CommentType == commentTypeInt)
                     comments.Add(comment.ToSend());
             }
 
@@ -51,28 +56,29 @@ namespace TicketSystem.Controllers
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IResult> PostComment(PostComment comment)
+        public async Task<ActionResult> PostComment(PostComment comment)
         {
-            Claim? idClaim = HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            if (!InternalActions.CanUserAccessTicket(user, context.Tickets.First(t => t.Id == comment.TicketId)))
+                return Forbid();
+
+            if (comment.type == (int)CommentType.Service && !user.AccessGroup.CanSeeServiceComments)
+                return Forbid();
 
             long userId;
 
-            if (idClaim == null || !long.TryParse(idClaim.Value, out userId))
-                return Results.Problem("Incorrectly authenticated user");
-
             DateTime commentDate = DateTime.Now;
 
-            if (context.Comments == null)
-            {
-                return Results.Problem("Entity set 'TicketContext.CommentItems' is null.");
-            }
-
-            Comment newComment = new Comment() { Text = comment.Text, Date = commentDate, TicketId = comment.TicketId, UserId = userId, CommentType = (CommentType)comment.type };
+            Comment newComment = new Comment() { Text = comment.Text, Date = commentDate, TicketId = comment.TicketId, UserId = user.Id, CommentType = (CommentType)comment.type };
 
             context.Comments.Add(newComment);
             await context.SaveChangesAsync();
 
-            return Results.Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);
+            return Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace TicketSystem.Models
         public long? ExecutorId { get; set; }
         public string Text { get; set; }
         public DateTime Date { get; set; }
+        public DateTime? DeadlineTime { get; set; }
         public bool Finished { get; set; }
         [Column("finishStatus")]
         public int FinishStatusInt { get; set; }
@@ -38,11 +39,11 @@ namespace TicketSystem.Models
             if (this.ExecutorUser != null)
                 executorName = this.ExecutorUser.Name;
 
-            return new SendTicket() { Id = Id, Text = Text, Date = Date, UserId = UserId, UserName = User.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName };
+            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, UserName = User.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName };
         }
     }
 
-    public record struct SendTicket(long Id, string Text, DateTime Date, long UserId, long? ExecutorUserId, string UserName, string ExecutorUserName);
+    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, long? ExecutorUserId, string UserName, string ExecutorUserName);
     public record struct PostTicket(string Text);
 
     public enum FinishStatus

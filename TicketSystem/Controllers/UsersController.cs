@@ -58,7 +58,8 @@ namespace TicketSystem.Controllers
                 var response = new
                 {
                     access_token = encodedJwt,
-                    username = userToAuth.Login
+                    username = userToAuth.Login,
+                    id = user.Id
                 };
 
                 return Results.Json(response);

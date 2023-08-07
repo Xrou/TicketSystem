@@ -1,0 +1,249 @@
+.action_section {
+    display: flex;
+    flex-grow: 0;
+    margin-bottom: 10px;
+}
+
+.action_button {
+    width: 300px;
+    height: 25px;
+
+    margin-right: 10px;
+
+    background-color: #7198C3;
+    color: white;
+
+    font-size: 16px;
+
+    border-radius: 4px;
+    border: 1px solid black;
+}
+
+.action_button:hover {
+    background-color: #6385AA;
+}
+
+.action_button:active {
+    background-color: #6080A3;
+}
+
+.action_grow {
+    width: 100%;
+}
+
+.action_time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 400px;
+    background-color: #7198C3;
+    color: white;
+
+    border-radius: 4px;
+    border: 1px solid black;
+}
+
+.action_time_more {
+    height: 25px;
+}
+
+.action_timer {
+    font-size: 22px;
+}
+
+.action_time_text {
+    display: flex;
+}
+
+.action_time_selector {
+    position: absolute;
+    display: none;
+    right: 20px;
+    height: 300px;
+    width: 300px;
+
+    padding: 10px;
+
+    background-color: white;
+    color: black;
+
+    border-radius: 5px;
+}
+
+.action_time_selector_calendar {
+    display: block;
+    width: 296px;
+    margin-bottom: 10px;
+}
+
+.action_time_selector_text {
+    width: 295px;
+    height: 50px;
+
+    margin-bottom: 10px;
+
+    resize: none;
+}
+
+.action_time_selector_buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.action_time_selector_button {
+    width: 70px;
+
+    background-color: #7198C3;
+    color: white;
+
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.action_time_selector_button:hover {
+    background-color: #6385AA;
+}
+
+.action_time_selector_button:active {
+    background-color: #6080A3;
+}
+
+.action_time_selector_button_submit {
+    width: 100%;
+    height: 30px;
+}
+
+.ticket_data {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.container {
+    padding: 50px 20px 0 20px;
+}
+
+.ticket_info {
+    margin-right: 10px;
+}
+
+.ticket_info,
+.ticket_content {
+    padding: 10px;
+    border: 1px solid gray;
+
+    background: #E7EFF7;
+    border-radius: 10px;
+}
+
+.ticket_info_block:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.ticket_content {
+    width: 100%;
+}
+
+p {
+    margin: 0;
+}
+
+.write_comment {
+    padding: 10px;
+
+    margin-bottom: 10px;
+
+    background: #E7EFF7;
+    border-radius: 10px;
+}
+
+.write_comment_text {
+    width: 99.5%;
+    height: 7%;
+
+    resize: none;
+}
+
+.write_comment_header {
+    margin: 0 0 10px 0;
+}
+
+.write_comment_button {
+    width: 100px;
+    height: 24px;
+
+    background-color: #7198C3;
+    color: white;
+
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.write_comment_button:hover {
+    background-color: #6385AA;
+}
+
+.write_comment_button:active {
+    background-color: #6080A3;
+}
+
+.tabs {
+    font-size: 0;
+}
+
+.tabs>input[type="radio"] {
+    display: none;
+}
+
+.tabs>div {
+    /* скрыть контент по умолчанию */
+    display: none;
+    border: 1px solid #e0e0e0;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+#tab-btn-1:checked~#content-1,
+#tab-btn-2:checked~#content-2,
+#tab-btn-3:checked~#content-3 {
+    display: block;
+    padding: 0;
+
+    background-color: white;
+}
+
+.tabs>label {
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    padding: 2px 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    top: 1px;
+}
+
+.tabs>label:not(:first-of-type) {
+    border-left: none;
+}
+
+.tabs>input[type="radio"]:checked+label {
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.comments_list {
+    margin: 0;
+    padding: 10px;
+    list-style-type: none;
+}
+
+.comment {
+    margin-bottom: 10px;
+}

@@ -44,6 +44,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllerRoute(name: "page", pattern: "{fileName?}",
+    defaults: new { controller = "Page", action = "Index" });
+
 app.MapControllers();
 
 app.Run();

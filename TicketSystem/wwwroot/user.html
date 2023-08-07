@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пользователь</title>
+    <link href="baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="userStyles.css" rel="stylesheet" type="text/css">
+    <script src="checkAuth.js"></script>
+    <script defer src="userScript.js"></script>
+</head>
+
+<body>
+    <div class="navigation_bar">
+        <a class="navigation_bar_item" href="./">На главную</a>
+        <a class="navigation_bar_item" href="./createTicket">Создать заявку</a>
+        <a class="navigation_bar_item" href="./user">Мой аккаунт</a>
+    </div>
+    <div class="container"> 
+        <div class="pages_block">
+            <ul class="pages_list">
+                <li class="pages_list_item">Информация о пользователе</li>
+                <li class="pages_list_item">Другие пункты</li>
+                <li class="pages_list_item">Другие пункты</li>
+                <li class="pages_list_item">Другие пункты</li>
+                <li class="pages_list_item">Другие пункты</li>
+                <li class="pages_list_item">Другие пункты</li>
+                <li class="pages_list_item">Другие пункты</li>
+            </ul>
+        </div>
+        <div class="content_block">
+            <h3 class="content_header">Информация о пользователе</h3>
+            <div>
+                <span>ФИО:</span>
+                <input id="fullName" type="text" value="">
+            </div>
+            <div>
+                <span>Компания</span>
+                <input id="company" type="text" value="">
+            </div>
+            <div>
+                <span>Номер телефона</span>
+                <input id="phoneNumber" type="text" value="">
+            </div>
+            <div>
+                <span>Электронная почта</span>
+                <input id="email" type="text" value="">
+            </div>     
+            <div>
+                <span>Телеграм</span>
+                <input id="telegram" type="text" value="">
+            </div>           
+        </div>
+    </div>
+</body>
+
+</html>

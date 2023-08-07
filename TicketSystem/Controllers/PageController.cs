@@ -2,90 +2,56 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using System.Web;
+using System;
 
 namespace TicketSystem.Controllers
 {
-    [Route("/")]
     public class PageController : Controller
     {
-        [HttpGet]
-        public IResult Index()
+        public IActionResult Index(string fileName)
         {
-            return ReadFile("Content/index.html");
+            if (fileName == null)
+            {
+                return File("index.html", "text/html");
+            }
+
+            string fileFormat = Path.GetExtension(fileName);
+
+            if (fileFormat == "")
+                fileName += ".html";
+
+            fileFormat = Path.GetExtension(fileName);
+
+            if (System.IO.File.Exists($"wwwroot/{fileName}"))
+            {
+                string contentType = $"text/{fileFormat[1..]}";
+
+                if (fileFormat == ".jpg")
+                    contentType = "image/jpg";
+                
+                return File($"{fileName}", contentType);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
-        [HttpGet("indexStyles.css")]
-        public IResult IndexStyles()
-        {
-            return ReadFile("Content/indexStyles.css");
-        }
-
-        [HttpGet("auth")]
-        public IResult Auth()
-        {
-            return ReadFile("Content/auth.html");
-        }
-
-        [HttpGet("authStyles.css")]
-        public IResult AuthStyles()
-        {
-            return ReadFile("Content/authStyles.css");
-        }
-
-        [HttpGet("register")]
-        public IResult Register()
-        {
-            return ReadFile("Content/register.html");
-        }
-
-        [HttpGet("registerStyles.css")]
-        public IResult RegisterStyles()
-        {
-            return ReadFile("Content/registerStyles.css");
-        }
-
-        [HttpGet("createTicket")]
-        public IResult CreateTicket()
-        {
-            return ReadFile("Content/createTicket.html");
-        }
-
-        [HttpGet("createTicketStyles.css")]
-        public IResult CreateTicketStyles()
-        {
-            return ReadFile("Content/createTicketStyles.css");
-        }
-
-        [HttpGet("ticket/{id}")]
-        public IResult GetTicket()
-        {
-            return ReadFile("Content/ticket.html");
-        }
-
-        [HttpGet("ticketStyles.css")]
-        public IResult GetTicketStyles()
-        {
-            return ReadFile("Content/ticketStyles.css");
-        }
-
-        [HttpGet("user")]
-        public IResult User()
-        {
-            return ReadFile("Content/user.html");
-        }
-
-        [HttpGet("UserStyles.css")]
-        public IResult UserStyles()
-        {
-            return ReadFile("Content/userStyles.css");
-        }
-
-        private IResult ReadFile(string filePath)
+        private IResult ReadTextFile(string filePath)
         {
             string fileFormat = Path.GetExtension(filePath)[1..];
 
             string file = System.IO.File.ReadAllText(filePath);
             return Results.Content(file, $"text/{fileFormat}");
+        }
+
+        private IResult ReadImage(string filePath)
+        {
+            string fileFormat = Path.GetExtension(filePath)[1..];
+
+            var file = System.IO.File.ReadAllBytes(filePath);
+            return Results.File(file, $"image/{fileFormat}");
         }
     }
 }

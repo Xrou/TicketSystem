@@ -72,47 +72,6 @@ namespace TicketSystem.Controllers
             return Forbid();
         }
 
-        // PUT: api/Tickets/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTicket(long id, SendTicket ticket)
-        {
-            if (id != ticket.Id)
-            {
-                return BadRequest();
-            }
-
-            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
-
-            if (user == null)
-                return Problem("No user instance", statusCode: 500);
-
-            if (!user.AccessGroup.CanEditTickets)
-                return Forbid();
-
-            context.Entry(ticket).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var ticketExist = (context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
-
-                if (!ticketExist)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -125,7 +84,7 @@ namespace TicketSystem.Controllers
 
             DateTime ticketDate = DateTime.Now;
 
-            Ticket newTicket = new Ticket() { Date = ticketDate, Text = ticket.Text, UserId = user.Id };
+            Ticket newTicket = new Ticket() { Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), UserId = user.Id };
 
             context.Tickets.Add(newTicket);
             await context.SaveChangesAsync();
@@ -196,7 +155,7 @@ namespace TicketSystem.Controllers
 
             if (!(
                 json.ContainsKey("userId") && long.TryParse(json["userId"]!.GetValue<string>(), out userId) &&
-                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"].GetValue<string>(), out ticketId)))
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId)))
             {
                 return BadRequest();
             }
@@ -256,10 +215,43 @@ namespace TicketSystem.Controllers
 
             updateTicket.Finished = true;
             updateTicket.FinishStatus = (FinishStatus)finishStatus;
+            updateTicket.DeadlineTime = DateTime.Now;
             context.Update(updateTicket);
             context.SaveChanges();
 
             return Ok();
+        }
+
+        // POST: api/Tickets/SetDeadline
+        [HttpPost("{id}")]
+        public async Task<IActionResult> SetDeadline([FromBody] JsonObject json)
+        {
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            long ticketId;
+            DateTime deadlineTime;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
+                json.ContainsKey("deadlineTime") && DateTime.TryParse(json["deadlineTime"]!.GetValue<string>(), out deadlineTime)                ))
+            {
+                return BadRequest();
+            }
+
+            if (user == null)
+                return Problem("No user instance", statusCode: 500);
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (updateTicket == null)
+            {
+                return NotFound();
+            }
+
+            updateTicket.DeadlineTime = deadlineTime;
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/Tickets/5

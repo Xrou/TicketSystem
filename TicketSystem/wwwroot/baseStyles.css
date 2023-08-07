@@ -1,0 +1,30 @@
+body {
+    background-image: url("bgTexture.jpg");
+    font-family: "Roboto", "Arial";
+    margin: 0;
+}
+
+a {
+    outline: none;
+    text-decoration: none;
+    color: white;
+}
+
+.navigation_bar {
+    position: absolute;
+    right: 0;
+    left: 0;
+    display: flex;
+    height: 27px;
+    background-color: #6F96B6;
+    padding: 10px 10px 5px 15px;
+    border-radius: 0 0 10px 10px;
+}
+
+.navigation_bar_item {
+    margin-right: 15px;
+}
+
+.container {
+    padding-top: 50px;
+}
