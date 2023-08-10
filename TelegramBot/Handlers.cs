@@ -10,6 +10,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
+using TelegramBot;
 
 namespace ITLTelegram
 {
@@ -45,28 +46,15 @@ namespace ITLTelegram
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
         {
-            HttpClient httpClient = new HttpClient();
-
-            Random random = new Random();
-            int code = random.Next(100000, 1000000);
-            await botClient.SendTextMessageAsync(message.Chat.Id, code.ToString());
-
-            using StringContent jsonContent = new(
-                JsonSerializer.Serialize(new
-                {
-                    telegramId = message.From!.Id,
-                    code = code.ToString()
-                }),
-                Encoding.UTF8,
-                "application/json");
-
-            try
+            if (message.Text == "/start")
             {
-                var request = await httpClient.PostAsync("https://localhost:7177/service/createtemporaryauthorization", jsonContent);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception.Message);
+                Random random = new Random();
+
+                int code = random.Next(100000, 1000000);
+
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Код подтверждения телеграм:\n{code}");
+
+                StaticStorage.Codes[code] = message.Chat.Id;
             }
         }
 

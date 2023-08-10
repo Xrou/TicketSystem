@@ -41,7 +41,7 @@ namespace TicketSystem.Controllers
 
             List<SendTicket> tickets = new List<SendTicket>();
 
-            foreach (var ticket in context.Tickets)
+            foreach (var ticket in context.Tickets.OrderByDescending(t => t.Id))
             {
                 if (InternalActions.CanUserAccessTicket(user, ticket))
                     tickets.Add(ticket.ToSend());
@@ -74,6 +74,24 @@ namespace TicketSystem.Controllers
 
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        protected internal static async Task<Ticket> CreateTicket(Database context, PostTicket ticket, long userId, bool registration = false)
+        {
+            DateTime ticketDate = DateTime.Now;
+
+            TicketType ticketType = TicketType.Standard;
+
+            if (registration)
+                ticketType = TicketType.Registration;
+
+            Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), UserId = userId };
+
+            context.Tickets.Add(newTicket);
+            await context.SaveChangesAsync();
+
+            return newTicket;
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostTicket(PostTicket ticket)
         {
@@ -82,12 +100,7 @@ namespace TicketSystem.Controllers
             if (user == null)
                 return Problem("No user instance", statusCode: 500);
 
-            DateTime ticketDate = DateTime.Now;
-
-            Ticket newTicket = new Ticket() { Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), UserId = user.Id };
-
-            context.Tickets.Add(newTicket);
-            await context.SaveChangesAsync();
+            Ticket newTicket = await CreateTicket(context, ticket, user.Id);
 
             return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
         }
@@ -233,7 +246,7 @@ namespace TicketSystem.Controllers
 
             if (!(
                 json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
-                json.ContainsKey("deadlineTime") && DateTime.TryParse(json["deadlineTime"]!.GetValue<string>(), out deadlineTime)                ))
+                json.ContainsKey("deadlineTime") && DateTime.TryParse(json["deadlineTime"]!.GetValue<string>(), out deadlineTime)))
             {
                 return BadRequest();
             }

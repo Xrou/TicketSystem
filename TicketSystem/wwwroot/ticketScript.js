@@ -24,12 +24,18 @@ function getTicketData() {
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
             var data = JSON.parse(http.responseText);
+            console.log(data);
+
+            var executorName = "не назначен";
+
+            if(data.executorUserName != "")
+                executorName = data.executorUserName;
 
             document.getElementById("ticket_date").innerHTML = data.date;
             document.getElementById("sender_name").innerHTML = data.userName;
-            document.getElementById("sender_company").innerHTML = data.userName;
+            document.getElementById("sender_company").innerHTML = data.senderCompany;
             document.getElementById("ticket_text").innerHTML = data.text;
-            document.getElementById("executor_name").innerHTML = data.executorUserName;
+            document.getElementById("executor_name").innerHTML = executorName;
 
             var day = data.deadlineTime.split('.')[0];
             var month = data.deadlineTime.split('.')[1];
@@ -39,11 +45,8 @@ function getTicketData() {
             var second = data.deadlineTime.split(' ')[1].split(':')[2];
 
             deadline_date = new Date(year, month - 1, day, hour, minute, second);
-
-            console.log(deadline_date);
         }
     }
-    console.log("getticket");
     http.send();
 }
 

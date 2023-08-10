@@ -5,7 +5,7 @@
 
 .inner_container {
     width: 200px;
-    height: 200px;
+    height: 450px;
     
     padding: 10px;
 
@@ -34,6 +34,17 @@
 .login_link {
     color: black;
     font-size: 14px;
+}
+
+.explain_text {
+    font-size: 10px;
+    line-height: 1em;
+    margin: 0;
+}
+
+.bot_link {
+    color: black;
+    font-weight: bold;
 }
 
 h3 {

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="baseStyles.css" rel="stylesheet" type="text/css">
     <link href="registerStyles.css" rel="stylesheet" type="text/css">
+    <script defer src="registerScript.js"></script>
     <title>Регистрация</title>
 </head>
 
@@ -15,14 +16,33 @@
             <h3>Регистрация</h3>
             <div class="input_block">
                 <legend class="login_text">Логин</legend>
-                <input class="login_input" type="text">
+                <input class="login_input" type="text" id="login_input">
             </div>
             <div class="input_block">
                 <legend class="login_text">Пароль</legend>
-                <input class="login_input" type="password">
+                <input class="login_input" type="password" id="password_input">
+            </div>
+            <div class="input_block">
+                <legend class="login_text">ФИО</legend>
+                <input class="login_input" type="text" id="fullname_input">
+            </div>
+            <div class="input_block">
+                <legend class="login_text">Номер телефона</legend>
+                <input class="login_input" type="tel" id="phone_input">
+            </div>
+            <div class="input_block">
+                <legend class="login_text">Компания</legend>
+                <input class="login_input" type="text" id="company_input">
+            </div>
+            <div class="input_block">
+                <legend>Код подтверждения телеграм</legend>
+                <p class="explain_text">Привяжите телеграм аккаунт к учетной записи. Для этого напишите <a
+                        class="bot_link" href="https://t.me/xroutestbot" target="_blank">боту @xroutestbot</a> команду
+                    /start.</p>
+                <input class="login_input" type="text" id="code_input">
             </div>
 
-            <button class="login_button">Зарегистрироваться</button>
+            <button class="login_button" onclick="register()">Зарегистрироваться</button>
             <a class="login_link" href="auth">Или войдите</a>
         </div>
     </div>

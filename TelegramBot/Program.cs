@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
+using TelegramBot;
 
 namespace ITLTelegram
 {
@@ -28,6 +29,10 @@ namespace ITLTelegram
                                    pollingErrorHandler: Handlers.PollingErrorHandler,
                                    receiverOptions: receiverOptions,
                                    cancellationToken: cts.Token);
+
+                Thread callbackListener = new Thread(CallbackListener.Listen);
+
+                callbackListener.Start();
             }
             catch
             {

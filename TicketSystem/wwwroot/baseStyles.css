@@ -10,6 +10,10 @@ a {
     color: white;
 }
 
+legend {
+    padding: 0;
+}
+
 .navigation_bar {
     position: absolute;
     right: 0;

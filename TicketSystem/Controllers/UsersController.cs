@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
@@ -32,15 +33,14 @@ namespace TicketSystem.Controllers
         [AllowAnonymous]
         public async Task<IResult> Login(AuthorizeUser userToAuth)
         {
-            if (userToAuth.Login.ToLower() == "bot")
-                return Results.Forbid();
-
             try
             {
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(userToAuth.Password)));
 
                 User? user = context.Users.FirstOrDefault(u => u.Name == userToAuth.Login && u.PasswordHash == passwordHash);
-                if (user is null) return Results.Unauthorized();
+
+                if (user is null || !user.CanLogin)
+                    return Results.Unauthorized();
 
                 var claims = new List<Claim> {
                     new Claim(ClaimTypes.Name, userToAuth.Login),
@@ -51,7 +51,7 @@ namespace TicketSystem.Controllers
                     audience: AuthOptions.AUDIENCE,
                     claims: claims,
                     expires: DateTime.UtcNow.Add(TimeSpan.FromHours(12)),
-                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha512));
 
                 var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
@@ -73,53 +73,63 @@ namespace TicketSystem.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IResult> Register(AuthorizeUser userToRegister)
+        public async Task<IActionResult> Register([FromBody] JsonObject json)
         {
-            try
+            string login;
+            string password;
+            string verificationCode;
+
+            string fullName;
+            string phoneNumber;
+            string company;
+
+            if (!(
+                json.ContainsKey("login") &&
+                json.ContainsKey("password") &&
+                json.ContainsKey("verificationCode") &&
+                json.ContainsKey("fullName") &&
+                json.ContainsKey("phoneNumber") &&
+                json.ContainsKey("company")
+                ))
             {
-                string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(userToRegister.Password)));
-
-                User newUser = new User() { Name = userToRegister.Login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1 };
-
-                context.Users.Add(newUser);
-                await context.SaveChangesAsync();
-
-                return Results.Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
+                return BadRequest();
             }
-            catch (Exception e)
+
+            login = json["login"]!.GetValue<string>();
+            password = json["password"]!.GetValue<string>();
+            verificationCode = json["verificationCode"]!.GetValue<string>();
+
+            fullName = json["fullName"]!.GetValue<string>();
+            phoneNumber = json["phoneNumber"]!.GetValue<string>();
+            company = json["company"]!.GetValue<string>();
+
+            HttpClient httpClient = new HttpClient();
+
+            var response = await httpClient.GetAsync($"http://localhost:8888/code/?code={verificationCode}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                Console.WriteLine(e);
-                return Results.Unauthorized();
+                return Forbid();
             }
-        }
 
-        [HttpPost("temporarylogin")]
-        [AllowAnonymous]
-        public async Task<IResult> TemporaryLogin(TemporaryAuthorizeUser userToAuth)
-        {
-            TemporaryAuthorizeUser? user = Storage.TemporaryAuthorizeUsers.FirstOrDefault(u => u.TelegramId == userToAuth.TelegramId && u.Code == userToAuth.Code);
+            string telegramIdString = await response.Content.ReadAsStringAsync();
 
-            if (user is null) return Results.Unauthorized();
+            long telegramId = long.Parse(telegramIdString);
+            string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
 
-            Storage.TemporaryAuthorizeUsers.Remove(user);
+            User newUser = new User() { Name = login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1, FullName = fullName, PhoneNumber = phoneNumber, Telegram = telegramId };
+            context.Users.Add(newUser);
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, userToAuth.TelegramId.ToString()) };
-            var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
-                claims: claims,
-                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            await context.SaveChangesAsync();
 
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            string registrationText = "Новый пользователь регистрируется в системе.\n" +
+                $"ФИО: {fullName}\n" +
+                $"Компания: {company}\n" +
+                $"Номер телефона: {phoneNumber}";
 
-            var response = new
-            {
-                access_token = encodedJwt,
-                username = userToAuth.TelegramId
-            };
+            await TicketsController.CreateTicket(context, new PostTicket(registrationText), 10, true);
 
-            return Results.Json(response);
+            return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
         }
 
         // GET: api/Users
@@ -178,11 +188,6 @@ namespace TicketSystem.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(long id, User user)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
             if (id != user.Id)
             {
                 return BadRequest();

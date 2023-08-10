@@ -2,6 +2,6 @@
 {
     public static class Constants
     {
-        public const string BaseUrl = "https://localhost:7177/";
+        public const long BotId = 10;
     }
 }
