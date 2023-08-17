@@ -75,61 +75,111 @@ namespace TicketSystem.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] JsonObject json)
         {
-            string login;
-            string password;
-            string verificationCode;
-
-            string fullName;
-            string phoneNumber;
-            string company;
-
-            if (!(
-                json.ContainsKey("login") &&
-                json.ContainsKey("password") &&
-                json.ContainsKey("verificationCode") &&
-                json.ContainsKey("fullName") &&
-                json.ContainsKey("phoneNumber") &&
-                json.ContainsKey("company")
-                ))
+            try
             {
-                return BadRequest();
+                string login;
+                string password;
+                string verificationCode;
+
+                string fullName;
+                string phoneNumber;
+                string company;
+
+                if (!(
+                    json.ContainsKey("login") &&
+                    json.ContainsKey("password") &&
+                    json.ContainsKey("verificationCode") &&
+                    json.ContainsKey("fullName") &&
+                    json.ContainsKey("phoneNumber") &&
+                    json.ContainsKey("company")
+                    ))
+                {
+                    return BadRequest();
+                }
+
+                login = json["login"]!.GetValue<string>();
+                password = json["password"]!.GetValue<string>();
+                verificationCode = json["verificationCode"]!.GetValue<string>();
+
+                fullName = json["fullName"]!.GetValue<string>();
+                phoneNumber = json["phoneNumber"]!.GetValue<string>();
+                company = json["company"]!.GetValue<string>();
+
+                HttpClient httpClient = new HttpClient();
+
+                var response = await httpClient.GetAsync($"http://localhost:8888/code/?code={verificationCode}");
+
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    return Forbid();
+                }
+
+                string telegramIdString = await response.Content.ReadAsStringAsync();
+
+                long telegramId = long.Parse(telegramIdString);
+                string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
+
+                User newUser = new User() { Name = login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1, FullName = fullName, PhoneNumber = phoneNumber, Telegram = telegramId };
+                context.Users.Add(newUser);
+
+                await context.SaveChangesAsync();
+
+                string registrationText = "Новый пользователь регистрируется в системе.\n" +
+                    $"ФИО: {fullName}\n" +
+                    $"Компания: {company}\n" +
+                    $"Номер телефона: {phoneNumber}";
+
+                await TicketsController.CreateTicket(context, new PostTicket(registrationText), newUser.Id, true);
+
+                return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
-
-            login = json["login"]!.GetValue<string>();
-            password = json["password"]!.GetValue<string>();
-            verificationCode = json["verificationCode"]!.GetValue<string>();
-
-            fullName = json["fullName"]!.GetValue<string>();
-            phoneNumber = json["phoneNumber"]!.GetValue<string>();
-            company = json["company"]!.GetValue<string>();
-
-            HttpClient httpClient = new HttpClient();
-
-            var response = await httpClient.GetAsync($"http://localhost:8888/code/?code={verificationCode}");
-
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            catch (Exception ex)
             {
-                return Forbid();
+                Logger.Log($"{ex.Source}: {ex.Message}");
+                return Problem();
             }
+        }
 
-            string telegramIdString = await response.Content.ReadAsStringAsync();
+        [HttpPost("confirmRegistration")]
+        public async Task<IActionResult> ConfirmRegistration([FromBody] JsonObject json)
+        {
+        //    try
+        //    {
+                if (!(
+                    json.ContainsKey("ticketId") &&
+                    json.ContainsKey("confirm")
+                    ))
+                {
+                    return BadRequest();
+                }
 
-            long telegramId = long.Parse(telegramIdString);
-            string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
+                long ticketId = Convert.ToInt64(json["ticketId"]!.GetValue<string>());
+                int confirm = json["confirm"]!.GetValue<int>();
 
-            User newUser = new User() { Name = login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1, FullName = fullName, PhoneNumber = phoneNumber, Telegram = telegramId };
-            context.Users.Add(newUser);
+                if (confirm == 1)
+                {
+                    long? userId = context.Tickets.FirstOrDefault(t => t.Id == ticketId)?.UserId;
 
-            await context.SaveChangesAsync();
+                    if (userId == null)
+                    {
+                        return Problem();
+                    }
 
-            string registrationText = "Новый пользователь регистрируется в системе.\n" +
-                $"ФИО: {fullName}\n" +
-                $"Компания: {company}\n" +
-                $"Номер телефона: {phoneNumber}";
+                    User user = context.Users.First(u => u.Id == userId);
 
-            await TicketsController.CreateTicket(context, new PostTicket(registrationText), 10, true);
+                    user.CanLogin = true;
 
-            return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
+                    await context.SaveChangesAsync();
+                }
+
+                return Ok();
+        /*    }
+            catch (Exception ex)
+            {
+                Logger.Log($"{ex.Source}: {ex.Message} {ex.}");
+                return Problem();
+            }
+        */
         }
 
         // GET: api/Users

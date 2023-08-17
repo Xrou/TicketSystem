@@ -54,11 +54,11 @@ namespace TicketSystem.Models
             if (this.ExecutorUser != null)
                 executorName = this.ExecutorUser.Name;
 
-            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, UserName = User.Name, SenderCompany = User.Company.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName };
+            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, UserName = User.Name, SenderCompany = User.Company.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName, Type = (int)Type };
         }
     }
 
-    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, string SenderCompany, long? ExecutorUserId, string UserName, string ExecutorUserName);
+    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, string SenderCompany, long? ExecutorUserId, string UserName, string ExecutorUserName, int Type);
     public record struct PostTicket(string Text);
 
     public enum FinishStatus

@@ -15,7 +15,7 @@ function getTicketData() {
     document.title = `Заявка ${ticket_id}`
 
     var http = new XMLHttpRequest();
-    http.open('GET', `https://localhost:7177/api/tickets/${ticket_id}`, true);
+    http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/${ticket_id}`, true);
 
     var authToken = sessionStorage.getItem("access_token")
 
@@ -28,7 +28,7 @@ function getTicketData() {
 
             var executorName = "не назначен";
 
-            if(data.executorUserName != "")
+            if (data.executorUserName != "")
                 executorName = data.executorUserName;
 
             document.getElementById("ticket_date").innerHTML = data.date;
@@ -36,6 +36,9 @@ function getTicketData() {
             document.getElementById("sender_company").innerHTML = data.senderCompany;
             document.getElementById("ticket_text").innerHTML = data.text;
             document.getElementById("executor_name").innerHTML = executorName;
+            
+            if (data.type == 2)
+                document.getElementById("registration").style.display = "block";
 
             var day = data.deadlineTime.split('.')[0];
             var month = data.deadlineTime.split('.')[1];
@@ -54,7 +57,7 @@ function getComments() {
     var urlParams = new URLSearchParams(window.location.search);
     var ticket_id = urlParams.get('id');
 
-    var url = new URL("https://localhost:7177/api/comments");
+    var url = new URL("http://cl-srv-suz.cl.local/api/comments");
     url.searchParams.append('ticketId', ticket_id);
     url.searchParams.append('commentType', "1");
 
@@ -168,7 +171,7 @@ function sendComment() {
         commentType = 2;
 
     var http = new XMLHttpRequest();
-    http.open('POST', 'https://localhost:7177/api/comments', true);
+    http.open('POST', 'http://cl-srv-suz.cl.local/api/comments', true);
 
     var authToken = sessionStorage.getItem("access_token");
 
@@ -193,7 +196,7 @@ function sendComment() {
 
 function takeTicket() {
     var http = new XMLHttpRequest();
-    http.open('POST', 'https://localhost:7177/api/tickets/assignTicket', true);
+    http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets/assignTicket', true);
 
     var authToken = sessionStorage.getItem("access_token");
     var myId = sessionStorage.getItem("id");
@@ -223,7 +226,7 @@ function subscribeTicket() {
     var ticket_id = urlParams.get('id');
 
     var http = new XMLHttpRequest();
-    http.open('GET', `https://localhost:7177/api/tickets/subscribe/${ticket_id}`, true);
+    http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/subscribe/${ticket_id}`, true);
 
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
     http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
@@ -290,7 +293,7 @@ function getDateAsString(date) {
 function setDeadline() {
     var deadlineTime = document.getElementById('action_time_selector_calendar').value;
     var http = new XMLHttpRequest();
-    http.open('POST', 'https://localhost:7177/api/tickets/setDeadline', true);
+    http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets/setDeadline', true);
 
     var authToken = sessionStorage.getItem("access_token");
 
@@ -314,7 +317,7 @@ function setDeadline() {
     http.send(ticketData);
 
     var http2 = new XMLHttpRequest();
-    http2.open('POST', 'https://localhost:7177/api/comments', true);
+    http2.open('POST', 'http://cl-srv-suz.cl.local/api/comments', true);
 
     var commentText = document.getElementById('action_time_selector_text').value;
     deadlineTime = new Date(deadlineTime);
@@ -336,6 +339,32 @@ function setDeadline() {
     }
 
     http2.send(commentData);
+}
+
+function verifyRegistration() {
+    var http = new XMLHttpRequest();
+    http.open('POST', 'http://cl-srv-suz.cl.local/api/users/confirmRegistration', true);
+
+    var authToken = sessionStorage.getItem("access_token");
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = urlParams.get('id');
+
+    var ticketData = JSON.stringify({
+        ticketId: ticket_id,
+        confirm: 1
+    });
+
+    http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+    http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    http.onreadystatechange = function () {
+        if (http.readyState == 4 && http.status == 204) {
+            getTicketData();
+        }
+    }
+
+    http.send(ticketData);
 }
 
 setInterval(updateTimer, 1000);

@@ -22,7 +22,7 @@ namespace TicketSystem.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("server=cl-srv-hdsk.cl.local;port=3306;user=xrouu;password=KLyuwi629jasy8HSH;database=suz; Charset=utf8;");
+            optionsBuilder.UseMySQL("server=cl-srv-suz.cl.local;port=3306;user=xrou;password=1474545mimosH;database=suz; Charset=utf8;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

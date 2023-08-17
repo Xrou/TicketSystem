@@ -149,6 +149,11 @@ p {
     margin: 0;
 }
 
+.register_verification {
+    display: none;
+    margin-bottom: 10px;
+}
+
 .write_comment {
     padding: 10px;
 

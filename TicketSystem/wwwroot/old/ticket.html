@@ -66,7 +66,7 @@
         document.getElementById("ticket_id").innerHTML = `Заявка ${ticket_id}`;
 
         var http = new XMLHttpRequest();
-        http.open('GET', `https://localhost:7177/api/tickets/${ticket_id}`, true);
+        http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/${ticket_id}`, true);
 
         var authToken = sessionStorage.getItem("access_token")
 
@@ -96,7 +96,7 @@
         function getComments()
         {
             var http = new XMLHttpRequest();
-            http.open('GET', `https://localhost:7177/api/comments/${ticket_id}`, true);
+            http.open('GET', `http://cl-srv-suz.cl.local/api/comments/${ticket_id}`, true);
 
             var authToken = sessionStorage.getItem("access_token")
 
@@ -144,7 +144,7 @@
         function add_comment()
         {
             var http = new XMLHttpRequest();
-            http.open('POST', 'https://localhost:7177/api/comments', true);
+            http.open('POST', 'http://cl-srv-suz.cl.local/api/comments', true);
             
             var authToken = sessionStorage.getItem("access_token");
             var text = document.getElementById("comment_form_text").value;
@@ -162,7 +162,7 @@
             http.onreadystatechange = function() {
                 if (http.readyState == 4 && http.status == 201)
                 {
-                    document.location.replace(`https://localhost:7177/ticket/${ticket_id}`);
+                    document.location.replace(`http://cl-srv-suz.cl.local/ticket/${ticket_id}`);
                 }
                 else if (http.readyState == 4 && http.status == 401)
                 {
@@ -176,7 +176,7 @@
         function subscribe()
         {
             var http = new XMLHttpRequest();
-            http.open('GET', `https://localhost:7177/api/tickets/subscribe/${ticket_id}`, true);
+            http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/subscribe/${ticket_id}`, true);
 
             var authToken = sessionStorage.getItem("access_token")
 
@@ -199,7 +199,7 @@
         function assignTicket()
         {
             var http = new XMLHttpRequest();
-            http.open('POST', `https://localhost:7177/api/tickets/assignTicket`, true);
+            http.open('POST', `http://cl-srv-suz.cl.local/api/tickets/assignTicket`, true);
 
             var authToken = sessionStorage.getItem("access_token")
 

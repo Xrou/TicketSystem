@@ -24,13 +24,13 @@
 
     <div id="modal_window" class="modal_container">
         <div class="modal_content">
-            <a href="https://localhost:7177/auth">Для продолжения работы необходимо авторизоваться</a>
+            <a href="http://cl-srv-suz.cl.local/auth">Для продолжения работы необходимо авторизоваться</a>
         </div>
     </div>
 
     <script>
         var http = new XMLHttpRequest();
-        http.open('GET', `https://localhost:7177/api/users/me`, true);
+        http.open('GET', `http://cl-srv-suz.cl.local/api/users/me`, true);
 
         var authToken = sessionStorage.getItem("access_token")
 

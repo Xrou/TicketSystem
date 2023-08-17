@@ -18,14 +18,14 @@
     </div>
     <div id="modal_window" class="modal_container">
         <div class="modal_content">
-            <a href="https://localhost:7177/auth">Для продолжения работы необходимо авторизоваться</a>
+            <a href="http://cl-srv-suz.cl.local/auth">Для продолжения работы необходимо авторизоваться</a>
         </div>
     </div>
     <script>
         function createTicket()
         {
             var http = new XMLHttpRequest();
-            http.open('POST', 'https://localhost:7177/api/tickets', true);
+            http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets', true);
             
             var authToken = sessionStorage.getItem("access_token");
             var text = document.getElementById("new_ticket_text").value;
@@ -41,7 +41,7 @@
             http.onreadystatechange = function() {
                 if (http.readyState == 4 && http.status == 201)
                 {
-                    document.location.replace("https://localhost:7177");
+                    document.location.replace("http://cl-srv-suz.cl.local");
                 }
                 else if (http.readyState == 4 && http.status == 401)
                 {

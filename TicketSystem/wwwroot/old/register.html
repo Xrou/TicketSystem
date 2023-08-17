@@ -25,13 +25,13 @@
             var password = document.getElementById("reg_password").value;
 
             var data = JSON.stringify({"login": login, "password": password});
-            http.open('POST', 'https://localhost:7177/api/users/register', true);
+            http.open('POST', 'http://cl-srv-suz.cl.local/api/users/register', true);
 
             http.setRequestHeader('Content-type', 'application/json');
 
             http.onreadystatechange = function() {
                 if (http.readyState == 4 && http.status == 201) {
-                    document.location.replace("https://localhost:7177/auth");
+                    document.location.replace("http://cl-srv-suz.cl.local/auth");
                 }
             }
 

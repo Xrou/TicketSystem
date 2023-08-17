@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../baseStyles.css" rel="stylesheet" type="text/css">
     <link href="../ticketStyles.css" rel="stylesheet" type="text/css">
-    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
     <script src="../ticketScript.js" defer></script>
     <script src="../checkAuth.js" defer></script>
     <title>Заявка НОМЕР ЗАЯВКИ</title>
@@ -72,6 +72,10 @@
                 <p id="ticket_text">
                 </p>
             </div>
+        </div>
+
+        <div class="register_verification" id="registration">
+            <button class="action_button" onclick="verifyRegistration()">Подтвердить регистрацию</button>
         </div>
 
         <div class="write_comment">

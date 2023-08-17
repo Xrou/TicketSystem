@@ -1,6 +1,6 @@
 function createTicket() {
     var http = new XMLHttpRequest();
-    http.open('POST', 'https://localhost:7177/api/tickets', true);
+    http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets', true);
 
     var authToken = sessionStorage.getItem("access_token");
 

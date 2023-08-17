@@ -14,7 +14,7 @@
         <input class="auth_input" type="text" id="auth_password" placeholder="Пароль">
         <button onclick="check_auth()">Вход</button>
 
-        <a href="https://localhost:7177/register">Или зарегистрируйтесь</a> 
+        <a href="http://cl-srv-suz.cl.local/register">Или зарегистрируйтесь</a> 
     </div>
 
     <script>
@@ -25,7 +25,7 @@
             var password = document.getElementById("auth_password").value;
 
             var data = JSON.stringify({"login": login, "password": password});
-            http.open('POST', 'https://localhost:7177/api/users/login', true);
+            http.open('POST', 'http://cl-srv-suz.cl.local/api/users/login', true);
 
             http.setRequestHeader('Content-type', 'application/json');
 
@@ -34,7 +34,7 @@
                     var data = JSON.parse(http.responseText);
                     sessionStorage.setItem("access_token", data.access_token);
                     document.cookie = "access_token=" + data.access_token + ";";
-                    document.location.replace("https://localhost:7177");
+                    document.location.replace("http://cl-srv-suz.cl.local");
                 }
             }
 
