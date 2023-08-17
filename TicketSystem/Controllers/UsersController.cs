@@ -143,8 +143,8 @@ namespace TicketSystem.Controllers
         [HttpPost("confirmRegistration")]
         public async Task<IActionResult> ConfirmRegistration([FromBody] JsonObject json)
         {
-        //    try
-        //    {
+            try
+            {
                 if (!(
                     json.ContainsKey("ticketId") &&
                     json.ContainsKey("confirm")
@@ -173,13 +173,12 @@ namespace TicketSystem.Controllers
                 }
 
                 return Ok();
-        /*    }
+            }
             catch (Exception ex)
             {
-                Logger.Log($"{ex.Source}: {ex.Message} {ex.}");
+                Logger.Log($"{ex.Source}: {ex.Message} {ex.StackTrace}");
                 return Problem();
             }
-        */
         }
 
         // GET: api/Users
