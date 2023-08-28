@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using NuGet.Configuration;
 using TicketSystem.Models;
 
 namespace TicketSystem.Controllers
@@ -129,7 +131,7 @@ namespace TicketSystem.Controllers
                     $"Компания: {company}\n" +
                     $"Номер телефона: {phoneNumber}";
 
-                await TicketsController.CreateTicket(context, new PostTicket(registrationText, 3), newUser.Id, true);
+                await TicketsController.CreateTicket(context, new PostTicket(newUser.Id, registrationText, 3), newUser.Id, true);
 
                 return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
@@ -185,11 +187,6 @@ namespace TicketSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SendUser>>> GetUsers()
         {
-            if (context.Users == null)
-            {
-                return NotFound();
-            }
-
             List<SendUser> sendUsers = new List<SendUser>();
 
             foreach (var user in context.Users)
@@ -200,14 +197,61 @@ namespace TicketSystem.Controllers
             return sendUsers;
         }
 
+        // POST: api/Users/getFilteredUsers
+        [HttpPost("getFilteredUsers")]
+        public async Task<ActionResult<IEnumerable<SendUser>>> GetFilteredUsers([FromBody] JsonObject json)
+        {
+            IEnumerable<User> users = context.Users.ToList();
+
+            if (long.TryParse(json["id"]!.GetValue<string>(), out long id))
+            {
+                users = users.Where(x => x.Id == id);
+            }
+            else
+            {
+                if (json.ContainsKey("name"))
+                {
+                    string nameValue = json["name"]!.GetValue<string>().ToLower();
+
+                    users = users.Where(x =>
+                    {
+                        if (x.FullName == null)
+                            return false;
+
+                        if (x.FullName!.ToLower().Contains(nameValue))
+                            return true;
+
+                        return false;
+                    });
+                }
+
+                if (json.ContainsKey("admins"))
+                {
+                    if (json["admins"]!.GetValue<bool>() == true)
+                        users = users.Where(x => x.AccessGroupId >= 3);
+                }
+
+                if (json.ContainsKey("company"))
+                {
+                    string companyValue = json["company"]!.GetValue<string>().ToLower();
+
+                    users = users.Where(x =>
+                    {
+                        if (x.Company.Name.ToLower().Contains(companyValue))
+                            return true;
+
+                        return false;
+                    });
+                }
+            }
+
+            return users.Select(x => x.ToSend()).ToList();
+        }
+
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SendUser>> GetUser(long id)
         {
-            if (context.Users == null)
-            {
-                return NotFound();
-            }
             var user = await context.Users.FindAsync(id);
 
             if (user == null)
@@ -230,6 +274,17 @@ namespace TicketSystem.Controllers
             }
 
             return user.ToSend();
+        }
+
+        [HttpGet("canRegisterUsers")]
+        public async Task<ActionResult<string>> CanRegisterUsers()
+        {
+            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return NotFound();
+
+            return JsonConvert.SerializeObject(user.AccessGroup.CanRegisterUsers);
         }
 
         // PUT: api/Users/5

@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../baseStyles.css" rel="stylesheet" type="text/css">
     <link href="../ticketStyles.css" rel="stylesheet" type="text/css">
-    <script src="http://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous"></script>
     <script src="../ticketScript.js" defer></script>
     <script src="../checkAuth.js" defer></script>
     <title>Заявка НОМЕР ЗАЯВКИ</title>
@@ -25,27 +26,52 @@
             <button class="action_button" onclick="assignTicket()">Назначить заявку</button>
             <button class="action_button" onclick="subscribeTicket()">Подписаться</button>
             <div class="action_grow"></div>
+            <div class="css-modal-target-container action_button">
+                <a href="#close_ticket" id="select_user_button">Завершить</a>
+            </div>
             <div class="action_time" onmouseenter="showTimeSelector()" onmouseleave="hideTimeSelector()">
                 <div class="action_time_text">
                     <span id="timer" class="action_timer"></span>
-                    <svg class="action_time_more" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path fill="#ffffff" d="M480-345 240-585l43-43 197 198 197-197 43 43-240 239Z"/></svg>
+                    <svg class="action_time_more" xmlns="http://www.w3.org/2000/svg" height="48"
+                        viewBox="0 -960 960 960" width="48">
+                        <path fill="#ffffff" d="M480-345 240-585l43-43 197 198 197-197 43 43-240 239Z" />
+                    </svg>
                 </div>
                 <div id="action_time_selector" class="action_time_selector">
                     <span>Выберите дату</span>
-                    <input class="action_time_selector_calendar" type="datetime-local" name="" id="action_time_selector_calendar">
-                    <textarea class="action_time_selector_text" name="" id="action_time_selector_text" cols="30" rows="10"
-                        placeholder="Укажите причину переноса"></textarea>
+                    <input class="action_time_selector_calendar" type="datetime-local" name=""
+                        id="action_time_selector_calendar">
+                    <textarea class="action_time_selector_text" name="" id="action_time_selector_text" cols="30"
+                        rows="10" placeholder="Укажите причину переноса"></textarea>
                     <div class="action_time_selector_buttons">
                         <button class="action_time_selector_button" onclick="setDeadlineDate(1)">День</button>
                         <button class="action_time_selector_button" onclick="setDeadlineDate(3)">3 дня</button>
                         <button class="action_time_selector_button" onclick="setDeadlineDate(7)">Неделя</button>
                         <button class="action_time_selector_button" onclick="setDeadlineDate(31)">Месяц</button>
                     </div>
-                    <button class="action_time_selector_button action_time_selector_button_submit" onclick="setDeadline()">
+                    <button class="action_time_selector_button action_time_selector_button_submit"
+                        onclick="setDeadline()">
                         Перенести
                     </button>
                 </div>
             </div>
+        </div>
+
+        <div class="css-modal-target" id="close_ticket">
+            <div class="cmt">
+                <h4>Закрытие заявки</h4>
+                <legend>Выберите категорию заявки</legend>
+                <div class="radio">
+                    <input label="Инцидент" type="radio" id="incident" name="urgency" value="low" checked>
+                    <input label="Изменение" type="radio" id="changes" name="urgency" value="medium">
+                </div>
+                <legend>Комментарий</legend>
+                <div>
+                    <textarea name="" id="finish_comment" cols="30" rows="10"></textarea>
+                </div>
+                <button onclick="closeTicket()">Закрыть</button>
+            </div>
+            <a href="#close" class="css-modal-close"></a>
         </div>
 
         <div class="ticket_data">
@@ -61,6 +87,10 @@
                 <div class="ticket_info_block">
                     <span>Дата отправления:</span>
                     <span id="ticket_date"></span>
+                </div>
+                <div class="ticket_info_block">
+                    <span>Срочность:</span>
+                    <span id="ticket_urgency"></span>
                 </div>
                 <div class="ticket_info_block">
                     <span>Назначенный исполнитель:</span>
@@ -94,7 +124,7 @@
 
             <div id="content-1">
                 <ul id="standard_comments" class="comments_list">
-                    
+
                 </ul>
             </div>
             <div id="content-2">

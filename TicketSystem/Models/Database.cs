@@ -37,6 +37,15 @@ namespace TicketSystem.Models
                 .AutoInclude();
 
             modelBuilder.Entity<Ticket>()
+                .HasOne(e => e.SenderUser)
+                .WithMany()
+                .HasForeignKey(e => e.SenderId);
+
+            modelBuilder.Entity<Ticket>()
+                .Navigation(e => e.SenderUser)
+                .AutoInclude();
+
+            modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.User)
                 .AutoInclude();
 

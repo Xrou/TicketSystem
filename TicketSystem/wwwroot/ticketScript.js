@@ -14,8 +14,10 @@ function getTicketData() {
 
     document.title = `Заявка ${ticket_id}`
 
+    var ticketType;
+
     var http = new XMLHttpRequest();
-    http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/${ticket_id}`, true);
+    http.open('GET', `../api/tickets/${ticket_id}`, true);
 
     var authToken = sessionStorage.getItem("access_token")
 
@@ -31,14 +33,19 @@ function getTicketData() {
             if (data.executorUserName != "")
                 executorName = data.executorUserName;
 
+            var urgency = "низкая";
+
+            if (data.urgency == 1)
+                urgency = "средняя";
+            else if (data.urgency == 2)
+                urgency = "высокая";
+
             document.getElementById("ticket_date").innerHTML = data.date;
             document.getElementById("sender_name").innerHTML = data.userName;
             document.getElementById("sender_company").innerHTML = data.senderCompany;
             document.getElementById("ticket_text").innerHTML = data.text;
             document.getElementById("executor_name").innerHTML = executorName;
-            
-            if (data.type == 2)
-                document.getElementById("registration").style.display = "block";
+            document.getElementById("ticket_urgency").innerHTML = urgency;
 
             var day = data.deadlineTime.split('.')[0];
             var month = data.deadlineTime.split('.')[1];
@@ -48,16 +55,35 @@ function getTicketData() {
             var second = data.deadlineTime.split(' ')[1].split(':')[2];
 
             deadline_date = new Date(year, month - 1, day, hour, minute, second);
+            var canRegisterValue;
+            var http2 = new XMLHttpRequest();
+            http2.open('GET', `../api/users/canRegisterUsers`, false);
+
+            var authToken = sessionStorage.getItem("access_token")
+
+            http2.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+            http2.onreadystatechange = function () {
+                if (http2.readyState == 4 && http2.status == 200) {
+                    canRegisterValue = http2.responseText == "true";
+
+                    if (data.type == 2 && canRegisterValue)
+                        document.getElementById("registration").style.display = "block";
+                }
+            }
+
+            http2.send();
         }
     }
     http.send();
+
 }
 
 function getComments() {
     var urlParams = new URLSearchParams(window.location.search);
     var ticket_id = urlParams.get('id');
 
-    var url = new URL("http://cl-srv-suz.cl.local/api/comments");
+    var url = new URL(window.location.origin + "/api/comments");
     url.searchParams.append('ticketId', ticket_id);
     url.searchParams.append('commentType', "1");
 
@@ -171,7 +197,7 @@ function sendComment() {
         commentType = 2;
 
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://cl-srv-suz.cl.local/api/comments', true);
+    http.open('POST', '../api/comments', true);
 
     var authToken = sessionStorage.getItem("access_token");
 
@@ -196,7 +222,7 @@ function sendComment() {
 
 function takeTicket() {
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets/assignTicket', true);
+    http.open('POST', '../api/tickets/assignTicket', true);
 
     var authToken = sessionStorage.getItem("access_token");
     var myId = sessionStorage.getItem("id");
@@ -226,7 +252,7 @@ function subscribeTicket() {
     var ticket_id = urlParams.get('id');
 
     var http = new XMLHttpRequest();
-    http.open('GET', `http://cl-srv-suz.cl.local/api/tickets/subscribe/${ticket_id}`, true);
+    http.open('GET', `../api/tickets/subscribe/${ticket_id}`, true);
 
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
     http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
@@ -293,7 +319,7 @@ function getDateAsString(date) {
 function setDeadline() {
     var deadlineTime = document.getElementById('action_time_selector_calendar').value;
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://cl-srv-suz.cl.local/api/tickets/setDeadline', true);
+    http.open('POST', '../api/tickets/setDeadline', true);
 
     var authToken = sessionStorage.getItem("access_token");
 
@@ -317,7 +343,7 @@ function setDeadline() {
     http.send(ticketData);
 
     var http2 = new XMLHttpRequest();
-    http2.open('POST', 'http://cl-srv-suz.cl.local/api/comments', true);
+    http2.open('POST', '../api/comments', true);
 
     var commentText = document.getElementById('action_time_selector_text').value;
     deadlineTime = new Date(deadlineTime);
@@ -343,7 +369,7 @@ function setDeadline() {
 
 function verifyRegistration() {
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://cl-srv-suz.cl.local/api/users/confirmRegistration', true);
+    http.open('POST', '../api/users/confirmRegistration', true);
 
     var authToken = sessionStorage.getItem("access_token");
 
@@ -365,6 +391,39 @@ function verifyRegistration() {
     }
 
     http.send(ticketData);
+}
+
+function closeTicket() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = Number(urlParams.get('id'));
+
+    var finishStatus = 0;
+    if (document.getElementById("changes").checked)
+        finishStatus = 1;
+
+    var finishComment = document.getElementById("finish_comment").value;
+
+    var data = JSON.stringify({
+        "ticketId": ticket_id,
+        "finishStatus": finishStatus,
+        "commentText": finishComment
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            getTicketData();
+            getComments();
+        }
+    });
+
+    xhr.open("POST", "http://localhost/api/Tickets/closeTicket");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIwIiwiZXhwIjoxNjkzMjU2NTI0LCJpc3MiOiJJVExTZXJ2ZXIiLCJhdWQiOiJJVExVc2VyIn0.Mg-XT2gVybRlq1VLvjmq7spI1UQZ1JHmpNswUoJ_Qep1H_KjsShKA42e2yXszii-yGvf_W3iEsLG5ukq-st24w");
+
+    xhr.send(data);
 }
 
 setInterval(updateTimer, 1000);

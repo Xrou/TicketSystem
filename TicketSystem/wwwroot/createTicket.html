@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="baseStyles.css" rel="stylesheet" type="text/css">
     <link href="createTicketStyles.css" rel="stylesheet" type="text/css">
-    <script src="createTicketScript.js"></script>
     <script src="checkAuth.js"></script>
+    <script defer src="createTicketScript.js"></script>
     <title>Создание заявки</title>
 </head>
 
@@ -19,8 +19,60 @@
     </div>
     <div class="container">
         <div class="center_container">
-            <span class="text_input_legend">Введите текст заявки</span>
+            <div class="inline_flex">
+                <span class="input_legend">Заявитель</span>
+                <div class="css-modal-target-container">
+                    <a class="css-modal-open" href="#select_user" id="select_user_button">Пользователь</a>
+                </div>
+            </div>
+
+            <div class="css-modal-target" id="select_user">
+                <div class="cmt">
+                    <h4>Выберите пользователя</h4>
+                    <div class="filters">
+                        <div class="filter_item">
+                            <span>№:</span>
+                            <input style="width: 50px;" type="text" name="" id="id_filter">
+                        </div>
+                        <div class="filter_item">
+                            <span>Имя:</span>
+                            <input type="text" name="" id="name_filter">
+                        </div>
+                        <div class="filter_item">
+                            <span>Компания:</span>
+                            <input type="text" name="" id="company_filter">
+                        </div>
+                    </div>
+                    <button class="filter_button" onclick="loadUsers()">Фильтр</button>
+                    <table>
+                        <colgroup>
+                            <col span="1" style="width: 70%;">
+                            <col span="1" style="width: auto;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>ФИО</th>
+                                <th>Компания</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users_table">
+
+                        </tbody>
+                    </table>
+                    <span>Выбранный пользователь:</span>
+                    <span id="modal_selected_user"></span>
+                </div>
+                <a href="#close" class="css-modal-close"></a>
+            </div>
+
+            <span class="input_legend">Введите текст заявки</span>
             <textarea class="text_input" name="" id="text_input" cols="30" rows="10"></textarea>
+            <span class="radio_input_legend">Срочность</span>
+            <div class="radio">
+                <input label="Низкая" type="radio" id="low" name="urgency" value="low" checked>
+                <input label="Средняя" type="radio" id="medium" name="urgency" value="medium">
+                <input label="Высокая" type="radio" id="high" name="urgency" value="high">
+            </div>
             <button class="create_button" onclick="createTicket()">Создать</button>
         </div>
     </div>

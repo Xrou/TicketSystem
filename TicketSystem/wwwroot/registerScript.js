@@ -8,7 +8,7 @@ function register() {
     var company = document.getElementById("company_input").value;
 
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://cl-srv-suz.cl.local/api/users/register', true);
+    http.open('POST', 'api/users/register', true);
 
     var ticketData = JSON.stringify({
         login: login,

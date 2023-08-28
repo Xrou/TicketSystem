@@ -75,7 +75,7 @@ namespace TicketSystem.Controllers
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
-        protected internal static async Task<Ticket> CreateTicket(Database context, PostTicket ticket, long userId, bool registration = false)
+        protected internal static async Task<Ticket> CreateTicket(Database context, PostTicket ticket, long senderId, bool registration = false)
         {
             DateTime ticketDate = DateTime.Now;
 
@@ -84,7 +84,7 @@ namespace TicketSystem.Controllers
             if (registration)
                 ticketType = TicketType.Registration;
 
-            Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), UserId = userId };
+            Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), SenderId = senderId, UserId = ticket.UserId, Urgency = (Urgency)ticket.Urgency };
 
             context.Tickets.Add(newTicket);
             await context.SaveChangesAsync();
@@ -95,14 +95,22 @@ namespace TicketSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> PostTicket(PostTicket ticket)
         {
-            User? user = InternalActions.SelectUserFromContext(HttpContext, context);
+            try
+            {
+                User? user = InternalActions.SelectUserFromContext(HttpContext, context);
 
-            if (user == null)
-                return Problem("No user instance", statusCode: 500);
+                if (user == null)
+                    return Problem("No user instance", statusCode: 500);
 
-            Ticket newTicket = await CreateTicket(context, ticket, user.Id);
+                Ticket newTicket = await CreateTicket(context, ticket, user.Id);
 
-            return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
+                return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"{ex.Source}: {ex.Message} {ex.StackTrace}");
+                return Problem();
+            }
         }
 
         // api/tickets/subscribe/3
@@ -201,13 +209,15 @@ namespace TicketSystem.Controllers
             string commentText;
 
             if (!(
-                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
-                json.ContainsKey("finishStatus") && int.TryParse(json["finishStatus"]!.GetValue<string>(), out finishStatus) &&
+                json.ContainsKey("ticketId") && 
+                json.ContainsKey("finishStatus") &&
                 json.ContainsKey("commentText")))
             {
                 return BadRequest();
             }
 
+            ticketId = json["ticketId"]!.GetValue<long>();
+            finishStatus = json["finishStatus"]!.GetValue<int>();
             commentText = json["commentText"]!.GetValue<string>();
 
             var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);

@@ -42,4 +42,10 @@ function getTickets() {
     http.send();
 }
 
+function logout() {
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("id");
+    document.location.replace("./auth");
+}
+
 getTickets();

@@ -1,6 +1,6 @@
 function getInfo(){
     var http = new XMLHttpRequest();
-    http.open('GET', `http://cl-srv-suz.cl.local/api/users/me`, true);
+    http.open('GET', `api/users/me`, true);
 
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
     http.setRequestHeader('Content-type', 'application/json; charset=utf-8');

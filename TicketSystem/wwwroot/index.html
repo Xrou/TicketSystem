@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,10 +10,12 @@
     <script src="checkAuth.js"></script>
     <title>СУЗ</title>
 </head>
+
 <body>
     <div class="navigation_bar">
         <a class="navigation_bar_item" href="./createTicket">Создать заявку</a>
         <a class="navigation_bar_item" href="./user">Мой аккаунт</a>
+        <a class="navigation_bar_item" href="#" onclick="logout()">Выйти</a>
     </div>
     <div class="container">
         <div class="internal_container">
@@ -45,7 +48,7 @@
                         <col span="1" style="width: 10%;">
                         <col span="1" style="width: 10%;">
                         <col span="1" style="width: 20%;">
-                     </colgroup>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>№</th>
@@ -57,11 +60,12 @@
                         </tr>
                     </thead>
                     <tbody id="tickets_table">
-                        
+
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </body>
-</html> 
+
+</html>
