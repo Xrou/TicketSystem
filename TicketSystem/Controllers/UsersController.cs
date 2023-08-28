@@ -129,7 +129,7 @@ namespace TicketSystem.Controllers
                     $"Компания: {company}\n" +
                     $"Номер телефона: {phoneNumber}";
 
-                await TicketsController.CreateTicket(context, new PostTicket(registrationText), newUser.Id, true);
+                await TicketsController.CreateTicket(context, new PostTicket(registrationText, 3), newUser.Id, true);
 
                 return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
