@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System.Web;
 using System;
+using System.Text.RegularExpressions;
 
 namespace TicketSystem.Controllers
 {
@@ -19,7 +20,10 @@ namespace TicketSystem.Controllers
             string fileFormat = Path.GetExtension(fileName);
 
             if (fileFormat == "")
+            {
                 fileName += ".html";
+                Console.WriteLine(fileName);
+            }
 
             fileFormat = Path.GetExtension(fileName);
 
@@ -29,7 +33,7 @@ namespace TicketSystem.Controllers
 
                 if (fileFormat == ".jpg")
                     contentType = "image/jpg";
-                
+
                 return File($"{fileName}", contentType);
             }
             else

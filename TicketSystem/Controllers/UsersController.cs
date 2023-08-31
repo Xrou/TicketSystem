@@ -203,7 +203,7 @@ namespace TicketSystem.Controllers
         {
             IEnumerable<User> users = context.Users.ToList();
 
-            if (long.TryParse(json["id"]!.GetValue<string>(), out long id))
+            if (json.ContainsKey("id") && long.TryParse(json["id"]!.GetValue<string>(), out long id))
             {
                 users = users.Where(x => x.Id == id);
             }
@@ -238,6 +238,38 @@ namespace TicketSystem.Controllers
                     users = users.Where(x =>
                     {
                         if (x.Company.Name.ToLower().Contains(companyValue))
+                            return true;
+
+                        return false;
+                    });
+                }
+            }
+
+            return users.Select(x => x.ToSend()).ToList();
+        }
+
+        // POST: api/Users/getFilteredUsers
+        [HttpPost("getExecutors")]
+        public async Task<ActionResult<IEnumerable<SendUser>>> GetExecutors([FromBody] JsonObject json)
+        {
+            IEnumerable<User> users = context.Users.Where(x => x.AccessGroupId > 2).ToList();
+
+            if (json.ContainsKey("id") && long.TryParse(json["id"]!.GetValue<string>(), out long id))
+            {
+                users = users.Where(x => x.Id == id);
+            }
+            else
+            {
+                if (json.ContainsKey("name"))
+                {
+                    string nameValue = json["name"]!.GetValue<string>().ToLower();
+
+                    users = users.Where(x =>
+                    {
+                        if (x.FullName == null)
+                            return false;
+
+                        if (x.FullName!.ToLower().Contains(nameValue))
                             return true;
 
                         return false;
@@ -287,35 +319,20 @@ namespace TicketSystem.Controllers
             return JsonConvert.SerializeObject(user.AccessGroup.CanRegisterUsers);
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        [HttpGet("hasAdminRights")]
+        public async Task<IActionResult> HasAdminRights()
         {
-            if (id != user.Id)
+            var user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return NotFound();
+            
+            if (user.AccessGroup.Id == 5)
             {
-                return BadRequest();
+                return Ok();
             }
 
-            context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Forbid();
         }
 
         // POST: api/Users

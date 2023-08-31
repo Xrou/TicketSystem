@@ -1,5 +1,5 @@
-var selectedUser = undefined;
 var availableUsers = {};
+var selectedUser = sessionStorage.getItem("id");
 
 function createTicket() {
     urgency = 0;
@@ -17,7 +17,7 @@ function createTicket() {
     var ticketText = document.getElementById("text_input").value;
 
     var ticketData = JSON.stringify({
-        userId: selectedUser, 
+        userId: selectedUser,
         text: ticketText,
         urgency: urgency
     });
@@ -35,56 +35,67 @@ function createTicket() {
 }
 
 function loadUsers() {
-    var data = JSON.stringify({
-        "name": document.getElementById("name_filter").value,
-        "company": document.getElementById("company_filter").value,
-        "id": document.getElementById("id_filter").value
-    });
-
     var xhr = new XMLHttpRequest();
 
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4 && this.status == 200) {
             var data = JSON.parse(this.responseText);
 
-            var table = document.getElementById("users_table");
-            table.replaceChildren();
-
-            availableUsers = []
+            var suggestions = document.getElementById("suggestions");
+            suggestions.replaceChildren();
+            availableUsers = {};
 
             for (var i = 0; i < data.length; i++) {
-                var tr = document.createElement("tr");
+                var option = document.createElement("option");
 
-                tr.id = data[i].id;
+                option.innerText = data[i].fullName + ` [${data[i].companyShortName}]`;
+                availableUsers[data[i].fullName + data[i].companyShortName] = data[i];
 
-                tr.innerHTML = `
-                <td>${data[i].fullName}</td>
-                <td>${data[i].companyName}</td>
-                `;
-
-                availableUsers[data[i].id] = { "name": data[i].fullName, "company": data[i].companyName };
-
-                tr.onclick = function () {
-                    var s = document.getElementById("modal_selected_user");
-                    s.innerText = availableUsers[this.id].name + " " + availableUsers[this.id].company;
-                    var b = document.getElementById("select_user_button");
-                    b.innerText = availableUsers[this.id].name;
-
-                    selectedUser = this.id;
+                if (data[i].id == sessionStorage.getItem("id")) {
+                    document.getElementById("sender_input").value = data[i].fullName + ` [${data[i].companyShortName}]`;
+                    document.getElementById("user_data_company").value = data[i].companyName;
+                    document.getElementById("user_data_phone").value = data[i].phoneNumber;
+                    document.getElementById("user_data_email").value = data[i].email;
+                
+                    selectedUser = data[i].id;
                 }
 
-                table.appendChild(tr);
+                suggestions.appendChild(option);
             }
         }
     });
 
     var authToken = sessionStorage.getItem("access_token");
 
-    xhr.open("POST", "api/Users/getFilteredUsers");
+    xhr.open("POST", "api/Users/getExecutors");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader('Authorization', 'Bearer ' + authToken);
 
-    xhr.send(data);
+    xhr.send("{}");
+}
+
+function onsenderselect(input) {
+    try {
+        var userName = input.value.split('[')[0].trim();
+
+        var userCompanyShortName = input.value.split('[')[1];
+        userCompanyShortName = userCompanyShortName.substring(0, userCompanyShortName.length - 1);
+    }
+    catch {
+        selectedUser = sessionStorage.getItem("id");
+        return;
+    }
+
+    if (userName + userCompanyShortName in availableUsers) {
+        selectedUser = availableUsers[userName + userCompanyShortName].id;
+    }
+    else {
+        selectedUser = sessionStorage.getItem("id");
+    }
+
+    document.getElementById("user_data_company").value = availableUsers[userName + userCompanyShortName].companyName;
+    document.getElementById("user_data_phone").value = availableUsers[userName + userCompanyShortName].phoneNumber;
+    document.getElementById("user_data_email").value = availableUsers[userName + userCompanyShortName].email;
 }
 
 loadUsers();

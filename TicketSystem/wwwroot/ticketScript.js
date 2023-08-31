@@ -1,4 +1,6 @@
 var deadline_date;
+var availableUsers = {};
+var selectedUser = 0;
 
 function showTimeSelector() {
     document.getElementById("action_time_selector").style.display = "block";
@@ -182,6 +184,37 @@ function getComments() {
     http3.send();
 }
 
+function getPossibleExecutors() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4 && this.status == 200) {
+            var data = JSON.parse(this.responseText);
+
+            var suggestions = document.getElementById("suggestions");
+            suggestions.replaceChildren();
+            availableUsers = {};
+
+            for (var i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+
+                option.innerText = data[i].fullName + ` [${data[i].companyShortName}]`;
+                availableUsers[data[i].fullName + data[i].companyShortName] = data[i];
+
+                suggestions.appendChild(option);
+            }
+        }
+    });
+
+    var authToken = sessionStorage.getItem("access_token");
+
+    xhr.open("POST", "../api/Users/getExecutors");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader('Authorization', 'Bearer ' + authToken);
+
+    xhr.send("{}");
+}
+
 function sendComment() {
     commentText = document.getElementById("write_comment_text").value;
     document.getElementById("write_comment_text").value = "";
@@ -266,8 +299,79 @@ function subscribeTicket() {
     http.send();
 }
 
+function showAssignButtons() {
+    document.getElementById("assign_button").style.display = "none";
+    document.getElementById("sender_input").style.display = "block";
+    document.getElementById("assign_button_commit").style.display = "block";
+    document.getElementById("assign_button_cancel").style.display = "block";
+
+}
+
+function hideAssignButtons() {
+    document.getElementById("assign_button").style.display = "block";
+    document.getElementById("sender_input").style.display = "none";
+    document.getElementById("assign_button_commit").style.display = "none";
+    document.getElementById("assign_button_cancel").style.display = "none";
+}
+
+function onsenderselect(input) {
+    try {
+        var userName = input.value.split('[')[0].trim();
+
+        var userCompanyShortName = input.value.split('[')[1];
+        userCompanyShortName = userCompanyShortName.substring(0, userCompanyShortName.length - 1);
+    }
+    catch {
+        selectedUser = 0;
+        return;
+    }
+
+    if (userName + userCompanyShortName in availableUsers) {
+        selectedUser = availableUsers[userName + userCompanyShortName].id;
+    }
+    else {
+        selectedUser = 0;
+    }
+}
+
 function assignTicket() {
-    alert("после переезда на фио сделать");
+    showAssignButtons();
+}
+
+function assignTicketCommit() {
+    hideAssignButtons();
+
+    if (selectedUser == 0)
+        return;
+
+    var http = new XMLHttpRequest();
+    http.open('POST', '../api/tickets/assignTicket', true);
+
+    var authToken = sessionStorage.getItem("access_token");
+    var myId = sessionStorage.getItem("id");
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = urlParams.get('id');
+
+    var ticketData = JSON.stringify({
+        userId: String(selectedUser),
+        ticketId: String(ticket_id)
+    });
+
+    http.setRequestHeader('Authorization', 'Bearer ' + authToken);
+    http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    http.onreadystatechange = function () {
+        if (http.readyState == 4 && http.status == 200) {
+            getTicketData();
+        }
+    }
+
+    http.send(ticketData);
+}
+
+function assignTicketCancel() {
+    hideAssignButtons();
 }
 
 function updateTimer() {
@@ -419,9 +523,9 @@ function closeTicket() {
         }
     });
 
-    xhr.open("POST", "http://localhost/api/Tickets/closeTicket");
+    xhr.open("POST", "../api/Tickets/closeTicket");
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIwIiwiZXhwIjoxNjkzMjU2NTI0LCJpc3MiOiJJVExTZXJ2ZXIiLCJhdWQiOiJJVExVc2VyIn0.Mg-XT2gVybRlq1VLvjmq7spI1UQZ1JHmpNswUoJ_Qep1H_KjsShKA42e2yXszii-yGvf_W3iEsLG5ukq-st24w");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send(data);
 }
@@ -430,6 +534,7 @@ setInterval(updateTimer, 1000);
 
 getTicketData();
 getComments();
+getPossibleExecutors();
 
 var now = new Date();
 

@@ -23,7 +23,13 @@
     <div class="container">
         <div class="action_section">
             <button class="action_button" onclick="takeTicket()">Взять заявку</button>
-            <button class="action_button" onclick="assignTicket()">Назначить заявку</button>
+            <button class="action_button" onclick="assignTicket()" id="assign_button">Назначить заявку</button>
+            
+            <datalist id="suggestions"><option>user 1</option><option>user 2</option></datalist>
+            <input style="display: none;" class="action_input" type="text" id="sender_input" autocomplete="on" list="suggestions" oninput="onsenderselect(this)">
+            <button style="display: none;" class="action_button action_button_small" id="assign_button_cancel" onclick="assignTicketCancel()"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="24"><path fill="#FFFFFF" d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
+            <button style="display: none;" class="action_button action_button_small" id="assign_button_commit" onclick="assignTicketCommit()"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="24"><path fill="#FFFFFF" d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg></button>
+
             <button class="action_button" onclick="subscribeTicket()">Подписаться</button>
             <div class="action_grow"></div>
             <div class="css-modal-target-container action_button">

@@ -102,6 +102,9 @@ namespace TicketSystem.Controllers
                 if (user == null)
                     return Problem("No user instance", statusCode: 500);
 
+                if (ticket.UserId == 0)
+                    ticket.UserId = user.Id;
+
                 Ticket newTicket = await CreateTicket(context, ticket, user.Id);
 
                 return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
@@ -209,7 +212,7 @@ namespace TicketSystem.Controllers
             string commentText;
 
             if (!(
-                json.ContainsKey("ticketId") && 
+                json.ContainsKey("ticketId") &&
                 json.ContainsKey("finishStatus") &&
                 json.ContainsKey("commentText")))
             {

@@ -14,7 +14,7 @@
 }
 
 .action_button {
-    width: 300px;
+    min-width: 150px;
     height: 25px;
 
     margin-right: 10px;
@@ -34,6 +34,18 @@
 
 .action_button:active {
     background-color: #6080A3;
+}
+
+.action_input {
+    min-width: 150px;
+    height: 20px;
+
+    margin-right: 10px;
+}
+
+.action_button_small {
+    min-width: 25px;
+    padding: 0;
 }
 
 .css-modal-target-container {
@@ -148,15 +160,15 @@
 
 
 .action_grow {
-    width: 100%;
+    flex: 3 1 1px;
 }
 
 .action_time {
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    width: 400px;
+    padding-left: 10px;
+    
     background-color: #7198C3;
     color: white;
 

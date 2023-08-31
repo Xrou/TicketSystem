@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Группы доступа пользователей</title>
+    <link href="baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="userAccessGroupsStyles.css" rel="stylesheet" type="text/css">
+    <script src="checkAuth.js"></script>
+    <script defer src="userAccessGroupsScript.js"></script>
+</head>
+
+<body>
+    <div class="navigation_bar">
+        <a class="navigation_bar_item" href="./">На главную</a>
+        <a class="navigation_bar_item" href="./createTicket">Создать заявку</a>
+        <a class="navigation_bar_item" href="./user">Мой аккаунт</a>
+    </div>
+    <div class="container">
+        <div class="pages_block">
+            <ul id="pages_list" class="pages_list">
+                <li class="pages_list_item"><a class="settingsPageLink" href="user">Информация о пользователе</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="userAccessGroups">Права пользователей</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="userGroups">Группы пользователей</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="groups">Группы</a></li>
+            </ul>
+        </div>
+        <div class="content_block">
+            <h3 class="content_header">Права пользователей</h3>
+            <div class="filters">
+                <div class="filter_item">
+                    <span class="filter_item_header">ФИО</span>
+                    <input type="text" name="" id="">
+                </div>
+            </div>
+            <button class="action_button">Фильтр</button>
+            <table class="users_table">
+                <colgroup>
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: auto;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Польз.</th>
+                        <th>Суперв.</th>
+                        <th>Линия 1</th>
+                        <th>Линия 2</th>
+                        <th>Админ</th>
+                    </tr>
+                </thead>
+                <tbody id="users_table">
+                </tbody>
+            </table>
+            <button class="action_button" onclick="getUsers()">Сбросить</button>
+            <button class="action_button" onclick="saveChanges()">Сохранить</button>
+        </div>
+    </div>
+</body>
+
+</html>

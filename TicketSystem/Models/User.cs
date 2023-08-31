@@ -24,11 +24,16 @@
 
         public SendUser ToSend()
         {
-            return new SendUser(Id, Name, Company.Name, AccessGroup.Name, FullName, Email, PhoneNumber, Telegram);
+            return new SendUser(Id, Name, Company.Name, Company.ShortName, AccessGroup.Name, FullName, Email, PhoneNumber, Telegram);
+        }
+
+        public SendUserAccessGroup ToSendUserAccessGroup()
+        {
+            return new SendUserAccessGroup(Id, FullName, AccessGroup.Id);
         }
     }
 
     public record struct AuthorizeUser(string Login, string Password);
-    public record struct SendUser(long Id, string Name, string companyName, string accessGroupName, string fullName, string email, string phoneNumber, long telegram);
-
+    public record struct SendUser(long Id, string Name, string companyName, string companyShortName, string accessGroupName, string fullName, string email, string phoneNumber, long telegram);
+    public record struct SendUserAccessGroup(long Id, string FullName, long AccessGroupId);
 }

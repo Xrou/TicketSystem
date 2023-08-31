@@ -20,51 +20,26 @@
     <div class="container">
         <div class="center_container">
             <div class="inline_flex">
-                <span class="input_legend">Заявитель</span>
-                <div class="css-modal-target-container">
-                    <a class="css-modal-open" href="#select_user" id="select_user_button">Пользователь</a>
+                <span class="input_legend user_data_item_header">Заявитель:</span>
+                <datalist id="suggestions">
+                </datalist>
+                <input type="text" id="sender_input" autocomplete="on" list="suggestions" oninput="onsenderselect(this)">
+            </div>
+            <span>Данные о пользователе</span>
+            <div class="user_data_container">
+                <div class="inline_flex">
+                    <span class="user_data_item_header">Компания:</span>
+                    <input type="text" id="user_data_company" value="ITL" readonly="readonly">
+                </div>
+                <div class="inline_flex">
+                    <span class="user_data_item_header">Телефон:</span>
+                    <input type="tel" id="user_data_phone" value="+79990002233" readonly="readonly">
+                </div>
+                <div class="inline_flex">
+                    <span class="user_data_item_header">Email:</span>
+                    <input type="email" id="user_data_email" value="superuser@gmail.com" readonly="readonly">
                 </div>
             </div>
-
-            <div class="css-modal-target" id="select_user">
-                <div class="cmt">
-                    <h4>Выберите пользователя</h4>
-                    <div class="filters">
-                        <div class="filter_item">
-                            <span>№:</span>
-                            <input style="width: 50px;" type="text" name="" id="id_filter">
-                        </div>
-                        <div class="filter_item">
-                            <span>Имя:</span>
-                            <input type="text" name="" id="name_filter">
-                        </div>
-                        <div class="filter_item">
-                            <span>Компания:</span>
-                            <input type="text" name="" id="company_filter">
-                        </div>
-                    </div>
-                    <button class="filter_button" onclick="loadUsers()">Фильтр</button>
-                    <table>
-                        <colgroup>
-                            <col span="1" style="width: 70%;">
-                            <col span="1" style="width: auto;">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>ФИО</th>
-                                <th>Компания</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users_table">
-
-                        </tbody>
-                    </table>
-                    <span>Выбранный пользователь:</span>
-                    <span id="modal_selected_user"></span>
-                </div>
-                <a href="#close" class="css-modal-close"></a>
-            </div>
-
             <span class="input_legend">Введите текст заявки</span>
             <textarea class="text_input" name="" id="text_input" cols="30" rows="10"></textarea>
             <span class="radio_input_legend">Срочность</span>
