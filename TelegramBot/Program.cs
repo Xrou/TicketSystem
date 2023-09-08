@@ -30,9 +30,9 @@ namespace ITLTelegram
                                    receiverOptions: receiverOptions,
                                    cancellationToken: cts.Token);
 
-                Thread callbackListener = new Thread(CallbackListener.Listen);
+                Thread callbackListener = new Thread(new ParameterizedThreadStart(CallbackListener.Listen));
 
-                callbackListener.Start();
+                callbackListener.Start(bot);
             }
             catch
             {

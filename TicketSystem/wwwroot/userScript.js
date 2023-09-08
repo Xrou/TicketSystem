@@ -35,7 +35,13 @@ function getAccess() {
             var list = document.getElementById("pages_list");
             var li = document.createElement("li");
             li.className = "pages_list_item";
-            li.innerHTML = `<a class="settingsPageLink" href="userAccessGroups">Права пользователей</a>`;
+            li.innerHTML = `
+                <li class="pages_list_item"><a class="settingsPageLink" href="userAccessGroups">Права пользователей</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="userGroups">Группы пользователей</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="groups">Группы</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="companies">Компании</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="usersDirectory">Пользователи</a></li>
+            `;
 
             list.appendChild(li);
         }

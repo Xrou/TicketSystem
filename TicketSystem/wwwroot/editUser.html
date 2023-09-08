@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="../editUserStyles.css" rel="stylesheet" type="text/css">
+    <script src="../editUserScript.js"></script>
+    <script src="../checkAuth.js"></script>
+    <title>Редактирование пользователя</title>
+</head>
+<body>
+    <div class="container">
+        <h3>Редактирование пользователя</h3>
+        <div class="edit_element">
+            <span class="edit_element_header">Id</span>
+            <input class="edit_element_input" type="text" id="id_input" readonly="readonly">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">ФИО</span>
+            <input class="edit_element_input" type="text" id="fullname_input">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Логин</span>
+            <input class="edit_element_input" type="text" id="login_input">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Компания</span>
+            <input class="edit_element_input" type="text" id="company_input" oninput="onCompanySelect(this)" autocomplete="on" list="suggestions">
+            <datalist id="suggestions">
+            </datalist>
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Номер</span>
+            <input class="edit_element_input" type="text" id="phone_input">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Почта</span>
+            <input class="edit_element_input" type="text" id="email_input">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Телеграм</span>
+            <input class="edit_element_input" type="text" id="telegram_input">
+        </div>
+        <button onclick="saveUser()">Сохранить</button>
+    </div>
+</body>
+</html>

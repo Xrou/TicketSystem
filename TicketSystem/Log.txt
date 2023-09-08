@@ -31,3 +31,5 @@
    at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
    at TicketSystem.Controllers.TicketsController.CreateTicket(Database context, PostTicket ticket, Int64 senderId, Boolean registration) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\TicketsController.cs:line 90
    at TicketSystem.Controllers.TicketsController.PostTicket(PostTicket ticket) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\TicketsController.cs:line 105
+02.09.2023 18:45:09	System.Net.Http: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:8888)
+02.09.2023 18:45:28	System.Net.Http: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:8888)

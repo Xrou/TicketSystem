@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Группы</title>
+    <title>Компании</title>
     <link href="baseStyles.css" rel="stylesheet" type="text/css">
-    <link href="groupsStyles.css" rel="stylesheet" type="text/css">
+    <link href="companiesStyles.css" rel="stylesheet" type="text/css">
     <script src="checkAuth.js"></script>
-    <script defer src="groupsScript.js"></script>
+    <script defer src="companiesScript.js"></script>
 </head>
 
 <body>
@@ -29,38 +29,41 @@
             </ul>
         </div>
         <div class="content_block">
-            <h3 class="content_header">Группы</h3>
+            <h3 class="content_header">Компании</h3>
             <div class="filters">
                 <div class="filter_item">
-                    <span class="filter_item_header">ФИО</span>
+                    <span class="filter_item_header">Название</span>
                     <input type="text" name="" id="">
                 </div>
             </div>
             <button class="action_button">Фильтр</button>
+            <div class="create_container">
+                <h3>Создать компанию</h3>
+
+                <span>Название</span>
+                <input type="text" id="name_input">
+
+                <span>Короткое название</span>
+                <input type="text" id="short_name_input">
+
+                <button onclick="create_company()">Создать</button>
+            </div>
             <table class="users_table">
                 <colgroup>
-                    <col span="1" style="width: auto;">
-                    <col span="1" style="width: auto;">
-                    <col span="1" style="width: auto;">
                     <col span="1" style="width: auto;">
                     <col span="1" style="width: auto;">
                     <col span="1" style="width: auto;">
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>ФИО</th>
-                        <th>Польз.</th>
-                        <th>Суперв.</th>
-                        <th>Линия 1</th>
-                        <th>Линия 2</th>
-                        <th>Админ</th>
+                        <th>№</th>
+                        <th>Название</th>
+                        <th>Краткое название</th>
                     </tr>
                 </thead>
-                <tbody id="users_table">
+                <tbody id="groups_table">
                 </tbody>
             </table>
-            <button class="action_button" onclick="getUsers()">Сбросить</button>
-            <button class="action_button" onclick="saveChanges()">Сохранить</button>
         </div>
     </div>
 </body>

@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NuGet.Configuration;
+using Org.BouncyCastle.Crypto.Tls;
 using TicketSystem.Models;
 
 namespace TicketSystem.Controllers
@@ -85,6 +86,7 @@ namespace TicketSystem.Controllers
 
                 string fullName;
                 string phoneNumber;
+                string email;
                 string company;
 
                 if (!(
@@ -93,6 +95,7 @@ namespace TicketSystem.Controllers
                     json.ContainsKey("verificationCode") &&
                     json.ContainsKey("fullName") &&
                     json.ContainsKey("phoneNumber") &&
+                    json.ContainsKey("email") &&
                     json.ContainsKey("company")
                     ))
                 {
@@ -105,6 +108,7 @@ namespace TicketSystem.Controllers
 
                 fullName = json["fullName"]!.GetValue<string>();
                 phoneNumber = json["phoneNumber"]!.GetValue<string>();
+                email = json["email"]!.GetValue<string>();
                 company = json["company"]!.GetValue<string>();
 
                 HttpClient httpClient = new HttpClient();
@@ -121,15 +125,18 @@ namespace TicketSystem.Controllers
                 long telegramId = long.Parse(telegramIdString);
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
 
-                User newUser = new User() { Name = login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1, FullName = fullName, PhoneNumber = phoneNumber, Telegram = telegramId };
+                User newUser = new User() { Name = login, CompanyId = 1, PasswordHash = passwordHash, AccessGroupId = 1, FullName = fullName, PhoneNumber = phoneNumber, Email = email, Telegram = telegramId };
                 context.Users.Add(newUser);
 
                 await context.SaveChangesAsync();
 
                 string registrationText = "Новый пользователь регистрируется в системе.\n" +
+                    $"Логин: {login}\n" +
+                    $"Пароль: {password}\n" +
                     $"ФИО: {fullName}\n" +
                     $"Компания: {company}\n" +
-                    $"Номер телефона: {phoneNumber}";
+                    $"Номер телефона: {phoneNumber}\n" +
+                    $"Электронная почта: {email}\n";
 
                 await TicketsController.CreateTicket(context, new PostTicket(newUser.Id, registrationText, 3), newUser.Id, true);
 
@@ -149,29 +156,61 @@ namespace TicketSystem.Controllers
             {
                 if (!(
                     json.ContainsKey("ticketId") &&
-                    json.ContainsKey("confirm")
+                    json.ContainsKey("fullName") &&
+                    json.ContainsKey("phone") &&
+                    json.ContainsKey("email") &&
+                    json.ContainsKey("companyId")
                     ))
                 {
                     return BadRequest();
                 }
 
                 long ticketId = Convert.ToInt64(json["ticketId"]!.GetValue<string>());
-                int confirm = json["confirm"]!.GetValue<int>();
+                string fullName = json["fullName"]!.GetValue<string>();
+                string phone = json["phone"]!.GetValue<string>();
+                string email = json["email"]!.GetValue<string>();
+                long companyId = json["companyId"]!.GetValue<long>();
 
-                if (confirm == 1)
+                Ticket? ticket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+                long? userId = ticket?.UserId;
+                long? executorId = ticket?.ExecutorId;
+
+                if (userId == null)
                 {
-                    long? userId = context.Tickets.FirstOrDefault(t => t.Id == ticketId)?.UserId;
+                    return Problem();
+                }
 
-                    if (userId == null)
-                    {
-                        return Problem();
-                    }
+                if (executorId == null)
+                {
+                    return BadRequest("executor not assigned");
+                }
 
-                    User user = context.Users.First(u => u.Id == userId);
+                User user = context.Users.First(u => u.Id == userId);
+                user.CanLogin = true;
+                user.FullName = fullName;
+                user.PhoneNumber = phone;
+                user.Email = email;
+                user.CompanyId = companyId;
 
-                    user.CanLogin = true;
+                await context.SaveChangesAsync();
 
-                    await context.SaveChangesAsync();
+                Comment newComment = new Comment() { Text = "Новый пользователь зарегистрирован", Date = DateTime.Now, TicketId = ticketId, UserId = executorId.GetValueOrDefault(), CommentType = CommentType.Official };
+
+                context.Comments.Add(newComment);
+
+                ticket.Finished = true;
+                ticket.FinishStatus = FinishStatus.Incident;
+                ticket.DeadlineTime = DateTime.Now;
+                context.Update(ticket);
+                context.SaveChanges();
+
+                HttpClient httpClient = new HttpClient();
+
+                var response = await httpClient.GetAsync($"http://localhost:8888/registrationVerified/?telegram={user.Telegram}");
+
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    return Problem("Telegram error");
                 }
 
                 return Ok();
@@ -294,6 +333,40 @@ namespace TicketSystem.Controllers
             return user.ToSend();
         }
 
+        // POST: api/Users/5
+        [HttpPost("{id}")]
+        public async Task<ActionResult<SendUser>> UpdateUser(long id, [FromBody]JsonObject json)
+        {
+            var user = await context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (json.ContainsKey("name"))
+                user.Name = json["name"]!.GetValue<string>();
+
+            if (json.ContainsKey("fullName"))
+                user.FullName = json["fullName"]!.GetValue<string>();
+
+            if (json.ContainsKey("companyId"))
+                user.CompanyId = json["companyId"]!.GetValue<int>();
+
+            if (json.ContainsKey("phoneNumber"))
+                user.PhoneNumber = json["phoneNumber"]!.GetValue<string>();
+
+            if (json.ContainsKey("email"))
+                user.Email = json["email"]!.GetValue<string>();
+
+            if (json.ContainsKey("telegram"))
+                user.Telegram = json["telegram"]!.GetValue<long>();
+    
+            context.SaveChanges();
+
+            return Ok();
+        }
+
         // GET: api/Users/me
         [HttpGet("me")]
         public async Task<ActionResult<SendUser>> GetMe()
@@ -326,7 +399,7 @@ namespace TicketSystem.Controllers
 
             if (user == null)
                 return NotFound();
-            
+
             if (user.AccessGroup.Id == 5)
             {
                 return Ok();
@@ -356,29 +429,48 @@ namespace TicketSystem.Controllers
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        [HttpGet("GetUsersAccessGroup")]
+        public async Task<ActionResult<ICollection<SendUserAccessGroup>>> GetUsersAccessGroups()
         {
-            if (context.Users == null)
-            {
-                return NotFound();
-            }
-            var user = await context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            context.Users.Remove(user);
-            await context.SaveChangesAsync();
-
-            return NoContent();
+            if (InternalActions.SelectUserFromContext(HttpContext, context)?.AccessGroupId != 5)
+                return Forbid();
+            return context.Users.Select(user => user.ToSendUserAccessGroup()).ToList();
         }
 
-        private bool UserExists(long id)
+        [HttpGet("GetUserAccessGroup")]
+        public async Task<ActionResult<SendUserAccessGroup>> GetUserAccessGroup(long id)
         {
-            return (context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            if (InternalActions.SelectUserFromContext(HttpContext, context)?.AccessGroupId != 5)
+                return Forbid();
+            var user = context.Users.FirstOrDefault(user => user.Id == id);
+
+            if (user == null)
+                return NotFound();
+
+            return user.ToSendUserAccessGroup();
+        }
+
+        [HttpPost("UpdateUsersAccessGroups")]
+        public async Task<IActionResult> UpdateUsersAccessGroups([FromBody] JsonObject json)
+        {
+            if (InternalActions.SelectUserFromContext(HttpContext, context)?.AccessGroupId != 5)
+                return Forbid();
+
+            foreach (var item in json)
+            {
+                long id = long.Parse(item.Key);
+                var user = context.Users.FirstOrDefault(user => user.Id == id);
+
+                if (user == null)
+                    continue;
+
+                user.AccessGroupId = item.Value.GetValue<int>();
+                context.Users.Update(user);
+            }
+
+            context.SaveChanges();
+
+            return Ok();
         }
     }
 }

@@ -2,6 +2,11 @@ var deadline_date;
 var availableUsers = {};
 var selectedUser = 0;
 
+var availableCompanies = {};
+var selectedCompany = 0;
+
+var ticketUser;
+
 function showTimeSelector() {
     document.getElementById("action_time_selector").style.display = "block";
 }
@@ -49,6 +54,8 @@ function getTicketData() {
             document.getElementById("executor_name").innerHTML = executorName;
             document.getElementById("ticket_urgency").innerHTML = urgency;
 
+            ticketUser = data.userId;
+
             var day = data.deadlineTime.split('.')[0];
             var month = data.deadlineTime.split('.')[1];
             var year = data.deadlineTime.split(' ')[0].split('.')[2];
@@ -69,8 +76,11 @@ function getTicketData() {
                 if (http2.readyState == 4 && http2.status == 200) {
                     canRegisterValue = http2.responseText == "true";
 
-                    if (data.type == 2 && canRegisterValue)
+                    if (data.type == 2 && canRegisterValue) {
                         document.getElementById("registration").style.display = "block";
+                        loadUserDataToConfirm();
+
+                    }
                 }
             }
 
@@ -480,21 +490,84 @@ function verifyRegistration() {
     var urlParams = new URLSearchParams(window.location.search);
     var ticket_id = urlParams.get('id');
 
+    var fullName = document.getElementById("verify_fullName").value;
+    var phone = document.getElementById("verify_phone").value;
+    var email = document.getElementById("verify_email").value;
+
     var ticketData = JSON.stringify({
         ticketId: ticket_id,
-        confirm: 1
+        fullName: fullName,
+        phone: phone,
+        email: email,
+        companyId: selectedCompany
     });
 
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
     http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
     http.onreadystatechange = function () {
-        if (http.readyState == 4 && http.status == 204) {
-            getTicketData();
+        if (http.readyState == 4 && http.status == 200) {
+            location.reload();
         }
     }
 
     http.send(ticketData);
+}
+
+function loadCompaniesVerify() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4 && this.status == 200) {
+            var data = JSON.parse(this.responseText);
+
+            var suggestions = document.getElementById("company_suggestions");
+            suggestions.replaceChildren();
+            for (var i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+                option.innerHTML = `${data[i].name}`;
+                suggestions.appendChild(option);
+                availableCompanies[data[i].name] = data[i];
+            }
+        }
+    });
+
+    xhr.open("GET", "../api/companies/");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+function onCompanySelect(input) {
+    companyName = input.value;
+
+    if (companyName in availableCompanies) {
+        selectedCompany = availableCompanies[companyName].id;
+    }
+    else {
+        selectedCompany = 0;
+    }
+}
+
+function loadUserDataToConfirm() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+
+            document.getElementById("verify_fullName").value = data.fullName;
+            document.getElementById("verify_phone").value = data.phoneNumber;
+            document.getElementById("verify_email").value = data.email;
+        }
+    });
+
+    xhr.open("GET", "../api/users/" + ticketUser);
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
 }
 
 function closeTicket() {
@@ -535,6 +608,7 @@ setInterval(updateTimer, 1000);
 getTicketData();
 getComments();
 getPossibleExecutors();
+loadCompaniesVerify();
 
 var now = new Date();
 

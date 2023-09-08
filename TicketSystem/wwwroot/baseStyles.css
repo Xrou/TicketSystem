@@ -10,6 +10,10 @@ a {
     color: white;
 }
 
+p {
+    white-space: pre-wrap;
+}
+
 legend {
     padding: 0;
 }

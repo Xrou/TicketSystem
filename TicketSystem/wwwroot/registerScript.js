@@ -5,6 +5,7 @@ function register() {
 
     var fullName = document.getElementById("fullname_input").value;
     var phone = document.getElementById("phone_input").value;
+    var email = document.getElementById("email_input").value;
     var company = document.getElementById("company_input").value;
 
     var http = new XMLHttpRequest();
@@ -16,6 +17,7 @@ function register() {
         fullName: fullName,
         phoneNumber: phone,
         company: company,
+        email: email,
         verificationCode: code
     });
 

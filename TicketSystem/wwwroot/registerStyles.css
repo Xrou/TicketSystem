@@ -5,7 +5,7 @@
 
 .inner_container {
     width: 200px;
-    height: 450px;
+    height: 505px;
     
     padding: 10px;
 
@@ -40,6 +40,7 @@
     font-size: 10px;
     line-height: 1em;
     margin: 0;
+    white-space: normal;
 }
 
 .bot_link {

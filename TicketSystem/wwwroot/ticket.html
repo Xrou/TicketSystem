@@ -24,16 +24,29 @@
         <div class="action_section">
             <button class="action_button" onclick="takeTicket()">Взять заявку</button>
             <button class="action_button" onclick="assignTicket()" id="assign_button">Назначить заявку</button>
-            
-            <datalist id="suggestions"><option>user 1</option><option>user 2</option></datalist>
-            <input style="display: none;" class="action_input" type="text" id="sender_input" autocomplete="on" list="suggestions" oninput="onsenderselect(this)">
-            <button style="display: none;" class="action_button action_button_small" id="assign_button_cancel" onclick="assignTicketCancel()"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="24"><path fill="#FFFFFF" d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
-            <button style="display: none;" class="action_button action_button_small" id="assign_button_commit" onclick="assignTicketCommit()"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="24"><path fill="#FFFFFF" d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg></button>
+
+            <datalist id="suggestions">
+                <option>user 1</option>
+                <option>user 2</option>
+            </datalist>
+            <input style="display: none;" class="action_input" type="text" id="sender_input" autocomplete="on"
+                list="suggestions" oninput="onsenderselect(this)">
+            <button style="display: none;" class="action_button action_button_small" id="assign_button_cancel"
+                onclick="assignTicketCancel()"><svg xmlns="http://www.w3.org/2000/svg" height="22"
+                    viewBox="0 -960 960 960" width="24">
+                    <path fill="#FFFFFF"
+                        d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                </svg></button>
+            <button style="display: none;" class="action_button action_button_small" id="assign_button_commit"
+                onclick="assignTicketCommit()"><svg xmlns="http://www.w3.org/2000/svg" height="22"
+                    viewBox="0 -960 960 960" width="24">
+                    <path fill="#FFFFFF" d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+                </svg></button>
 
             <button class="action_button" onclick="subscribeTicket()">Подписаться</button>
             <div class="action_grow"></div>
             <div class="css-modal-target-container action_button">
-                <a href="#close_ticket" id="select_user_button">Завершить</a>
+                <a href="#close_ticket" id="close_ticket_button">Завершить</a>
             </div>
             <div class="action_time" onmouseenter="showTimeSelector()" onmouseleave="hideTimeSelector()">
                 <div class="action_time_text">
@@ -111,7 +124,37 @@
         </div>
 
         <div class="register_verification" id="registration">
-            <button class="action_button" onclick="verifyRegistration()">Подтвердить регистрацию</button>
+            <div class="css-modal-target-container action_button">
+                <a href="#verify_registration" id="verify_registration_button">Завершить</a>
+            </div>
+            <div class="css-modal-target verify_registration_modal_target" id="verify_registration">
+                <div class="verify_registration_cmt">
+                    <h4>Подтверждение регистрации</h4>
+
+                    <div class="verify_registration_user_data_container">
+                        <div class="inline_flex">
+                            <span class="verify_registration_user_data_header">ФИО:</span>
+                            <input class="verify_registration_user_data_input" id="verify_fullName" type="text">
+                        </div>
+                        <div class="inline_flex">
+                            <span class="verify_registration_user_data_header">Компания</span>
+                            <datalist id="company_suggestions">
+                            </datalist>
+                            <input class="verify_registration_user_data_input" type="text" id="verify_registration_company_select" autocomplete="on" list="company_suggestions" oninput="onCompanySelect(this)">
+                        </div>
+                        <div class="inline_flex">
+                            <span class="verify_registration_user_data_header">Номер телефона</span>
+                            <input class="verify_registration_user_data_input" id="verify_phone" type="text">
+                        </div>
+                        <div class="inline_flex">
+                            <span class="verify_registration_user_data_header">Email</span>
+                            <input class="verify_registration_user_data_input" id="verify_email" type="text">
+                        </div>
+                    </div>
+                    <button class="action_button" onclick="verifyRegistration()">Подтвердить регистрацию</button>
+                </div>
+                <a href="#close" class="css-modal-close"></a>
+            </div>
         </div>
 
         <div class="write_comment">

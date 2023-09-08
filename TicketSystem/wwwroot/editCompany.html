@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../baseStyles.css" rel="stylesheet" type="text/css">
+    <link href="../editCompanyStyles.css" rel="stylesheet" type="text/css">
+    <script src="../editCompanyScript.js"></script>
+    <script src="../checkAuth.js"></script>
+    <title>Редактирование пользователя</title>
+</head>
+<body>
+    <div class="container">
+        <h3>Редактирование Компании</h3>
+        <div class="edit_element">
+            <span class="edit_element_header">Id</span>
+            <input class="edit_element_input" type="text" id="id_input" readonly="readonly">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Название</span>
+            <input class="edit_element_input" type="text" id="fullname_input">
+        </div>
+        <div class="edit_element">
+            <span class="edit_element_header">Сокращение</span>
+            <input class="edit_element_input" type="text" id="shortname_input">
+        </div>
+        <button onclick="saveCompany()">Сохранить</button>
+    </div>
+</body>
+</html>

@@ -31,7 +31,7 @@ function getUsers() {
         }
     });
 
-    xhr.open("GET", "api/settings/GetUsersAccessGroup");
+    xhr.open("GET", "api/users/GetUsersAccessGroup");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send();
@@ -64,7 +64,7 @@ function saveChanges() {
         }
     });
 
-    xhr.open("POST", "api/settings/UpdateUsersAccessGroups");
+    xhr.open("POST", "api/users/UpdateUsersAccessGroups");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
     xhr.send(JSON.stringify(tableChanges));
