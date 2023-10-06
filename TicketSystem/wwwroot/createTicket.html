@@ -19,11 +19,7 @@
     </div>
     <div class="container">
         <div class="center_container">
-            <div class="inline_flex">
-                <span class="input_legend user_data_item_header">Заявитель:</span>
-                <datalist id="suggestions">
-                </datalist>
-                <input type="text" id="sender_input" autocomplete="on" list="suggestions" oninput="onsenderselect(this)">
+            <div class="inline_flex" id="sender_select_block">
             </div>
             <span>Данные о пользователе</span>
             <div class="user_data_container">
@@ -47,6 +43,9 @@
                 <input label="Низкая" type="radio" id="low" name="urgency" value="low" checked>
                 <input label="Средняя" type="radio" id="medium" name="urgency" value="medium">
                 <input label="Высокая" type="radio" id="high" name="urgency" value="high">
+            </div>
+
+            <div class="vertical_flex" id="topic_select_block">
             </div>
             <button class="create_button" onclick="createTicket()">Создать</button>
         </div>

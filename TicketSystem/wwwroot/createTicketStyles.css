@@ -21,6 +21,12 @@
 	align-items: baseline;
 }
 
+.vertical_flex {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 .input_legend {
 	margin-bottom: 10px;
 }
@@ -70,6 +76,8 @@
 .create_button {
 	width: 100px;
 	height: 25px;
+
+	margin-top: 10px;
 
 	background-color: #7198C3;
 	color: white;

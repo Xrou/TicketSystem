@@ -18,6 +18,8 @@ namespace TicketSystem.Models
         public bool Finished { get; set; }
         [Column("finishStatus")]
         public int FinishStatusInt { get; set; }
+        public long TopicId { get; set; }
+        public long StatusId { get; set; }
 
         [NotMapped]
         public Urgency Urgency
@@ -63,6 +65,8 @@ namespace TicketSystem.Models
         virtual public User User { get; set; } = null!;
         virtual public User SenderUser { get; set; } = null!;
         virtual public User? ExecutorUser { get; set; }
+        virtual public Topic? Topic { get; set; } = null!;
+        virtual public Status? Status { get; set; } = null!;
 
         public SendTicket ToSend()
         {
@@ -76,12 +80,12 @@ namespace TicketSystem.Models
             if (this.SenderId != this.UserId)
                 userName += $" ({SenderUser.FullName})";
 
-            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, SenderId = SenderId, UserName = userName, SenderCompany = User.Company.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName, Type = (int)Type, Urgency = (int)Urgency };
+            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, SenderId = SenderId, SenderPhone = User.PhoneNumber, UserName = userName, SenderCompany = User.Company.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName, Type = (int)Type, Urgency = (int)Urgency, TopicName = Topic.Name, Status = Status.Name };
         }
     }
 
-    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, long SenderId, string SenderCompany, long? ExecutorUserId, string UserName, string ExecutorUserName, int Type, int Urgency);
-    public record struct PostTicket(long UserId, string Text, int Urgency);
+    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, long SenderId, string SenderPhone, string SenderCompany, long? ExecutorUserId, string UserName, string ExecutorUserName, int Type, int Urgency, string TopicName, string Status);
+    public record struct PostTicket(long UserId, string Text, int Urgency, long TopicId);
 
     public enum FinishStatus
     {

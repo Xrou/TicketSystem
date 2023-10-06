@@ -1,4 +1,4 @@
-function loadGroups() {
+function loadStatuses() {
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
 
@@ -15,10 +15,10 @@ function loadGroups() {
 
                 tr.innerHTML = `
                 <tr>
-                    <td>${data[i].id}</td>
-                    <td>${data[i].name}</td>
-                    <td><button id="${data[i].id}" onclick="editGroup(this)">Редактировать</button></td>
-                    <td><button id="${data[i].id}" onclick="deleteGroup(this)">Удалить</button></td>
+                    <td>${data[i].Id}</td>
+                    <td>${data[i].Name}</td>
+                    <td><button id="${data[i].Id}" onclick="editStatus(this)">Редактировать</button></td>
+                    <td><button id="${data[i].Id}" onclick="deleteStatus(this)">Удалить</button></td>
                 </tr>
                 `;
 
@@ -27,23 +27,16 @@ function loadGroups() {
         }
     });
 
-    xhr.open("GET", "/api/userGroups/");
+    xhr.open("GET", "/api/statuses/");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send();
 }
 
-function editGroup(button) {
-    location.replace(`editGroup?id=${button.id}`);
-}
+function createStatus() {
+    var name = document.getElementById("name_input").value;
 
-
-function deleteGroup(button) {
-    console.log(button.id)
-}
-
-function createGroup() {
-    if (document.getElementById("name_input").value == "")
+    if (name == "")
         return;
 
     var data = JSON.stringify({
@@ -55,16 +48,15 @@ function createGroup() {
 
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4) {
-            loadGroups();
+            loadStatuses();
         }
     });
 
-    xhr.open("POST", "api/userGroups/");
+    xhr.open("POST", "/api/statuses");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send(data);
 }
 
-
-loadGroups();
+loadStatuses();

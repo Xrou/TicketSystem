@@ -75,8 +75,13 @@ namespace TicketSystem.Controllers
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
-        protected internal static async Task<Ticket> CreateTicket(Database context, PostTicket ticket, long senderId, bool registration = false)
+        protected internal static async Task<Ticket?> CreateTicket(Database context, HttpContext http, PostTicket ticket, long senderId, bool registration = false)
         {
+            User? user = InternalActions.SelectUserFromContext(http, context);
+
+            if (!registration && user == null)
+                return null;
+
             DateTime ticketDate = DateTime.Now;
 
             TicketType ticketType = TicketType.Standard;
@@ -84,7 +89,10 @@ namespace TicketSystem.Controllers
             if (registration)
                 ticketType = TicketType.Registration;
 
-            Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), SenderId = senderId, UserId = ticket.UserId, Urgency = (Urgency)ticket.Urgency };
+            if (!registration && !user.AccessGroup.CanSelectTopic && ticket.TopicId != 1)
+                return null;
+
+            Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), SenderId = senderId, UserId = ticket.UserId, Urgency = (Urgency)ticket.Urgency, TopicId = ticket.TopicId };
 
             context.Tickets.Add(newTicket);
             await context.SaveChangesAsync();
@@ -105,7 +113,10 @@ namespace TicketSystem.Controllers
                 if (ticket.UserId == 0)
                     ticket.UserId = user.Id;
 
-                Ticket newTicket = await CreateTicket(context, ticket, user.Id);
+                Ticket? newTicket = await CreateTicket(context, HttpContext, ticket, user.Id);
+
+                if (newTicket == null)
+                    return BadRequest();
 
                 return Created(new Uri("https://localhost:7177/api/tickets"), newTicket.Id);
             }
@@ -197,11 +208,43 @@ namespace TicketSystem.Controllers
             }
 
             updateTicket.ExecutorId = userId;
+            updateTicket.StatusId = 2;
             context.Update(updateTicket);
             context.SaveChanges();
 
             return Ok();
         }
+
+        //api/tickets/setStatus
+        [HttpPost("setStatus")]
+        public async Task<IActionResult> SetStatus([FromBody] JsonObject json)
+        {
+            long statusId;
+            long ticketId;
+
+            if (!(
+                json.ContainsKey("statusId") && long.TryParse(json["statusId"]!.GetValue<string>(), out statusId) &&
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (updateTicket == null)
+            {
+                return NotFound();
+            }
+
+
+            updateTicket.StatusId = statusId;
+
+            context.Update(updateTicket);
+            context.SaveChanges();
+
+            return Ok();
+        }
+
 
         //api/tickets/closeTicket
         [HttpPost("closeTicket")]
@@ -242,11 +285,14 @@ namespace TicketSystem.Controllers
             updateTicket.Finished = true;
             updateTicket.FinishStatus = (FinishStatus)finishStatus;
             updateTicket.DeadlineTime = DateTime.Now;
+            updateTicket.StatusId = 3;
             context.Update(updateTicket);
             context.SaveChanges();
 
             return Ok();
         }
+
+
 
         // POST: api/Tickets/SetDeadline
         [HttpPost("{id}")]

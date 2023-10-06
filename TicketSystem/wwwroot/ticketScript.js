@@ -4,6 +4,10 @@ var selectedUser = 0;
 
 var availableCompanies = {};
 var selectedCompany = 0;
+var selectedEditCompany = 0;
+
+var availableStatuses = {};
+var selectedStatus = {};
 
 var ticketUser;
 
@@ -49,10 +53,13 @@ function getTicketData() {
 
             document.getElementById("ticket_date").innerHTML = data.date;
             document.getElementById("sender_name").innerHTML = data.userName;
+            document.getElementById("phone_number").innerHTML = data.senderPhone;
             document.getElementById("sender_company").innerHTML = data.senderCompany;
             document.getElementById("ticket_text").innerHTML = data.text;
             document.getElementById("executor_name").innerHTML = executorName;
             document.getElementById("ticket_urgency").innerHTML = urgency;
+            document.getElementById("ticket_topic").innerHTML = data.topicName;
+            document.getElementById("status").innerHTML = data.status;
 
             ticketUser = data.userId;
 
@@ -79,16 +86,145 @@ function getTicketData() {
                     if (data.type == 2 && canRegisterValue) {
                         document.getElementById("registration").style.display = "block";
                         loadUserDataToConfirm();
-
                     }
                 }
             }
 
             http2.send();
+            checkCanEditUserInfo();
         }
     }
-    http.send();
 
+    http.send();
+}
+
+function loadAvailableStatuses() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+
+            availableStatuses = {};
+            var datalist = document.getElementById("status_suggestions");
+            datalist.replaceChildren();
+
+            for (var i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+                option.innerHTML = data[i].Name;
+                datalist.appendChild(option);
+
+                availableStatuses[data[i].Name] = data[i];
+            }
+        }
+    });
+
+    xhr.open("GET", "/api/statuses");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+function onStatusSelect(input) {
+    statusName = input.value;
+
+    if (statusName in availableStatuses) {
+        selectedStatus = availableStatuses[statusName].Id;
+    }
+    else {
+        selectedStatus = 0;
+    }
+    console.log(selectedStatus);
+    if (selectedStatus == 0)
+        return;
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = urlParams.get('id');
+
+    var data = JSON.stringify({
+        "ticketId": ticket_id,
+        "statusId": selectedStatus.toString()
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.open("POST", "/api/tickets/setStatus");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send(data);
+}
+
+function checkCanEditUserInfo() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+
+            if (data["CanEditUsers"] == true) {
+                var currentCompany = document.getElementById("sender_company").textContent;
+                var currentStatus = document.getElementById("status").textContent;
+
+                document.getElementById("sender_name").contentEditable = true;
+                document.getElementById("phone_number").contentEditable = true;
+
+                document.getElementById("sender_company").innerHTML = `
+                <input type="text" autocomplete="on" list="company_suggestions" oninput="onCompanySelectEditUser(this)" value="${currentCompany}">`;
+                document.getElementById("status").innerHTML = `
+                <input type="text" autocomplete="on" list="status_suggestions" oninput="onStatusSelect(this)" value="${currentStatus}">`;
+
+                document.getElementById("ticket_info_section").innerHTML += `
+                <div class="ticket_info_block">
+                    <button onclick="editUserInfo()">Сохранить</button>
+                </div>`;
+
+                selectedEditCompany = availableCompanies[currentCompany].id;
+            }
+        }
+    });
+
+    xhr.open("GET", "/api/Users/getRights");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+function onCompanySelectEditUser(input) {
+    companyName = input.value;
+
+    if (companyName in availableCompanies) {
+        selectedEditCompany = availableCompanies[companyName].id;
+    }
+    else {
+        selectedEditCompany = 0;
+    }
+}
+
+function editUserInfo() {
+    var data = JSON.stringify({
+        "fullName": document.getElementById("sender_name").innerText,
+        "phoneNumber": document.getElementById("phone_number").innerText,
+        "companyId": selectedEditCompany,
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            location.reload();
+        }
+    });
+
+    xhr.open("POST", "/api/Users/" + ticketUser);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send(data);
 }
 
 function getComments() {
@@ -606,6 +742,7 @@ function closeTicket() {
 setInterval(updateTimer, 1000);
 
 getTicketData();
+loadAvailableStatuses();
 getComments();
 getPossibleExecutors();
 loadCompaniesVerify();

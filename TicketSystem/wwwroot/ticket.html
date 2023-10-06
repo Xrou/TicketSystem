@@ -94,10 +94,20 @@
         </div>
 
         <div class="ticket_data">
-            <div class="ticket_info">
+            <div class="ticket_info" id="ticket_info_section">
+                <datalist id="status_suggestions">
+                </datalist>
+                <div class="ticket_info_block">
+                    <span>Статус:</span>
+                    <span id="status"></span>
+                </div>
                 <div class="ticket_info_block">
                     <span>Заявитель:</span>
                     <span id="sender_name"></span>
+                </div>
+                <div class="ticket_info_block">
+                    <span>Номер телефона:</span>
+                    <span id="phone_number"></span>
                 </div>
                 <div class="ticket_info_block">
                     <span>Компания:</span>
@@ -112,10 +122,13 @@
                     <span id="ticket_urgency"></span>
                 </div>
                 <div class="ticket_info_block">
+                    <span>Тематика:</span>
+                    <span id="ticket_topic"></span>
+                </div>
+                <div class="ticket_info_block">
                     <span>Назначенный исполнитель:</span>
                     <span id="executor_name"></span>
                 </div>
-
             </div>
             <div class="ticket_content">
                 <p id="ticket_text">
@@ -125,7 +138,7 @@
 
         <div class="register_verification" id="registration">
             <div class="css-modal-target-container action_button">
-                <a href="#verify_registration" id="verify_registration_button">Завершить</a>
+                <a href="#verify_registration" id="verify_registration_button">Зарегистрировать</a>
             </div>
             <div class="css-modal-target verify_registration_modal_target" id="verify_registration">
                 <div class="verify_registration_cmt">

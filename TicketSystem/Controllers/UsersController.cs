@@ -138,7 +138,7 @@ namespace TicketSystem.Controllers
                     $"Номер телефона: {phoneNumber}\n" +
                     $"Электронная почта: {email}\n";
 
-                await TicketsController.CreateTicket(context, new PostTicket(newUser.Id, registrationText, 3), newUser.Id, true);
+                await TicketsController.CreateTicket(context, HttpContext, new PostTicket(newUser.Id, registrationText, 3, 1), newUser.Id, true);
 
                 return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
@@ -408,6 +408,17 @@ namespace TicketSystem.Controllers
             return Forbid();
         }
 
+        [HttpGet("getRights")]
+        public async Task<ActionResult<string>> GetRights()
+        {
+            var user = InternalActions.SelectUserFromContext(HttpContext, context);
+
+            if (user == null)
+                return NotFound();
+
+            return JsonConvert.SerializeObject(user.AccessGroup.ToSend());
+        }
+
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -471,6 +482,15 @@ namespace TicketSystem.Controllers
             context.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpGet("GetUsersGroups")]
+        public async Task<ActionResult<ICollection<SendUserGroups>>> GetUsersGroups()
+        {
+            if (InternalActions.SelectUserFromContext(HttpContext, context)?.AccessGroupId != 5)
+                return Forbid();
+
+            return context.Users.Select(user => user.ToSendUserGroups()).ToList();
         }
     }
 }

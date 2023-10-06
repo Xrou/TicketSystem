@@ -17,6 +17,8 @@ function getTickets() {
             var table = document.getElementById("tickets_table");
             table.replaceChildren();
 
+            console.log(data);
+
             for (var i = 0; i < data.length; i++) {
                 var tr = document.createElement("tr");
 
@@ -25,10 +27,13 @@ function getTickets() {
                 tr.innerHTML = `
                 <td>${data[i].Id}</td>
                 <td>${data[i].UserName}</td>
+                <td>${data[i].SenderCompany}</td>
+                <td>${data[i].TopicName}</td>
+                <td>${data[i].Status}</td>
+                <td>${data[i].ExecutorUserName}</td>
                 <td>${data[i].Text}</td>
                 <td>${data[i].Date}</td>
                 <td>${data[i].DeadlineTime}</td>
-                <td>${data[i].ExecutorUserName}</td>
                 `;
                 tr.onclick = function () {
                     open_ticket(this.id);

@@ -1,0 +1,55 @@
+.container {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    width: 350px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    border-radius: 5px;
+
+    background: #E7EFF7;
+}
+
+.edit_element {
+    display: flex;  
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.edit_element_header {
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+.edit_element_input {
+    width: 75%;
+}
+
+.users_block {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.users_input_block {
+    margin-bottom: 5px;
+}
+
+.user_element_input {
+    width: 65.5%;
+}
+
+.users_actions_block {
+    display: flex;
+    width: 100%;
+
+    justify-content: end;
+}
+
+.users_actions_button:not(:last-child) {
+    margin-right: 5px;
+}

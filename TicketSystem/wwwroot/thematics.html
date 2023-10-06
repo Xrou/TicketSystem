@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Группы пользователей</title>
+    <title>Тематики</title>
     <link href="baseStyles.css" rel="stylesheet" type="text/css">
-    <link href="userGroupsStyles.css" rel="stylesheet" type="text/css">
+    <link href="thematicsStyles.css" rel="stylesheet" type="text/css">
     <script src="checkAuth.js"></script>
-    <script defer src="userGroupsScript.js"></script>
+    <script defer src="thematicsScript.js"></script>
 </head>
 
 <body>
@@ -27,37 +27,36 @@
                 <li class="pages_list_item"><a class="settingsPageLink" href="companies">Компании</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="usersDirectory">Пользователи</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="thematics">Тематики</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="statuses">Статусы</a></li>
             </ul>
         </div>
         <div class="content_block">
-            <h3 class="content_header">Группы пользователей</h3>
-            <div class="filters">
-                <div class="filter_item">
-                    <span class="filter_item_header">ФИО</span>
-                    <input type="text" name="" id="">
-                </div>
+            <h3 class="content_header">Тематики</h3>
+            <div class="create_container">
+                <h3>Создать тематику</h3>
+    
+                <span>Название</span>
+                <input type="text" id="name_input">
+
+                <button onclick="createThematic()">Создать</button>
             </div>
-            <button class="action_button">Фильтр</button>
-            <div class="users_table_container">
-                <table>
-                    <colgroup>
-                        <col span="1" style="min-width: 200px;">
-                        <col span="1" style="min-width: 100px;">
-                    </colgroup>
-                    <thead>
-                        <tr id="companies_header">
-                            <th>ФИО</th>
-                            <th>Компания</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users_table">
-                        <tr>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button class="action_button" onclick="getUsers()">Сбросить</button>
-            <button class="action_button" onclick="saveChanges()">Сохранить</button>
+            <table class="users_table">
+                <colgroup>
+                    <col span="1" style="width: auto;">
+                    <col span="1" style="width: 100%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Название</th>
+                        <th></th>
+                        <th></th>        
+                    </tr>
+                </thead>
+                <tbody id="groups_table">
+
+                </tbody>
+            </table>
         </div>
     </div>
 </body>

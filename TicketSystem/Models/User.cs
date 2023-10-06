@@ -31,9 +31,15 @@
         {
             return new SendUserAccessGroup(Id, FullName, AccessGroup.Id);
         }
+
+        public SendUserGroups ToSendUserGroups()
+        {
+            return new SendUserGroups(Id, FullName, Company.Name, UserGroups.Select(u => u.ToSendShort()).ToList());
+        }
     }
 
     public record struct AuthorizeUser(string Login, string Password);
     public record struct SendUser(long Id, string Name, string companyName, string companyShortName, string accessGroupName, string fullName, string email, string phoneNumber, long telegram);
     public record struct SendUserAccessGroup(long Id, string FullName, long AccessGroupId);
+    public record struct SendUserGroups(long Id, string FullName, string companyName, List<SendUserGroupShort> UserGroups);
 }

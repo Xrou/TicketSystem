@@ -1,6 +1,11 @@
 var availableUsers = {};
 var selectedUser = sessionStorage.getItem("id");
 
+var availableTopics = {};
+var selectedTopic;
+
+var canSelectTopics = false;
+
 function createTicket() {
     urgency = 0;
 
@@ -16,10 +21,14 @@ function createTicket() {
 
     var ticketText = document.getElementById("text_input").value;
 
+    if (canSelectTopics == false)
+        selectedTopic = 1;
+
     var ticketData = JSON.stringify({
         userId: selectedUser,
         text: ticketText,
-        urgency: urgency
+        urgency: urgency,
+        topicId: selectedTopic
     });
 
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
@@ -56,7 +65,7 @@ function loadUsers() {
                     document.getElementById("user_data_company").value = data[i].companyName;
                     document.getElementById("user_data_phone").value = data[i].phoneNumber;
                     document.getElementById("user_data_email").value = data[i].email;
-                
+
                     selectedUser = data[i].id;
                 }
 
@@ -98,4 +107,85 @@ function onsenderselect(input) {
     document.getElementById("user_data_email").value = availableUsers[userName + userCompanyShortName].email;
 }
 
-loadUsers();
+function loadTopics() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+
+            var suggestions = document.getElementById("topic_suggestions");
+            suggestions.replaceChildren();
+            availableTopics = {};
+
+            for (var i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+
+                option.innerText = data[i].name;
+                availableTopics[data[i].name] = data[i];
+
+                suggestions.appendChild(option);
+            }
+
+        }
+    });
+
+    xhr.open("GET", "/api/Topics/");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+function ontopicselect(input) {
+    var topicName = input.value;
+
+    if (topicName in availableTopics) {
+        selectedTopic = availableTopics[topicName].id;
+    }
+    else {
+        selectedTopic = availableTopics[0];
+    }
+
+    console.log(selectedTopic);
+}
+
+function CheckRights() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+
+            if (data["CanSelectTopic"] == true) {
+                document.getElementById("topic_select_block").innerHTML = `
+                <span class="input_legend">Тематика</span>
+                <datalist id="topic_suggestions">
+                </datalist>
+                <input type="text" id="topic_input" autocomplete="on" list="topic_suggestions"
+                    oninput="ontopicselect(this)">
+                `;
+                CheckRights = true;
+                loadTopics();
+            }
+
+            if (data["CanEditTickets"] == true) {
+                document.getElementById("sender_select_block").innerHTML = `
+                <span class="input_legend user_data_item_header">Заявитель:</span>
+                <datalist id="suggestions">
+                </datalist>
+                <input type="text" id="sender_input" autocomplete="on" list="suggestions"
+                    oninput="onsenderselect(this)">`;
+                loadUsers();
+            }
+        }
+    });
+
+    xhr.open("GET", "/api/Users/getRights");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+CheckRights();

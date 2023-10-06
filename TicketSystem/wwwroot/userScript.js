@@ -41,6 +41,7 @@ function getAccess() {
                 <li class="pages_list_item"><a class="settingsPageLink" href="groups">Группы</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="companies">Компании</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="usersDirectory">Пользователи</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="thematics">Тематики</a></li>
             `;
 
             list.appendChild(li);

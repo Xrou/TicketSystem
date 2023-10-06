@@ -1,4 +1,4 @@
-function loadGroups() {
+function loadThematics() {
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
 
@@ -17,8 +17,8 @@ function loadGroups() {
                 <tr>
                     <td>${data[i].id}</td>
                     <td>${data[i].name}</td>
-                    <td><button id="${data[i].id}" onclick="editGroup(this)">Редактировать</button></td>
-                    <td><button id="${data[i].id}" onclick="deleteGroup(this)">Удалить</button></td>
+                    <td><button id="${data[i].id}" onclick="editThematic(this)">Редактировать</button></td>
+                    <td><button id="${data[i].id}" onclick="deleteThematic(this)">Удалить</button></td>
                 </tr>
                 `;
 
@@ -27,22 +27,22 @@ function loadGroups() {
         }
     });
 
-    xhr.open("GET", "/api/userGroups/");
+    xhr.open("GET", "/api/topics/");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send();
 }
 
-function editGroup(button) {
-    location.replace(`editGroup?id=${button.id}`);
+function editThematic(button) {
+
 }
 
 
-function deleteGroup(button) {
+function deleteThematic(button) {
     console.log(button.id)
 }
 
-function createGroup() {
+function createThematic() {
     if (document.getElementById("name_input").value == "")
         return;
 
@@ -55,11 +55,11 @@ function createGroup() {
 
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4) {
-            loadGroups();
+            loadThematics();
         }
     });
 
-    xhr.open("POST", "api/userGroups/");
+    xhr.open("POST", "api/topics/");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
@@ -67,4 +67,4 @@ function createGroup() {
 }
 
 
-loadGroups();
+loadThematics();

@@ -96,7 +96,7 @@ function saveUser() {
         }
     });
 
-    xhr.open("POST", "http://localhost/api/Users/" + companyId);
+    xhr.open("POST", "../api/Users/" + companyId);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
