@@ -21,7 +21,9 @@ namespace TicketSystem.Models
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Status> Statuses { get; set; }
-
+        public DbSet<File> Files { get; set; }
+        public DbSet<TicketFile> TicketFiles { get; set; }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySQL("server=cl-srv-suz.cl.local;port=3306;user=xrou;password=1474545mimosH;database=suz; Charset=utf8;");
@@ -54,7 +56,18 @@ namespace TicketSystem.Models
             modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.Subscriptions)
                 .AutoInclude();
+            
+            modelBuilder.Entity<Ticket>()
+                .HasMany(e => e.Files)
+                .WithMany()
+                .UsingEntity("ticketfiles",
+                    l => l.HasOne(typeof(File)).WithMany().HasForeignKey("fileId"),
+                    r => r.HasOne(typeof(Ticket)).WithMany().HasForeignKey("ticketId"));
 
+            modelBuilder.Entity<Ticket>()
+                .Navigation(e => e.Files)
+                .AutoInclude();
+            
             modelBuilder.Entity<Ticket>()
                 .HasOne(e => e.Topic)
                 .WithMany()

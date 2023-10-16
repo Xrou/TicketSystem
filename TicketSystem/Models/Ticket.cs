@@ -61,6 +61,7 @@ namespace TicketSystem.Models
         }
 
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public List<File> Files { get; set; } = new List<File>();
 
         virtual public User User { get; set; } = null!;
         virtual public User SenderUser { get; set; } = null!;
@@ -80,12 +81,41 @@ namespace TicketSystem.Models
             if (this.SenderId != this.UserId)
                 userName += $" ({SenderUser.FullName})";
 
-            return new SendTicket() { Id = Id, Text = Text, Date = Date.ToString(), DeadlineTime = DeadlineTime?.ToString(), UserId = UserId, SenderId = SenderId, SenderPhone = User.PhoneNumber, UserName = userName, SenderCompany = User.Company.Name, ExecutorUserId = ExecutorId, ExecutorUserName = executorName, Type = (int)Type, Urgency = (int)Urgency, TopicName = Topic.Name, Status = Status.Name };
+            string[] fileNames = Files.Select(x => x.Path).ToArray();
+
+            return new SendTicket()
+            {
+                Id = Id,
+                Text = Text,
+                Date = Date.ToString(),
+                DeadlineTime = DeadlineTime?.ToString(),
+                UserId = UserId,
+                SenderId = SenderId,
+                SenderPhone = User.PhoneNumber,
+                UserName = userName,
+                SenderCompany = User.Company.Name,
+                ExecutorUserId = ExecutorId,
+                ExecutorUserName = executorName,
+                Type = (int)Type,
+                Urgency = (int)Urgency,
+                TopicName = Topic.Name,
+                Status = Status.Name,
+                Files = fileNames
+            };
         }
     }
 
-    public record struct SendTicket(long Id, string Text, string Date, string? DeadlineTime, long UserId, long SenderId, string SenderPhone, string SenderCompany, long? ExecutorUserId, string UserName, string ExecutorUserName, int Type, int Urgency, string TopicName, string Status);
-    public record struct PostTicket(long UserId, string Text, int Urgency, long TopicId);
+    public record struct SendTicket(
+        long Id, string Text,
+        string Date, string? DeadlineTime,
+        long UserId, long SenderId,
+        string SenderPhone, string SenderCompany,
+        long? ExecutorUserId, string UserName,
+        string ExecutorUserName, int Type,
+        int Urgency, string TopicName,
+        string Status, string[] Files);
+
+    public record struct PostTicket(long UserId, string Text, int Urgency, long TopicId, File[] Files);
 
     public enum FinishStatus
     {

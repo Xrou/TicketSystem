@@ -38,7 +38,21 @@ namespace TicketSystem.Controllers
             }
             else
             {
-                return NotFound();
+                if (System.IO.File.Exists($"wwwroot/Files/{fileName}"))
+                {
+                    string contentType = $"text/{fileFormat[1..]}";
+
+                    if (fileFormat == ".jpg")
+                        contentType = "image/jpg";
+                    if (fileFormat == ".png")
+                        contentType = "image/jpg";
+
+                    return File($"Files/{fileName}", contentType);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
         }
 

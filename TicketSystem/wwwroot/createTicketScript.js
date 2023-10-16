@@ -7,40 +7,66 @@ var selectedTopic;
 var canSelectTopics = false;
 
 function createTicket() {
-    urgency = 0;
+    function postTicket() {
+        urgency = 0;
 
-    if (document.getElementById("medium").checked)
-        urgency = 1;
-    else if (document.getElementById("high").checked)
-        urgency = 2;
+        if (document.getElementById("medium").checked)
+            urgency = 1;
+        else if (document.getElementById("high").checked)
+            urgency = 2;
 
-    var http = new XMLHttpRequest();
-    http.open('POST', 'api/tickets', true);
+        var http = new XMLHttpRequest();
+        http.open('POST', 'api/tickets', true);
 
-    var authToken = sessionStorage.getItem("access_token");
+        var ticketText = document.getElementById("text_input").value;
 
-    var ticketText = document.getElementById("text_input").value;
+        if (canSelectTopics == false)
+            selectedTopic = 1;
 
-    if (canSelectTopics == false)
-        selectedTopic = 1;
+        var ticketData = JSON.stringify({
+            userId: selectedUser,
+            text: ticketText,
+            urgency: urgency,
+            topicId: selectedTopic,
+            files: files,
+        });
 
-    var ticketData = JSON.stringify({
-        userId: selectedUser,
-        text: ticketText,
-        urgency: urgency,
-        topicId: selectedTopic
-    });
+        http.setRequestHeader('Authorization', 'Bearer ' + sessionStorage.getItem("access_token"));
+        http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
-    http.setRequestHeader('Authorization', 'Bearer ' + authToken);
-    http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-    http.onreadystatechange = function () {
-        if (http.readyState == 4 && http.status == 201) {
-            document.location.replace(`ticket/?id=${http.responseText}`);
+        http.onreadystatechange = function () {
+            if (http.readyState == 4 && http.status == 201) {
+                document.location.replace(`ticket/?id=${http.responseText}`);
+            }
         }
+
+        http.send(ticketData);
     }
 
-    http.send(ticketData);
+    var file_selector = document.getElementById("file_selector");
+
+    var files = []
+
+    for (var i = 0; i < file_selector.files.length; i++) {
+        var fileRequset = new XMLHttpRequest();
+        fileRequset.open("POST", "./api/Files", false);
+
+        fileRequset.setRequestHeader('Authorization', 'Bearer ' + sessionStorage.getItem("access_token"));
+
+        var formData = new FormData(); formData.append("uploadedFiles", file_selector.files[i]);
+        
+        fileRequset.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 201) {
+                var createdFile = JSON.parse(this.responseText)[0];
+                files.push(createdFile);
+                console.log(files);
+            }
+        }
+
+        fileRequset.send(formData);
+    }
+
+    postTicket();
 }
 
 function loadUsers() {

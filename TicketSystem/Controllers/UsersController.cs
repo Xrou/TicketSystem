@@ -121,7 +121,7 @@ namespace TicketSystem.Controllers
                 }
 
                 string telegramIdString = await response.Content.ReadAsStringAsync();
-
+                
                 long telegramId = long.Parse(telegramIdString);
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
 
@@ -138,7 +138,7 @@ namespace TicketSystem.Controllers
                     $"Номер телефона: {phoneNumber}\n" +
                     $"Электронная почта: {email}\n";
 
-                await TicketsController.CreateTicket(context, HttpContext, new PostTicket(newUser.Id, registrationText, 3, 1), newUser.Id, true);
+                await TicketsController.CreateTicket(context, HttpContext, new PostTicket(newUser.Id, registrationText, 3, 1, new Models.File[] { }), newUser.Id, true);
 
                 return Created(new Uri("https://localhost:7177/api/users/register"), newUser.Id);
             }
@@ -203,7 +203,7 @@ namespace TicketSystem.Controllers
                 ticket.DeadlineTime = DateTime.Now;
                 context.Update(ticket);
                 context.SaveChanges();
-
+                /*
                 HttpClient httpClient = new HttpClient();
 
                 var response = await httpClient.GetAsync($"http://localhost:8888/registrationVerified/?telegram={user.Telegram}");
@@ -212,7 +212,7 @@ namespace TicketSystem.Controllers
                 {
                     return Problem("Telegram error");
                 }
-
+                */
                 return Ok();
             }
             catch (Exception ex)

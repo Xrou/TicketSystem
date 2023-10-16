@@ -61,6 +61,18 @@ function getTicketData() {
             document.getElementById("ticket_topic").innerHTML = data.topicName;
             document.getElementById("status").innerHTML = data.status;
 
+            file_links = document.getElementById("file_links");
+
+            for (var i = 0; i < data.files.length; i++) {
+                a = document.createElement("a");
+                a.target = "_blank";
+                a.href = "../" + data.files[i];
+                a.innerText = data.files[i] + "\n";
+                a.download = "../" + data.files[i];
+                file_links.appendChild(a);
+            }
+
+
             ticketUser = data.userId;
 
             var day = data.deadlineTime.split('.')[0];
@@ -643,6 +655,7 @@ function verifyRegistration() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
+            location.replace("#close");
             location.reload();
         }
     }
@@ -729,6 +742,7 @@ function closeTicket() {
         if (this.readyState === 4) {
             getTicketData();
             getComments();
+            location.replace("#close");
         }
     });
 
