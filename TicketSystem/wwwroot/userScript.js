@@ -43,6 +43,7 @@ function getAccess() {
                 <li class="pages_list_item"><a class="settingsPageLink" href="usersDirectory">Пользователи</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="thematics">Тематики</a></li>
                 <li class="pages_list_item"><a class="settingsPageLink" href="statuses">Статусы</a></li>
+                <li class="pages_list_item"><a class="settingsPageLink" href="accessgroupsettings">Права групп досутпа</a></li>
             `;
 
             list.appendChild(li);

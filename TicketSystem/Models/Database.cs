@@ -132,7 +132,20 @@ namespace TicketSystem.Models
                 );
 
             modelBuilder.Entity<UserGroup>()
+                .HasMany(e => e.Topics)
+                .WithMany()
+                .UsingEntity("topicsingroup",
+                    l => l.HasOne(typeof(Topic)).WithMany().HasForeignKey("topicId"),
+                    r => r.HasOne(typeof(UserGroup)).WithMany().HasForeignKey("groupId")
+                );
+
+
+            modelBuilder.Entity<UserGroup>()
                 .Navigation(e => e.Companies)
+                .AutoInclude();
+
+            modelBuilder.Entity<UserGroup>()
+                .Navigation(e => e.Topics)
                 .AutoInclude();
         }
     }

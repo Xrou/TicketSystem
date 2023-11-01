@@ -9,7 +9,7 @@ var canSelectTopics = false;
 function createTicket() {
     function postTicket() {
         urgency = 0;
-
+        
         if (document.getElementById("medium").checked)
             urgency = 1;
         else if (document.getElementById("high").checked)
@@ -204,6 +204,15 @@ function CheckRights() {
                 <input type="text" id="sender_input" autocomplete="on" list="suggestions"
                     oninput="onsenderselect(this)">`;
                 loadUsers();
+            }
+
+            if (data["CanSelectUrgency"] == true) {
+                document.getElementById("urgency_select_block").innerHTML = `
+                <input label="Низкая" type="radio" id="low" name="urgency" value="low" checked>
+                <input label="Средняя" type="radio" id="medium" name="urgency" value="medium">
+                <input label="Высокая" type="radio" id="high" name="urgency" value="high">
+                `;
+                document.getElementById("urgency_select_header").style.display = "block"; 
             }
         }
     });

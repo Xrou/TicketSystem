@@ -22,8 +22,8 @@
 
     <div class="container">
         <div class="action_section">
-            <button class="action_button" onclick="takeTicket()">Взять заявку</button>
-            <button class="action_button" onclick="assignTicket()" id="assign_button">Назначить заявку</button>
+            <button class="action_button" id="take_ticket_button" onclick="takeTicket()">Взять заявку</button>
+            <button class="action_button" id="assign_ticket_button" onclick="assignTicket()" id="assign_button">Назначить заявку</button>
 
             <datalist id="suggestions">
                 <option>user 1</option>
@@ -43,12 +43,12 @@
                     <path fill="#FFFFFF" d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
                 </svg></button>
 
-            <button class="action_button" onclick="subscribeTicket()">Подписаться</button>
+            <button class="action_button" id="subscribe_ticket_button" onclick="subscribeTicket()">Подписаться</button>
             <div class="action_grow"></div>
-            <div class="css-modal-target-container action_button">
+            <div class="css-modal-target-container action_button" id="finish_ticket_button">
                 <a href="#close_ticket" id="close_ticket_button">Завершить</a>
             </div>
-            <div class="action_time" onmouseenter="showTimeSelector()" onmouseleave="hideTimeSelector()">
+            <div class="action_time"  id="move_ticket_button" onmouseenter="showTimeSelector()" onmouseleave="hideTimeSelector()">
                 <div class="action_time_text">
                     <span id="timer" class="action_timer"></span>
                     <svg class="action_time_more" xmlns="http://www.w3.org/2000/svg" height="48"
@@ -129,6 +129,9 @@
                     <span>Назначенный исполнитель:</span>
                     <span id="executor_name"></span>
                 </div>
+                <div id="ticket_info_save_edits" class="ticket_info_block" style="display: none;">
+                    <button onclick="editUserInfo()">Сохранить</button>
+                </div>
             </div>
             <div class="ticket_content">
                 <p id="ticket_text">
@@ -183,12 +186,12 @@
         </div>
 
         <div class="tabs">
-            <input type="radio" name="tab-btn" id="tab-btn-1" value="" checked>
-            <label for="tab-btn-1">Комментарии</label>
-            <input type="radio" name="tab-btn" id="tab-btn-2" value="">
-            <label for="tab-btn-2">Оффициальные комментарии</label>
-            <input type="radio" name="tab-btn" id="tab-btn-3" value="">
-            <label for="tab-btn-3">Системные комментарии</label>
+            <input id="standard_comments_radio"type="radio" name="tab-btn" id="tab-btn-1" value="" checked>
+            <label id="standard_comments_label"for="tab-btn-1">Комментарии</label>
+            <input id="official_comments_radio"type="radio" name="tab-btn" id="tab-btn-2" value="">
+            <label id="official_comments_label"for="tab-btn-2">Оффициальные комментарии</label>
+            <input id="service_comments_radio" type="radio" name="tab-btn" id="tab-btn-3" value="">
+            <label id="service_comments_label" for="tab-btn-3">Системные комментарии</label>
 
             <div id="content-1">
                 <ul id="standard_comments" class="comments_list">

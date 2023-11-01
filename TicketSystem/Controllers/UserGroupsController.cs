@@ -65,6 +65,52 @@ namespace TicketSystem.Controllers
             if (json.ContainsKey("name"))
                 userGroup.Name = json["name"]!.GetValue<string>();
 
+            if (json.ContainsKey("topicsChanges"))
+            {
+                var node = json["topicsChanges"].AsObject();
+
+                foreach (var item in node)
+                {
+                    long topicId = long.Parse(item.Key);
+
+                    if (item.Value!.GetValue<bool>() == false)
+                    {
+                        var topic = userGroup.Topics.FirstOrDefault(t => t.Id == topicId);
+                        if (topic != null)
+                            userGroup.Topics.Remove(topic);
+                    }
+                    else
+                    {
+                        var topic = context.Topics.FirstOrDefault(t => t.Id == topicId);
+                        if (topic != null)
+                            userGroup.Topics.Add(topic);
+                    }
+                }
+            }
+
+            if (json.ContainsKey("companiesChanges"))
+            {
+                var node = json["companiesChanges"].AsObject();
+
+                foreach (var item in node)
+                {
+                    long companyId = long.Parse(item.Key);
+
+                    if (item.Value!.GetValue<bool>() == false)
+                    {
+                        var company = userGroup.Companies.FirstOrDefault(t => t.Id == companyId);
+                        if (company != null)
+                            userGroup.Companies.Remove(company);
+                    }
+                    else
+                    {
+                        var company = context.Companies.FirstOrDefault(t => t.Id == companyId);
+                        if (company != null)
+                            userGroup.Companies.Add(company);
+                    }
+                }
+            }
+
             context.SaveChanges();
             context.UserGroups.Load();
 

@@ -9,14 +9,14 @@
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    
+
     border-radius: 5px;
 
     background: #E7EFF7;
 }
 
 .edit_element {
-    display: flex;  
+    display: flex;
     width: 100%;
     margin-bottom: 5px;
 }
@@ -43,6 +43,13 @@
     width: 65.5%;
 }
 
+.selecting_container {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+}
+
 .users_actions_block {
     display: flex;
     width: 100%;
@@ -52,4 +59,44 @@
 
 .users_actions_button:not(:last-child) {
     margin-right: 5px;
+}
+
+table {
+    text-decoration: none;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+table th {
+    font-weight: normal;
+    font-size: 14px;
+    color: #000;
+    background-color: #E7EFF7;
+    text-align: left;
+}
+
+table td {
+    font-size: 13px;
+    color: #354251;
+    background-color: #FFF5DD;
+    text-align: left;
+}
+
+table td,
+table th {
+    white-space: pre-wrap;
+    padding: 10px 5px;
+    line-height: 13px;
+    vertical-align: middle;
+    border: 1px solid #354251;
+}
+
+table tr:hover {
+    background-color: #FFE9B4
+}
+
+table tr:hover td {
+    background-color: #FFE9B4;
+    cursor: pointer;
 }

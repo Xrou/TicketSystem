@@ -15,11 +15,18 @@
         public bool CanRegisterUsers { get; set; }
         public bool CanSelectTopic { get; set; }
         public bool CanEditUsers { get; set; }
+        public bool CanSelectUrgency { get; set; }
+        public bool CanTakeTickets { get; set; }
+        public bool CanAssignTickets { get; set; }
+        public bool CanFinishTickets { get; set; }
+        public bool CanMoveTickets { get; set; }
 
-        public SendUserAccessGroupRights ToSend()
+        public SendAccessGroup ToSend()
         {
-            return new SendUserAccessGroupRights()
+            return new SendAccessGroup()
             {
+                Id = Id,
+                Name = Name,
                 CanSubscribe = CanSubscribe,
                 CanDeleteTickets = CanDeleteTickets,
                 CanEditTickets = CanEditTickets,
@@ -30,9 +37,32 @@
                 CanSeeServiceComments = CanSeeServiceComments,
                 CanSelectTopic = CanSelectTopic,
                 CanEditUsers = CanEditUsers,
+                CanSelectUrgency = CanSelectUrgency,
+                CanAssignTickets = CanAssignTickets,
+                CanFinishTickets = CanFinishTickets,
+                CanMoveTickets = CanMoveTickets,
+                CanTakeTickets = CanTakeTickets,
             };
         }
     }
 
-    public record struct SendUserAccessGroupRights(bool CanSubscribe, bool CanSeeHisTickets, bool CanSeeCompanyTickets, bool CanSeeAllTickets, bool CanEditTickets, bool CanDeleteTickets, bool CanSeeServiceComments, bool CanRegisterUsers, bool CanSelectTopic, bool CanEditUsers);
+    public record struct SendAccessGroup(
+        long Id,
+        string Name,
+        bool CanSubscribe, 
+        bool CanSeeHisTickets, 
+        bool CanSeeCompanyTickets, 
+        bool CanSeeAllTickets, 
+        bool CanEditTickets, 
+        bool CanDeleteTickets, 
+        bool CanSeeServiceComments, 
+        bool CanRegisterUsers, 
+        bool CanSelectTopic, 
+        bool CanEditUsers, 
+        bool CanSelectUrgency,
+        bool CanTakeTickets,
+        bool CanAssignTickets,
+        bool CanFinishTickets,
+        bool CanMoveTickets
+    );
 }

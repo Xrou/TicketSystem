@@ -1,6 +1,7 @@
 var deadline_date;
 var availableUsers = {};
 var selectedUser = 0;
+var userRights;
 
 var availableCompanies = {};
 var selectedCompany = 0;
@@ -60,6 +61,27 @@ function getTicketData() {
             document.getElementById("ticket_urgency").innerHTML = urgency;
             document.getElementById("ticket_topic").innerHTML = data.topicName;
             document.getElementById("status").innerHTML = data.status;
+            console.log(userRights);
+            if (userRights["CanTakeTickets"] == false)
+            {
+                document.getElementById("take_ticket_button").style.display = "none";
+            }
+            if (userRights["CanAssignTickets"] == false)
+            {
+                document.getElementById("assign_ticket_button").style.display = "none";
+            }
+            if (userRights["CanSubscribe"] == false)
+            {
+                document.getElementById("subscribe_ticket_button").style.display = "none";
+            }
+            if (userRights["CanFinishTickets"] == false)
+            {
+                document.getElementById("finish_ticket_button").style.display = "none";
+            }
+            if (userRights["CanMoveTickets"] == false)
+            {
+                document.getElementById("move_ticket_button").style.display = "none";
+            }
 
             file_links = document.getElementById("file_links");
 
@@ -189,10 +211,7 @@ function checkCanEditUserInfo() {
                 document.getElementById("status").innerHTML = `
                 <input type="text" autocomplete="on" list="status_suggestions" oninput="onStatusSelect(this)" value="${currentStatus}">`;
 
-                document.getElementById("ticket_info_section").innerHTML += `
-                <div class="ticket_info_block">
-                    <button onclick="editUserInfo()">Сохранить</button>
-                </div>`;
+                document.getElementById("ticket_info_save_edits").style.display = "block";
 
                 selectedEditCompany = availableCompanies[currentCompany].id;
             }
@@ -309,6 +328,16 @@ function getComments() {
 
     http2.send();
 
+    if (!userRights["CanSeeServiceComments"]) {
+        document.getElementById("service_comments").remove();
+        document.getElementById("service_comments_radio").remove();
+        document.getElementById("service_comments_label").remove();
+
+        return;
+    }
+
+    console.log("can see");
+        
     url.searchParams.set('commentType', '3');
 
     var http3 = new XMLHttpRequest();
@@ -753,13 +782,34 @@ function closeTicket() {
     xhr.send(data);
 }
 
+
+function CheckRights() {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            var data = JSON.parse(this.responseText);
+            userRights = data;
+        }
+    });
+
+    xhr.open("GET", "/api/Users/getRights");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send();
+}
+
+CheckRights();
+
 setInterval(updateTimer, 1000);
 
 getTicketData();
+loadCompaniesVerify();
 loadAvailableStatuses();
 getComments();
 getPossibleExecutors();
-loadCompaniesVerify();
+
 
 var now = new Date();
 
