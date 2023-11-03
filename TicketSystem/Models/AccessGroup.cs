@@ -1,5 +1,8 @@
-﻿namespace TicketSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketSystem.Models
 {
+    [Table("accessgroups", Schema = "suz")]
     public class AccessGroup
     {
         public long Id { get; set; }

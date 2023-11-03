@@ -2,15 +2,15 @@
 
 namespace TicketSystem.Models
 {
-    [Table("usergroups")]
+    [Table("usergroups", Schema = "suz")]
     public class UserGroup
     {
         public long Id { get; set; }
         public string Name { get; set; } = null!;
 
-        public List<User> Users { get; set; } = new();
-        public List<Company> Companies { get; set; } = new();
-        public List<Topic> Topics { get; set; } = new();
+        virtual public List<User> Users { get; set; } = new();
+        virtual public List<Company> Companies { get; set; } = new();
+        virtual public List<Topic> Topics { get; set; } = new();
 
         public SendUserGroup ToSend()
         {

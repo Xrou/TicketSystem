@@ -2,7 +2,7 @@
 
 namespace TicketSystem.Models
 {
-    [Table("statuses")]
+    [Table("statuses", Schema = "suz")]
     public class Status
     {
         public long Id { get; set; }

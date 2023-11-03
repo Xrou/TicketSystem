@@ -2,6 +2,7 @@
 
 namespace TicketSystem.Models
 {
+    [Table("comments", Schema = "suz")]
     public class Comment
     {
         public long Id { get; set; }

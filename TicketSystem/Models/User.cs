@@ -1,5 +1,8 @@
-﻿namespace TicketSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketSystem.Models
 {
+    [Table("users", Schema = "suz")]
     public class User
     {
         public long Id { get; set; }
@@ -16,8 +19,8 @@
         public long Telegram { get; set; }
 
 
-        public List<Subscription> Subscriptions { get; set; } = new();
-        public List<UserGroup> UserGroups { get; set; } = new();
+        virtual public List<Subscription> Subscriptions { get; set; } = new();
+        virtual public List<UserGroup> UserGroups { get; set; } = new();
 
         virtual public AccessGroup AccessGroup { get; set; } = null!;
         virtual public Company Company { get; set; } = null!;

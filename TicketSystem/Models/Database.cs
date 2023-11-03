@@ -26,7 +26,7 @@ namespace TicketSystem.Models
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("server=cl-srv-suz.cl.local;port=3306;user=xrou;password=1474545mimosH;database=suz; Charset=utf8;");
+            optionsBuilder.UseLazyLoadingProxies().UseSqlServer("Server=cl-srv-suz.cl.local;User ID=suz;password=$UZ5P@$$w0rd;database=suz;Initial Catalog=suz;Trusted_Connection=False;TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=true;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,8 +37,7 @@ namespace TicketSystem.Models
                 .HasForeignKey(e => e.ExecutorId);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.ExecutorUser)
-                .AutoInclude();
+                .Navigation(e => e.ExecutorUser);
 
             modelBuilder.Entity<Ticket>()
                 .HasOne(e => e.SenderUser)
@@ -46,16 +45,13 @@ namespace TicketSystem.Models
                 .HasForeignKey(e => e.SenderId);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.SenderUser)
-                .AutoInclude();
+                .Navigation(e => e.SenderUser);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.User)
-                .AutoInclude();
+                .Navigation(e => e.User);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.Subscriptions)
-                .AutoInclude();
+                .Navigation(e => e.Subscriptions);
             
             modelBuilder.Entity<Ticket>()
                 .HasMany(e => e.Files)
@@ -65,8 +61,7 @@ namespace TicketSystem.Models
                     r => r.HasOne(typeof(Ticket)).WithMany().HasForeignKey("ticketId"));
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.Files)
-                .AutoInclude();
+                .Navigation(e => e.Files);
             
             modelBuilder.Entity<Ticket>()
                 .HasOne(e => e.Topic)
@@ -74,8 +69,7 @@ namespace TicketSystem.Models
                 .HasForeignKey(e => e.TopicId);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.Topic)
-                .AutoInclude();
+                .Navigation(e => e.Topic);
 
             modelBuilder.Entity<Ticket>()
                 .HasOne(e => e.Status)
@@ -83,21 +77,16 @@ namespace TicketSystem.Models
                 .HasForeignKey(e => e.StatusId);
 
             modelBuilder.Entity<Ticket>()
-                .Navigation(e => e.Status)
-                .AutoInclude();
-
+                .Navigation(e => e.Status);
 
             modelBuilder.Entity<User>()
-                .Navigation(e => e.AccessGroup)
-                .AutoInclude();
+                .Navigation(e => e.AccessGroup);
 
             modelBuilder.Entity<User>()
-                .Navigation(e => e.Subscriptions)
-                .AutoInclude();
+                .Navigation(e => e.Subscriptions);
 
             modelBuilder.Entity<User>()
-                .Navigation(e => e.Company)
-                .AutoInclude();
+                .Navigation(e => e.Company);
 
             modelBuilder.Entity<User>()
                 .HasMany(e => e.UserGroups)
@@ -108,12 +97,10 @@ namespace TicketSystem.Models
                 );
 
             modelBuilder.Entity<User>()
-                .Navigation(e => e.UserGroups)
-                .AutoInclude();
+                .Navigation(e => e.UserGroups);
 
             modelBuilder.Entity<Comment>()
-                .Navigation(e => e.User)
-                .AutoInclude();
+                .Navigation(e => e.User);
 
             modelBuilder.Entity<UserGroup>()
                 .HasMany(e => e.Users)
@@ -139,14 +126,11 @@ namespace TicketSystem.Models
                     r => r.HasOne(typeof(UserGroup)).WithMany().HasForeignKey("groupId")
                 );
 
+            modelBuilder.Entity<UserGroup>()
+                .Navigation(e => e.Companies);
 
             modelBuilder.Entity<UserGroup>()
-                .Navigation(e => e.Companies)
-                .AutoInclude();
-
-            modelBuilder.Entity<UserGroup>()
-                .Navigation(e => e.Topics)
-                .AutoInclude();
+                .Navigation(e => e.Topics);
         }
     }
 }

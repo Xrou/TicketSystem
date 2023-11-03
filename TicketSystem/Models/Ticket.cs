@@ -2,6 +2,7 @@
 
 namespace TicketSystem.Models
 {
+    [Table("tickets", Schema = "suz")]
     public class Ticket
     {
         public long Id { get; set; }
@@ -60,8 +61,8 @@ namespace TicketSystem.Models
             }
         }
 
-        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-        public List<File> Files { get; set; } = new List<File>();
+        virtual public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        virtual public List<File> Files { get; set; } = new List<File>();
 
         virtual public User User { get; set; } = null!;
         virtual public User SenderUser { get; set; } = null!;

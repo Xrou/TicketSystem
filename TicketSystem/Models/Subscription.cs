@@ -2,7 +2,7 @@
 
 namespace TicketSystem.Models
 {
-    [Table("ticketsubscribers")]
+    [Table("ticketsubscribers", Schema = "suz")]
     public class Subscription
     {
         public long Id { get; set; }

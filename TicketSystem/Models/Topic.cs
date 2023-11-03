@@ -1,5 +1,8 @@
-﻿namespace TicketSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketSystem.Models
 {
+    [Table("topics", Schema = "suz")]
     public class Topic
     {
         public long Id { get; set; }

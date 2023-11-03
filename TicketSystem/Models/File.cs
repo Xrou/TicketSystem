@@ -2,6 +2,7 @@
 
 namespace TicketSystem.Models
 {
+    [Table("files", Schema = "suz")]
     public class File
     {
         public long Id { get; set; }
