@@ -13,38 +13,39 @@ function getGroups() {
         if (this.readyState === 4 && this.status == 200) {
             var json = JSON.parse(this.responseText);
 
+            console.log(json);
+
             var table_columns = document.getElementById("table_columns");
             var groups_table = document.getElementById("groups_table");
 
-            for (var i = 0; i < json.length; i++) {
-                var keys = Object.keys(json[0]);
+            var th = document.createElement("th");
+            table_columns.append(th);
 
-                if (i == 0) {
-                    for (var j = 0; j < keys.length; j++) {
-                        var th = document.createElement("th");
-                        th.innerText = keys[j];
-                        table_columns.appendChild(th);
-                    }
-                }
+            for (var k = 0; k < json.length; k++) {
+                var th = document.createElement("th");
+                th.innerText = json[k].name;
+                table_columns.append(th);
+            }
 
+            var fields = Object.keys(json[0]);
+
+            for (var i = 2; i < fields.length; i++) {
                 var tr = document.createElement("tr");
 
-                for (var k = 0; k < keys.length; k++) {
+                var td = document.createElement("td");
+                td.innerText = fields[i];
+
+                tr.append(td);
+
+                for (var k = 0; k < json.length; k++) {
+                    var vals = Object.values(json[k]);
                     var td = document.createElement("td");
-
-                    if (typeof (json[i][keys[k]]) == 'boolean') {
-                        td.innerHTML = `
-                        <input type="checkbox" id="${json[i].id}|${keys[k]}" oninput="saveSelection(this)" ${json[i][keys[k]] ? "checked" : ""}>
-                        `;
-                    }
-                    else {
-                        td.innerText = json[i][keys[k]];
-                    }
-
-                    tr.appendChild(td);
+                    td.innerHTML = `<input type="checkbox" id="${json[k].id}|${fields[i]}" oninput="saveSelection(this)" ${json[k][fields[i]] ? "checked" : ""}>`;
+                    console.log(`${k} ${fields[i]}`);
+                    tr.append(td);
                 }
 
-                groups_table.appendChild(tr);
+                groups_table.append(tr);
             }
         }
     });

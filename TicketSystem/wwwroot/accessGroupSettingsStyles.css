@@ -27,7 +27,7 @@
 }
 
 .content_block {
-    height: 90vh;
+    height: auto;
     width: 50vw;
     
     margin-left: 10px;
@@ -55,7 +55,7 @@
 }
 
 .action_button {
-    width: 100px;
+    width: auto;
     height: 23px;
     
     margin-bottom: 10px;

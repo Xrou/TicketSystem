@@ -25,7 +25,7 @@ function register() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 201) {
-            document.location.replace("auth");
+            window.open("auth");
         }
     }
 

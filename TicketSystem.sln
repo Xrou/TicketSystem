@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketSystem", "TicketSystem\TicketSystem.csproj", "{92A4F5C0-02EE-40C8-AF52-565A4BCED1F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{7E5EA231-BFBF-456B-8138-6BE6148A066E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{7E5EA231-BFBF-456B-8138-6BE6148A066E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSystemDesktop", "TicketSystemDesktop\TicketSystemDesktop.csproj", "{C78EFE1B-167F-451D-B889-B5D89F516045}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7E5EA231-BFBF-456B-8138-6BE6148A066E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E5EA231-BFBF-456B-8138-6BE6148A066E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E5EA231-BFBF-456B-8138-6BE6148A066E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C78EFE1B-167F-451D-B889-B5D89F516045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78EFE1B-167F-451D-B889-B5D89F516045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78EFE1B-167F-451D-B889-B5D89F516045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78EFE1B-167F-451D-B889-B5D89F516045}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

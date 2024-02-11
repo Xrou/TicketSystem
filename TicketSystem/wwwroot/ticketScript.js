@@ -12,6 +12,8 @@ var selectedStatus = {};
 
 var ticketUser;
 
+var selectedSender;
+
 function showTimeSelector() {
     document.getElementById("action_time_selector").style.display = "block";
 }
@@ -25,8 +27,6 @@ function getTicketData() {
     var ticket_id = urlParams.get('id');
 
     document.title = `Заявка ${ticket_id}`
-
-    var ticketType;
 
     var http = new XMLHttpRequest();
     http.open('GET', `../api/tickets/${ticket_id}`, true);
@@ -61,26 +61,48 @@ function getTicketData() {
             document.getElementById("ticket_urgency").innerHTML = urgency;
             document.getElementById("ticket_topic").innerHTML = data.topicName;
             document.getElementById("status").innerHTML = data.status;
+
+            var myId = sessionStorage.getItem("id");
+            ticketUser = data.userId;
+
             console.log(userRights);
-            if (userRights["CanTakeTickets"] == false)
-            {
+            if (userRights["CanTakeTickets"] == false) {
                 document.getElementById("take_ticket_button").style.display = "none";
             }
-            if (userRights["CanAssignTickets"] == false)
-            {
+            if (userRights["CanAssignTickets"] == false) {
                 document.getElementById("assign_ticket_button").style.display = "none";
             }
-            if (userRights["CanSubscribe"] == false)
-            {
+            if (userRights["CanSubscribe"] == false || data.senderId == myId) {
                 document.getElementById("subscribe_ticket_button").style.display = "none";
             }
-            if (userRights["CanFinishTickets"] == false)
-            {
+            if (userRights["CanFinishTickets"] == false) {
                 document.getElementById("finish_ticket_button").style.display = "none";
             }
-            if (userRights["CanMoveTickets"] == false)
-            {
+            if (userRights["CanMoveTickets"] == false) {
                 document.getElementById("move_ticket_button").style.display = "none";
+            }
+            if (userRights["CanRegisterUsers"] == true && data.type == 2) {
+                document.getElementById("registration").style.display = "block";
+                loadUserDataToConfirm();
+            }
+
+            if (data.status == "Завершена") {
+                document.getElementById("take_ticket_button").style.display = "none";
+                document.getElementById("assign_ticket_button").style.display = "none";
+                document.getElementById("subscribe_ticket_button").style.display = "none";
+                document.getElementById("finish_ticket_button").style.display = "none";
+                document.getElementById("move_ticket_button").style.display = "none";
+                document.getElementById("registration").style.display = "none";
+                document.getElementById("write_comment_section").style.display = "none";
+                if (userRights["CanEditTickets"] == true) {
+                    document.getElementById("reopen_ticket_button").style.display = "block";
+                }
+                else {
+                    document.getElementById("reopen_ticket_button").style.display = "none";
+                }
+            }
+            else {
+                document.getElementById("reopen_ticket_button").style.display = "none";
             }
 
             file_links = document.getElementById("file_links");
@@ -95,7 +117,6 @@ function getTicketData() {
             }
 
 
-            ticketUser = data.userId;
 
             var day = data.deadlineTime.split('.')[0];
             var month = data.deadlineTime.split('.')[1];
@@ -105,26 +126,7 @@ function getTicketData() {
             var second = data.deadlineTime.split(' ')[1].split(':')[2];
 
             deadline_date = new Date(year, month - 1, day, hour, minute, second);
-            var canRegisterValue;
-            var http2 = new XMLHttpRequest();
-            http2.open('GET', `../api/users/canRegisterUsers`, false);
 
-            var authToken = sessionStorage.getItem("access_token")
-
-            http2.setRequestHeader('Authorization', 'Bearer ' + authToken);
-
-            http2.onreadystatechange = function () {
-                if (http2.readyState == 4 && http2.status == 200) {
-                    canRegisterValue = http2.responseText == "true";
-
-                    if (data.type == 2 && canRegisterValue) {
-                        document.getElementById("registration").style.display = "block";
-                        loadUserDataToConfirm();
-                    }
-                }
-            }
-
-            http2.send();
             checkCanEditUserInfo();
         }
     }
@@ -203,8 +205,10 @@ function checkCanEditUserInfo() {
                 var currentCompany = document.getElementById("sender_company").textContent;
                 var currentStatus = document.getElementById("status").textContent;
 
-                document.getElementById("sender_name").contentEditable = true;
                 document.getElementById("phone_number").contentEditable = true;
+                document.getElementById("phone_number").addEventListener("input", function () {
+                    validatePhone(this);
+                });
 
                 document.getElementById("sender_company").innerHTML = `
                 <input type="text" autocomplete="on" list="company_suggestions" oninput="onCompanySelectEditUser(this)" value="${currentCompany}">`;
@@ -214,6 +218,26 @@ function checkCanEditUserInfo() {
                 document.getElementById("ticket_info_save_edits").style.display = "block";
 
                 selectedEditCompany = availableCompanies[currentCompany].id;
+            }
+            if (data["CanEditTickets"]) {
+                var senderName = document.getElementById("sender_name");
+                var newInput = document.createElement("input");
+                newInput.id = "sender_name";
+                newInput.value = senderName.innerText;
+                newInput.autocomplete = "on";
+                newInput.setAttribute("list", "suggestions");
+                newInput.addEventListener('input', onEditSenderSelect);
+
+                senderName.replaceWith(newInput);
+
+                var ticketUrgency = document.getElementById("ticket_urgency");
+                var newTicketUrgency = document.createElement("input");
+                newTicketUrgency.id = "ticket_urgency";
+                newTicketUrgency.value = ticketUrgency.innerText;
+                newTicketUrgency.autocomplete = "on";
+                newTicketUrgency.setAttribute("list", "ticket_urgency_suggestions");
+                
+                ticketUrgency.replaceWith(newTicketUrgency);
             }
         }
     });
@@ -235,6 +259,27 @@ function onCompanySelectEditUser(input) {
     }
 }
 
+function onEditSenderSelect(input) {
+    try {
+        var userName = input.srcElement.value.split('[')[0].trim();
+
+        var userCompanyShortName = input.srcElement.value.split('[')[1];
+        userCompanyShortName = userCompanyShortName.substring(0, userCompanyShortName.length - 1);
+    }
+    catch {
+        selectedSender = 0;
+        return;
+    }
+
+    if (userName + userCompanyShortName in availableUsers) {
+        selectedSender = availableUsers[userName + userCompanyShortName].id;
+    }
+    else {
+        selectedSender = 0;
+    }
+    console.log(selectedSender);
+}
+
 function editUserInfo() {
     var data = JSON.stringify({
         "fullName": document.getElementById("sender_name").innerText,
@@ -245,17 +290,35 @@ function editUserInfo() {
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
 
-    xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === 4) {
-            location.reload();
-        }
-    });
-
     xhr.open("POST", "/api/Users/" + ticketUser);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send(data);
+
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = urlParams.get('id');
+
+    data2 = JSON.stringify({
+        "ticketId": ticket_id,
+        "userId": selectedSender.toString()
+    });
+
+    xhr2 = new XMLHttpRequest();
+    xhr2.withCredentials = true;
+
+    xhr2.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            location.reload();
+        }
+    });
+
+    xhr2.open("POST", "/api/Tickets/changeSender");
+    xhr2.setRequestHeader("Content-Type", "application/json");
+    xhr2.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr2.send(data2);
 }
 
 function getComments() {
@@ -274,6 +337,8 @@ function getComments() {
     http.setRequestHeader('Authorization', 'Bearer ' + authToken);
     http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
+    var myId = sessionStorage.getItem("id");
+
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
             var data = JSON.parse(http.responseText);
@@ -282,13 +347,21 @@ function getComments() {
             standardComments.replaceChildren();
             for (var i = 0; i < data.length; i++) {
                 var li = document.createElement("li");
+                var date = new Date(data[i].Date);
+
+
 
                 li.innerHTML = `
-                <span>${data[i].UserName}</span>
-                <span>${data[i].Date}</span>
+                <span><b>${data[i].FullName}</b></span>
+                <span>${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</span>
                 <p>${data[i].Text}</p>
                 `;
                 li.className = "comment";
+
+                if (data[i].UserId == myId) {
+                    li.style.backgroundColor = "AliceBlue";
+                }
+
                 standardComments.appendChild(li);
             }
         }
@@ -337,7 +410,7 @@ function getComments() {
     }
 
     console.log("can see");
-        
+
     url.searchParams.set('commentType', '3');
 
     var http3 = new XMLHttpRequest();
@@ -405,16 +478,22 @@ function getPossibleExecutors() {
 function sendComment() {
     commentText = document.getElementById("write_comment_text").value;
     document.getElementById("write_comment_text").value = "";
+
     if (commentText == "")
         return;
 
     var urlParams = new URLSearchParams(window.location.search);
     var ticket_id = urlParams.get('id');
     var commentType = 3;
-    if (document.getElementById("tab-btn-1").checked)
+
+    if (document.getElementById("standard_comments_radio").checked)
         commentType = 1;
-    else if (document.getElementById("tab-btn-2").checked)
-        commentType = 2;
+    else if (document.getElementById("official_comments_radio").checked) {
+        document.getElementById("official_comments_radio").checked = false;
+        document.getElementById("standard_comments_radio").checked = true;
+
+        commentType = 1;
+    }
 
     var http = new XMLHttpRequest();
     http.open('POST', '../api/comments', true);
@@ -460,7 +539,7 @@ function takeTicket() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
-            getTicketData();
+            location.reload();
         }
     }
 
@@ -479,7 +558,7 @@ function subscribeTicket() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
-            getTicketData();
+            location.reload();
         }
     }
 
@@ -487,7 +566,7 @@ function subscribeTicket() {
 }
 
 function showAssignButtons() {
-    document.getElementById("assign_button").style.display = "none";
+    document.getElementById("assign_ticket_button").style.display = "none";
     document.getElementById("sender_input").style.display = "block";
     document.getElementById("assign_button_commit").style.display = "block";
     document.getElementById("assign_button_cancel").style.display = "block";
@@ -495,7 +574,7 @@ function showAssignButtons() {
 }
 
 function hideAssignButtons() {
-    document.getElementById("assign_button").style.display = "block";
+    document.getElementById("assign_ticket_button").style.display = "block";
     document.getElementById("sender_input").style.display = "none";
     document.getElementById("assign_button_commit").style.display = "none";
     document.getElementById("assign_button_cancel").style.display = "none";
@@ -550,7 +629,7 @@ function assignTicketCommit() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
-            getTicketData();
+            location.reload();
         }
     }
 
@@ -597,9 +676,9 @@ function setDeadlineDate(days) {
     var hour = ("0" + (now.getHours())).slice(-2);
     var minute = ("0" + (now.getMinutes())).slice(-2);
 
-    var today = now.getFullYear() + "-" + (month) + "-" + (day) + " " + (hour) + ":" + (minute);
+    var today = now.getFullYear() + "-" + (month) + "-" + (day) + "T" + (hour) + ":" + (minute);
 
-    $('#action_time_selector_calendar').val(today);
+    document.getElementById("action_time_selector_calendar").value = today;
 }
 
 function getDateAsString(date) {
@@ -627,7 +706,7 @@ function setDeadline() {
 
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 204) {
-            getTicketData();
+            location.reload();
         }
     }
 
@@ -769,9 +848,8 @@ function closeTicket() {
 
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4) {
-            getTicketData();
-            getComments();
             location.replace("#close");
+            location.reload();
         }
     });
 
@@ -782,6 +860,29 @@ function closeTicket() {
     xhr.send(data);
 }
 
+function reopenTicket() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var ticket_id = urlParams.get('id');
+
+    var data = JSON.stringify({
+        "ticketId": ticket_id
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4 && this.status == 200) {
+            location.reload();
+        }
+    });
+
+    xhr.open("POST", "../api/tickets/ReopenTicket");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
+
+    xhr.send(data);
+}
 
 function CheckRights() {
     var xhr = new XMLHttpRequest();
@@ -794,10 +895,14 @@ function CheckRights() {
         }
     });
 
-    xhr.open("GET", "/api/Users/getRights");
+    xhr.open("GET", "/api/Users/getRights", false);
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access_token"));
 
     xhr.send();
+}
+
+function validatePhone(input) {
+    input.textContent = input.textContent.replace("\n", "");
 }
 
 CheckRights();

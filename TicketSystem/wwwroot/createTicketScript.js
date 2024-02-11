@@ -10,10 +10,14 @@ function createTicket() {
     function postTicket() {
         urgency = 0;
         
-        if (document.getElementById("medium").checked)
-            urgency = 1;
-        else if (document.getElementById("high").checked)
-            urgency = 2;
+        if (document.getElementById("medium") != null)
+        {
+            if (document.getElementById("medium").checked)
+                urgency = 1;
+            else if (document.getElementById("high").checked)
+                urgency = 2;
+        }
+
 
         var http = new XMLHttpRequest();
         http.open('POST', 'api/tickets', true);
@@ -36,12 +40,14 @@ function createTicket() {
 
         http.onreadystatechange = function () {
             if (http.readyState == 4 && http.status == 201) {
-                document.location.replace(`ticket/?id=${http.responseText}`);
+                window.location = `ticket/?id=${http.responseText}`;
             }
         }
 
         http.send(ticketData);
     }
+
+    document.getElementById("create_button").disabled = true;
 
     var file_selector = document.getElementById("file_selector");
 

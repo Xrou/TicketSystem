@@ -1,0 +1,36 @@
+﻿<Window x:Class="TicketSystemDesktop.TicketsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:TicketSystemDesktop"
+        mc:Ignorable="d"
+        Title="TicketsWindow" SizeToContent="WidthAndHeight">
+    <Grid Width="800" Height="600">
+        <Button Command="{Binding OpenCreateTicketWindowCommand}" Content="Создать заявку" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="TicketsDataGrid"
+                  Margin="0,214,0,0"
+                  ItemsSource="{Binding Tickets}"
+                  IsReadOnly="True"
+                  SelectionUnit="FullRow"
+                  AutoGenerateColumns="False"
+                  HeadersVisibility="Column"
+                  CanUserDeleteRows="False"
+                  CanUserAddRows="False"
+                  CanUserReorderColumns="False"
+                  CanUserResizeRows="False"
+                  SelectionMode="Single">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=TicketsDataGrid, Path=SelectedItem}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                <DataGridTextColumn Header="Текст" Width="5*" Binding="{Binding Path=Text}"/>
+                <DataGridTextColumn Header="Дата" Width="*" Binding="{Binding Path=Date}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

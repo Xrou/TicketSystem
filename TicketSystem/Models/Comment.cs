@@ -30,11 +30,11 @@ namespace TicketSystem.Models
 
         public SendComment ToSend()
         {
-            return new SendComment { Id = Id, Text = Text, Date = Date, Type = CommentType, TicketId = TicketId, UserName = User.Name };
+            return new SendComment { Id = Id, Text = Text, Date = Date, Type = CommentType, TicketId = TicketId, UserId = User.Id, UserName = User.Name, FullName = User.FullName };
         }
     }
 
-    public record struct SendComment(long Id, string Text, DateTime Date, CommentType Type, long TicketId, string UserName);
+    public record struct SendComment(long Id, string Text, DateTime Date, CommentType Type, long TicketId, long UserId, string UserName, string FullName);
     public record struct PostComment(long TicketId, string Text, int type);
 
     public enum CommentType

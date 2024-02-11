@@ -30,7 +30,7 @@ namespace TicketSystem.Controllers
 
         // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<string>> GetTicketItems()
+        public async Task<ActionResult<List<SendTicket>>> GetTicketItems()
         {
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
 
@@ -47,7 +47,7 @@ namespace TicketSystem.Controllers
                     tickets.Add(ticket.ToSend());
             }
 
-            return JsonConvert.SerializeObject(tickets);
+            return tickets;
         }
 
         // GET: api/Tickets/5
@@ -98,10 +98,13 @@ namespace TicketSystem.Controllers
 
             await context.SaveChangesAsync();
 
-            foreach (var file in ticket.Files)
+            if (ticket.Files != null)
             {
-                TicketFile ticketFile = new TicketFile() { FileId = file.Id, TicketId = newTicket.Id };
-                context.TicketFiles.Add(ticketFile);
+                foreach (var file in ticket.Files)
+                {
+                    TicketFile ticketFile = new TicketFile() { FileId = file.Id, TicketId = newTicket.Id };
+                    context.TicketFiles.Add(ticketFile);
+                }
             }
 
             await context.SaveChangesAsync();
@@ -118,6 +121,16 @@ namespace TicketSystem.Controllers
 
                 if (user == null)
                     return Problem("No user instance", statusCode: 500);
+
+
+                if (!user.CanLogin)
+                {
+                    if (context.Tickets.Count(x => x.User == user) > 2)
+                    {
+                        return Forbid();
+                    }
+                }
+
 
                 if (ticket.UserId == 0)
                     ticket.UserId = user.Id;
@@ -301,10 +314,34 @@ namespace TicketSystem.Controllers
             return Ok();
         }
 
+        // POST: api/Tickets/reopenTicket
+        [HttpPost("reopenTicket")]
+        public async Task<IActionResult> ReopenTicket([FromBody] JsonObject json)
+        {
+            long ticketId;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var ticket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (ticket == null)
+                return NotFound();
+
+            ticket.StatusId = 5;
+            ticket.DeadlineTime = DateTime.Now + new TimeSpan(3, 0, 0);
+
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
 
 
         // POST: api/Tickets/SetDeadline
-        [HttpPost("{id}")]
+        [HttpPost("setDeadline")]
         public async Task<IActionResult> SetDeadline([FromBody] JsonObject json)
         {
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
@@ -333,6 +370,33 @@ namespace TicketSystem.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPost("changeSender")]
+        public async Task<IActionResult> ChangeSender([FromBody] JsonObject json)
+        {
+            long ticketId;
+            long userId;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
+                json.ContainsKey("userId") && long.TryParse(json["userId"]!.GetValue<string>(), out userId)))
+            {
+                return BadRequest();
+            }
+
+            Ticket? ticket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            ticket.SenderId = userId;
+
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         // DELETE: api/Tickets/5

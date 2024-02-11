@@ -27,7 +27,7 @@ namespace TicketSystem.Controllers
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<string>> GetCommentsAtMessage(string ticketId, string commentType)
+        public async Task<ActionResult<List<SendComment>>> GetCommentsAtMessage(string ticketId, string commentType)
         {
             int commentTypeInt = int.Parse(commentType);
             long ticketIdLong = long.Parse(ticketId);
@@ -44,13 +44,13 @@ namespace TicketSystem.Controllers
             if (commentTypeInt == 3 && !user.AccessGroup.CanSeeServiceComments)
                 return Forbid();
 
-            foreach (var comment in context.Comments.Where(c => c.TicketId == ticketIdLong).OrderBy(c => c.Date))
+            foreach (var comment in context.Comments.Where(c => c.TicketId == ticketIdLong).OrderByDescending(c => c.Date))
             {
                 if ((int)comment.CommentType == commentTypeInt)
                     comments.Add(comment.ToSend());
             }
 
-            return JsonConvert.SerializeObject(comments);
+            return comments;
         }
 
         // POST: api/Comments

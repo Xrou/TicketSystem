@@ -1,0 +1,19 @@
+﻿<Window x:Class="TicketSystemDesktop.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TicketSystemDesktop"
+        mc:Ignorable="d"
+        Title="LoginWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Grid Width="200" Height="200">
+        <Label Content="Авторизация" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="Логин" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+        <TextBox Margin="59,45,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Username}"/>
+        <Label Content="Пароль" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top"/>
+        <TextBox Margin="59,76,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Password}"/>
+
+        <Button Content="Авторизация" HorizontalAlignment="Center" Margin="0,103,0,0" VerticalAlignment="Top" Command="{Binding AuthorizeCommand}" Width="180"/>
+        <Label Content="Неверно введены&#xD;&#xA;логин или пароль" Visibility="{Binding IncorrectAuthVisible}" HorizontalAlignment="Center" Margin="0,128,0,0" VerticalAlignment="Top" Height="48" FontSize="14"/>
+    </Grid>
+</Window>

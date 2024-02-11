@@ -10,12 +10,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NuGet.Configuration;
 using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Utilities.Encoders;
+using Telegram.Bot.Extensions.LoginWidget;
 using TicketSystem.Models;
 
 namespace TicketSystem.Controllers
@@ -42,7 +45,7 @@ namespace TicketSystem.Controllers
 
                 User? user = context.Users.FirstOrDefault(u => u.Name == userToAuth.Login && u.PasswordHash == passwordHash);
 
-                if (user is null || !user.CanLogin)
+                if (user is null)  // !user.CanLogin - если подтвержденный аккаунт
                     return Results.Unauthorized();
 
                 var claims = new List<Claim> {
@@ -121,7 +124,7 @@ namespace TicketSystem.Controllers
                 }
 
                 string telegramIdString = await response.Content.ReadAsStringAsync();
-                
+
                 long telegramId = long.Parse(telegramIdString);
                 string passwordHash = Convert.ToBase64String(SHA512.HashData(Encoding.UTF8.GetBytes(password)));
 
@@ -147,6 +150,49 @@ namespace TicketSystem.Controllers
                 Logger.Log($"{ex.Source}: {ex.Message}");
                 return Problem();
             }
+        }
+
+        [HttpPost("loginTelegram")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginTelegram([FromBody] JsonObject json)
+        {
+            var authData = new SortedDictionary<string, string>(JsonConvert.DeserializeObject<Dictionary<string, string>>(json.ToString()));
+
+            LoginWidget loginWidget = new LoginWidget("5397081584:AAHAYI5fiEPRcL0LQeTuASzU78-EkaduqUg");
+            var auth = loginWidget.CheckAuthorization(authData);
+            if (auth == Authorization.Valid)
+            {
+                User? user = context.Users.FirstOrDefault(u => u.Telegram == Convert.ToInt64(authData["id"]));
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var claims = new List<Claim> {
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
+                var jwt = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    claims: claims,
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromHours(12)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha512));
+
+                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+                var response = new
+                {
+                    access_token = encodedJwt,
+                    username = user.Name,
+                    id = user.Id
+                };
+
+                return Ok(response);
+            }
+
+            return Forbid();
         }
 
         [HttpPost("confirmRegistration")]
@@ -335,7 +381,7 @@ namespace TicketSystem.Controllers
 
         // POST: api/Users/5
         [HttpPost("{id}")]
-        public async Task<ActionResult<SendUser>> UpdateUser(long id, [FromBody]JsonObject json)
+        public async Task<ActionResult<SendUser>> UpdateUser(long id, [FromBody] JsonObject json)
         {
             var user = await context.Users.FindAsync(id);
 
@@ -361,7 +407,7 @@ namespace TicketSystem.Controllers
 
             if (json.ContainsKey("telegram"))
                 user.Telegram = json["telegram"]!.GetValue<long>();
-    
+
             context.SaveChanges();
 
             return Ok();

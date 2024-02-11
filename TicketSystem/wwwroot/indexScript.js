@@ -1,5 +1,5 @@
 function open_ticket(click_row) {
-    window.location.replace(`ticket/?id=${click_row}`);
+    window.open(`ticket/?id=${click_row}`, "_blank");
 }
 
 function getTickets() {
@@ -25,15 +25,15 @@ function getTickets() {
                 tr.id = data[i].Id;
 
                 tr.innerHTML = `
-                <td>${data[i].Id}</td>
-                <td>${data[i].UserName}</td>
-                <td>${data[i].SenderCompany}</td>
-                <td>${data[i].TopicName}</td>
-                <td>${data[i].Status}</td>
-                <td>${data[i].ExecutorUserName}</td>
-                <td>${data[i].Text}</td>
-                <td>${data[i].Date}</td>
-                <td>${data[i].DeadlineTime}</td>
+                <td>${data[i].id}</td>
+                <td>${data[i].userName}</td>
+                <td>${data[i].senderCompany}</td>
+                <td>${data[i].topicName}</td>
+                <td>${data[i].status}</td>
+                <td>${data[i].executorUserName}</td>
+                <td>${data[i].text}</td>
+                <td>${data[i].date}</td>
+                <td>${data[i].deadlineTime}</td>
                 `;
                 tr.onclick = function () {
                     open_ticket(this.id);
@@ -50,7 +50,7 @@ function getTickets() {
 function logout() {
     sessionStorage.removeItem("access_token");
     sessionStorage.removeItem("id");
-    document.location.replace("./auth");
+    window.open("./auth");
 }
 
 getTickets();

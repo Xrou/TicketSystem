@@ -363,10 +363,11 @@ p {
     font-size: 16px;
 }
 
-#tab-btn-1:checked~#content-1,
-#tab-btn-2:checked~#content-2,
-#tab-btn-3:checked~#content-3 {
+#standard_comments_radio:checked~#content-1,
+#official_comments_radio:checked~#content-2,
+#service_comments_radio:checked~#content-3 {
     display: block;
+    margin-bottom: 20px;
     padding: 0;
 
     background-color: white;
@@ -400,9 +401,14 @@ p {
 .comments_list {
     margin: 0;
     padding: 10px;
+    font-size: small;
     list-style-type: none;
 }
 
 .comment {
-    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.comment:nth-child(odd) {
+    background-color: lightgrey;
 }

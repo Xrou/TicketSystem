@@ -116,7 +116,7 @@ namespace TicketSystem.Models
         int Urgency, string TopicName,
         string Status, string[] Files);
 
-    public record struct PostTicket(long UserId, string Text, int Urgency, long TopicId, File[] Files);
+    public record struct PostTicket(long UserId, string Text, int Urgency, long TopicId, File[]? Files);
 
     public enum FinishStatus
     {
