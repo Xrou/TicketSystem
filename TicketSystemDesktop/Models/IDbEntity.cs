@@ -15,5 +15,10 @@ namespace TicketSystemDesktop.Models
         {
             throw new NotImplementedException();
         }
+
+        public static IDbEntity ParseArrayFromJson(string jsonString)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

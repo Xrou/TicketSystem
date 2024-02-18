@@ -19,11 +19,11 @@ namespace TicketSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> GetStatusItems()
+        public async Task<ActionResult<List<SendStatus>>> GetStatusItems()
         {
             List<SendStatus> statuses = context.Statuses.Select(x => x.ToSend()).ToList();
 
-            return JsonConvert.SerializeObject(statuses);
+            return statuses;
         }
 
         [HttpPost]

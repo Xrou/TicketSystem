@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TicketSystemDesktop.Models
 {
-    public class Topic : INotifyPropertyChanged, IDbEntity
+    public class Status : INotifyPropertyChanged, IDbEntity
     {
         private long id;
         private string name;
@@ -17,18 +17,17 @@ namespace TicketSystemDesktop.Models
         public long Id { get { return id; } set { id = value; OnPropertyChanged("Id"); } }
         public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
 
-        public static Topic ParseFromJson(JsonObject ticket)
+        public static Status ParseFromJson(JsonObject parseObject)
         {
-            var Id = ticket["id"]!.GetValue<long>();
-            var Name = ticket["name"]!.GetValue<string>();
+            var id = parseObject["id"].GetValue<long>();
+            var name = parseObject["name"].GetValue<string>();
 
-            return new Topic { Id = Id, Name = Name };
+            return new Status() { Id = id, Name = name };
         }
 
-
-        public static List<Topic> ParseArrayFromJson(string response)
+        public static List<Status> ParseArrayFromJson(string response)
         {
-            List<Topic> parsed = new List<Topic>();
+            List<Status> parsed = new List<Status>();
             var array = JsonArray.Parse(response);
 
             foreach (var t in array.AsArray())

@@ -9,10 +9,11 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
+using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
 {
-    public class TicketsWindowViewModel : INotifyPropertyChanged
+    public partial class TicketsWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         public ObservableCollection<Ticket> Tickets { get; set; } = new ObservableCollection<Ticket>();
 
@@ -42,21 +43,28 @@ namespace TicketSystemDesktop
             }
         }
 
+        public RelayCommand OpenSettingsWindowCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    SettingsWindow settingsWindow = new SettingsWindow();
+                    settingsWindow.Show();
+                });
+            }
+        }
+
         public TicketsWindowViewModel()
         {
-            var response = HttpClient.Get("api/tickets");
+            Notifications.TicketsChanged += TicketsChangedOutside;
 
-            if (response.code == System.Net.HttpStatusCode.OK)
-            {
-                var array = JsonArray.Parse(response.response);
+            Load();
+        }
 
-                foreach (var t in array.AsArray())
-                {
-                    var ticket = t.AsObject();
-
-                    Tickets.Add(Ticket.ParseFromJson(ticket));                    
-                }
-            }
+        private void TicketsChangedOutside()
+        {
+            Load();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

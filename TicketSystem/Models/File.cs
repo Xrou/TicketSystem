@@ -15,11 +15,4 @@ namespace TicketSystem.Models
     }
 
     public record struct SendFile(long Id, string Path);
-
-    public class TicketFile
-    {
-        public long Id { get; set; }
-        public long TicketId { get; set; }
-        public long FileId { get; set; }
-    }
 }

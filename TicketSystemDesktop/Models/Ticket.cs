@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using TicketSystemDesktop.Models;
 
-namespace TicketSystemDesktop
+namespace TicketSystemDesktop.Models
 {
     public class Ticket : INotifyPropertyChanged, IDbEntity
     {
@@ -166,57 +166,72 @@ namespace TicketSystemDesktop
 
         public static Ticket ParseFromJson(JsonObject ticket)
         {
-            long? ExecutorUserId = null;
-            var Id = ticket["id"].GetValue<long>();
-            var Text = ticket["text"].GetValue<string>();
-            var Date = DateTime.Parse(ticket["date"].GetValue<string>());
-            var DeadlineTime = DateTime.Parse(ticket["deadlineTime"].GetValue<string>());
+            long? executorUserId = null;
+            var id = ticket["id"].GetValue<long>();
+            var text = ticket["text"].GetValue<string>();
+            var date = DateTime.Parse(ticket["date"].GetValue<string>());
+            var deadlineTime = DateTime.Parse(ticket["deadlineTime"].GetValue<string>());
 
             if (ticket.ContainsKey("executorUserId"))
             {
-                ExecutorUserId = ticket["executorUserId"]?.GetValue<long>();
+                executorUserId = ticket["executorUserId"]?.GetValue<long>();
             }
 
-            var ExecutorUserName = ticket["executorUserName"].GetValue<string>();
+            var executorUserName = ticket["executorUserName"].GetValue<string>();
 
-            var FilesList = new List<string>();
+            var filesList = new List<string>();
 
             foreach (var file in ticket["files"].AsArray())
             {
-                FilesList.Add(file.GetValue<string>());
+                filesList.Add(file.GetValue<string>());
             }
 
-            var Files = FilesList.ToArray();
+            var files = filesList.ToArray();
 
-            var SenderCompany = ticket["senderCompany"].GetValue<string>();
-            var SenderId = ticket["senderId"].GetValue<long>();
-            var SenderPhone = ticket["senderPhone"].GetValue<string>();
-            var Status = ticket["status"].GetValue<string>();
-            var TopicName = ticket["topicName"].GetValue<string>();
-            var @Type = ticket["type"].GetValue<int>();
-            var Urgency = ticket["urgency"].GetValue<int>();
-            var UserId = ticket["userId"].GetValue<long>();
-            var UserName = ticket["userName"].GetValue<string>();
+            var senderCompany = ticket["senderCompany"].GetValue<string>();
+            var senderId = ticket["senderId"].GetValue<long>();
+            var senderPhone = ticket["senderPhone"].GetValue<string>();
+            var status = ticket["status"].GetValue<string>();
+            var topicName = ticket["topicName"].GetValue<string>();
+            var type = ticket["type"].GetValue<int>();
+            var urgency = ticket["urgency"].GetValue<int>();
+            var userId = ticket["userId"].GetValue<long>();
+            var userName = ticket["userName"].GetValue<string>();
 
             return new Ticket()
             {
-                Id = Id,
-                Files = Files,
-                Date = Date,
-                DeadlineTime = DeadlineTime,
-                UserId = UserId,
-                UserName = UserName,
-                ExecutorUserId = ExecutorUserId,
-                ExecutorUserName = ExecutorUserName,
-                SenderCompany = SenderCompany,
-                SenderId = SenderId,
-                SenderPhone = SenderPhone,
-                Status = Status,
-                TopicName = TopicName,
-                Text = Text,
-                TicketType = @Type,
-                Urgency = Urgency
+                Id = id,
+                Files = files,
+                Date = date,
+                DeadlineTime = deadlineTime,
+                UserId = userId,
+                UserName = userName,
+                ExecutorUserId = executorUserId,
+                ExecutorUserName = executorUserName,
+                SenderCompany = senderCompany,
+                SenderId = senderId,
+                SenderPhone = senderPhone,
+                Status = status,
+                TopicName = topicName,
+                Text = text,
+                TicketType = type,
+                Urgency = urgency
             };
+        }
+
+
+        public static List<Ticket> ParseArrayFromJson(string response)
+        {
+            List<Ticket> parsed = new List<Ticket>();
+            var array = JsonArray.Parse(response);
+
+            foreach (var t in array.AsArray())
+            {
+                var obj = t.AsObject();
+                parsed.Add(ParseFromJson(obj));
+            }
+
+            return parsed;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

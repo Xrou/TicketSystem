@@ -12,7 +12,7 @@ using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
 {
-    public partial class TicketWindowViewModel : INotifyPropertyChanged
+    public partial class TicketWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         private Ticket ticket;
         private int selectedCommentTab = 0;

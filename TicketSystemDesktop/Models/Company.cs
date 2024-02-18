@@ -9,26 +9,29 @@ using System.Threading.Tasks;
 
 namespace TicketSystemDesktop.Models
 {
-    public class Topic : INotifyPropertyChanged, IDbEntity
+    public class Company : INotifyPropertyChanged, IDbEntity
     {
         private long id;
         private string name;
+        private string shortName;
 
         public long Id { get { return id; } set { id = value; OnPropertyChanged("Id"); } }
         public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
+        public string ShortName { get { return shortName; } set { shortName = value; OnPropertyChanged("ShortName"); } }
 
-        public static Topic ParseFromJson(JsonObject ticket)
+
+        public static Company ParseFromJson(JsonObject companyObject)
         {
-            var Id = ticket["id"]!.GetValue<long>();
-            var Name = ticket["name"]!.GetValue<string>();
+            var id = companyObject["id"].GetValue<long>();
+            var name = companyObject["name"].GetValue<string>();
+            var shortName = companyObject["shortName"].GetValue<string>();
 
-            return new Topic { Id = Id, Name = Name };
+            return new Company() { Id = id, Name = name, ShortName = shortName };
         }
 
-
-        public static List<Topic> ParseArrayFromJson(string response)
+        public static List<Company> ParseArrayFromJson(string response)
         {
-            List<Topic> parsed = new List<Topic>();
+            List<Company> parsed = new List<Company>();
             var array = JsonArray.Parse(response);
 
             foreach (var t in array.AsArray())

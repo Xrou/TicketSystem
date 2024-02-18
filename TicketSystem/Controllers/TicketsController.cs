@@ -95,18 +95,16 @@ namespace TicketSystem.Controllers
             Ticket newTicket = new Ticket() { Type = ticketType, Date = ticketDate, Text = ticket.Text, DeadlineTime = ticketDate + new TimeSpan(3, 0, 0), SenderId = senderId, UserId = ticket.UserId, Urgency = (Urgency)ticket.Urgency, TopicId = ticket.TopicId, StatusId = 1 };
 
             context.Tickets.Add(newTicket);
-
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(); // не удалять, нужно для нормальной работы с айдишниками. сначала сохрани тикет - потом работай с ним
 
             if (ticket.Files != null)
             {
                 foreach (var file in ticket.Files)
                 {
-                    TicketFile ticketFile = new TicketFile() { FileId = file.Id, TicketId = newTicket.Id };
-                    context.TicketFiles.Add(ticketFile);
+                    newTicket.Files.Add(file);
                 }
             }
-
+            
             await context.SaveChangesAsync();
 
             return newTicket;

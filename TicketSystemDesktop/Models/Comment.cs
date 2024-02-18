@@ -46,6 +46,20 @@ namespace TicketSystemDesktop.Models
             return comment;
         }
 
+        public static List<Comment> ParseArrayFromJson(string response)
+        {
+            List<Comment> parsed = new List<Comment>();
+            var array = JsonArray.Parse(response);
+
+            foreach (var t in array.AsArray())
+            {
+                var obj = t.AsObject();
+                parsed.Add(ParseFromJson(obj));
+            }
+
+            return parsed;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

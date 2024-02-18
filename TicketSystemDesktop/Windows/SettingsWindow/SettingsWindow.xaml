@@ -1,0 +1,199 @@
+﻿<Window x:Class="TicketSystemDesktop.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:TicketSystemDesktop"
+        mc:Ignorable="d"
+        Title="SettingsWindows" Height="450" Width="800">
+    <Grid>
+        <TabControl TabStripPlacement="Left" SelectionChanged="TabControl_SelectionChanged" >
+            <TabItem x:Name="AccountTab" Header="Аккаунт" Cursor="Hand">
+                <Grid Background="#FFF0F0F0">
+                    <Label Content="ФИО:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,34,0,0" Text="{Binding User.FullName}" VerticalAlignment="Top" Width="225" IsReadOnly="True"/>
+                    <Label Content="Компания:" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,88,0,0" Text="{Binding User.CompanyName}" VerticalAlignment="Top" Width="225" IsReadOnly="True"/>
+                    <Label Content="Электронная почта:" HorizontalAlignment="Left" Margin="10,113,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,137,0,0" Text="{Binding User.Email}" VerticalAlignment="Top" Width="225" IsReadOnly="True"/>
+                    <Label Content="Номер телефона:" HorizontalAlignment="Left" Margin="10,163,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,187,0,0" Text="{Binding User.PhoneNumber}" VerticalAlignment="Top" Width="225" IsReadOnly="True"/>
+                    <Label Content="Телеграм:" HorizontalAlignment="Left" Margin="10,213,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,237,0,0" Text="{Binding User.TelegramId}" VerticalAlignment="Top" Width="225" IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="UsersTab" Header="Пользователи" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="UsersDataGrid" 
+                        ItemsSource="{Binding Users}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                            <DataGridTextColumn Header="ФИО" Width="1.5*" Binding="{Binding Path=FullName}"/>
+                            <DataGridTextColumn Header="Компания" Width="*" Binding="{Binding Path=CompanyName}"/>
+                            <DataGridTextColumn Header="Почта" Width="*" Binding="{Binding Path=Email}"/>
+                            <DataGridTextColumn Header="Телефон" Width="*" Binding="{Binding Path=PhoneNumber}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="CompaniesTab" Header="Компании" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="CompaniesDataGrid" 
+                        ItemsSource="{Binding Companies}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
+                            <DataGridTextColumn Header="Короткое название" Width="*" Binding="{Binding Path=ShortName}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="UserGroupsTab" Header="Группы" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="UserGroupsDataGrid" 
+                        ItemsSource="{Binding UserGroups}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                            <DataGridTextColumn Header="Название" Width="*" Binding="{Binding Path=Name}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="TopicsTab" Header="Тематики" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="TopicsDataGrid" 
+                        ItemsSource="{Binding Topics}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="StatusesTab" Header="Статусы" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="StatusesDataGrid" 
+                        ItemsSource="{Binding Statuses}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="UserAccessGroupsTab" Header="Права пользователей" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <Button Content="Сохранить" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+                    <DataGrid x:Name="UserRightsDataGrid" 
+                        ItemsSource="{Binding UserAccessGroups}"
+                        IsReadOnly="True"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Disabled" Margin="0,47,0,0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ФИО" Width="*" Binding="{Binding FullName}"/>
+                            <DataGridCheckBoxColumn Header="Пользователь" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Супервайзер" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Линия 1" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Линия 2" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Админ" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Группы пользователей" Cursor="Hand">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Права групп доступа" Cursor="Hand">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

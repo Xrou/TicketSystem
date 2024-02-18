@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using TicketSystemDesktop.Models;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace TicketSystemDesktop
 {
-    public class CreateTicketWindowViewModel : INotifyPropertyChanged
+    public class CreateTicketWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         private string text = "";
         private bool[] urgency = new bool[] { true, false, false };
@@ -72,17 +73,28 @@ namespace TicketSystemDesktop
                         urgencyInt = 2;
                     }
 
-                    var result = HttpClient.Post("api/tickets", new Dictionary<string, object> {
+                    var requestBody = new Dictionary<string, object> {
                         { "userId", LocalStorage.Get("MyId") },
                         { "text", Text },
                         { "urgency", urgencyInt.ToString() },
-                        { "topicId", selectedTopic.Id }
-                    });
+                        { "topicId", selectedTopic.Id },
+                    };
+
+                    if (SelectedFiles.Count() != 0)
+                    {
+                        var filesResult = HttpClient.UploadFile("api/files", SelectedFiles.ToArray());
+                        var uploadedFiles = Models.File.ParseArrayFromJson(filesResult.response);
+                        requestBody.Add("files", uploadedFiles);
+                    }
+
+                    var result = HttpClient.Post("api/tickets", requestBody);
 
                     if (result.code == System.Net.HttpStatusCode.Created)
                     {
+                        Notifications.CallTicketsChanged();
                         WindowInstance.Close();
                     }
+
                 });
             }
         }
@@ -90,17 +102,20 @@ namespace TicketSystemDesktop
         public CreateTicketWindowViewModel(Window window)
         {
             WindowInstance = window;
+            Load();
+        }
+
+        public void Load()
+        {
             var response = HttpClient.Get("api/topics");
 
             if (response.code == System.Net.HttpStatusCode.OK)
             {
-                var array = JsonArray.Parse(response.response);
+                var array = Topic.ParseArrayFromJson(response.response);
 
-                foreach (var c in array.AsArray())
+                foreach (var t in array)
                 {
-                    var comment = c.AsObject();
-
-                    AvailableTopics.Add(Topic.ParseFromJson(comment));
+                    AvailableTopics.Add(t);
                 }
             }
 

@@ -12,6 +12,11 @@ namespace TicketSystemDesktop
 {
     public partial class TicketWindowViewModel
     {
+        public void Load()
+        {
+            LoadComments();
+        }
+
         public void LoadComments()
         {
             StandardComments.Clear();
@@ -22,13 +27,10 @@ namespace TicketSystemDesktop
 
             if (response.code == System.Net.HttpStatusCode.OK)
             {
-                var array = JsonArray.Parse(response.response);
-
-                foreach (var c in array.AsArray())
+                var comments = Comment.ParseArrayFromJson(response.response);
+                foreach(var c in comments)
                 {
-                    var comment = c.AsObject();
-
-                    StandardComments.Add(Comment.ParseFromJson(comment));
+                    StandardComments.Add(c);
                 }
             }
 
@@ -36,13 +38,10 @@ namespace TicketSystemDesktop
 
             if (response.code == System.Net.HttpStatusCode.OK)
             {
-                var array = JsonArray.Parse(response.response);
-
-                foreach (var c in array.AsArray())
+                var comments = Comment.ParseArrayFromJson(response.response);
+                foreach (var c in comments)
                 {
-                    var comment = c.AsObject();
-
-                    OfficialComments.Add(Comment.ParseFromJson(comment));
+                    OfficialComments.Add(c);
                 }
             }
 
@@ -50,13 +49,10 @@ namespace TicketSystemDesktop
 
             if (response.code == System.Net.HttpStatusCode.OK)
             {
-                var array = JsonArray.Parse(response.response);
-
-                foreach (var c in array.AsArray())
+                var comments = Comment.ParseArrayFromJson(response.response);
+                foreach (var c in comments)
                 {
-                    var comment = c.AsObject();
-
-                    ServiceComments.Add(Comment.ParseFromJson(comment));
+                    ServiceComments.Add(c);
                 }
             }
         }

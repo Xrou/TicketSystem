@@ -59,5 +59,25 @@ namespace TicketSystemDesktop
 
             return (response.Content, response.StatusCode);
         }
+
+        public static (string? response, HttpStatusCode code) UploadFile(string url, string[] filesPaths, bool auth = true)
+        {
+            var options = new RestClientOptions(Constants.BaseUrl);
+            var client = new RestClient(options);
+            var request = new RestRequest(url, Method.Post);
+
+            if (auth)
+            {
+                request.AddHeader("Authorization", "Bearer " + LocalStorage.Get("AccessToken"));
+            }
+            request.AlwaysMultipartFormData = true;
+            foreach (var filePath in filesPaths)
+            {
+                request.AddFile("uploadedFiles", filePath);
+            }
+            RestResponse response = client.ExecuteAsync(request).Result;
+
+            return (response.Content, response.StatusCode);
+        }
     }
 }

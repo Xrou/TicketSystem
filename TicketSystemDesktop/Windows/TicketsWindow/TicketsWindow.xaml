@@ -7,8 +7,13 @@
         xmlns:local="clr-namespace:TicketSystemDesktop"
         mc:Ignorable="d"
         Title="TicketsWindow" SizeToContent="WidthAndHeight">
-    <Grid Width="800" Height="600">
+    <Window.Resources>
+        <Image x:Key="SettingsIcon" Source="/Resources/SettingsIcon.png"/>
+    </Window.Resources>
+    <Grid Width="800" Height="600" Cursor="">
         <Button Command="{Binding OpenCreateTicketWindowCommand}" Content="Создать заявку" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Button Command="{Binding OpenSettingsWindowCommand}" Content="Настройки" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+
         <DataGrid x:Name="TicketsDataGrid"
                   Margin="0,214,0,0"
                   ItemsSource="{Binding Tickets}"

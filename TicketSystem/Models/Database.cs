@@ -22,7 +22,6 @@ namespace TicketSystem.Models
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<File> Files { get; set; }
-        public DbSet<TicketFile> TicketFiles { get; set; }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
