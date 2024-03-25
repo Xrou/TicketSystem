@@ -41,7 +41,10 @@ namespace TicketSystem.Controllers
             foreach (string groupId in groupIds)
             {
                 Dictionary<string, string> dictObj = jsonObj[groupId].ToObject<Dictionary<string, string>>();
-                AccessGroup accessGroup = context.AccessGroups.Single(x => x.Id == long.Parse(groupId));
+                AccessGroup? accessGroup = context.AccessGroups.SingleOrDefault(x => x.Id == long.Parse(groupId));
+
+                if (accessGroup == null)
+                    continue;
 
                 foreach (var key in dictObj.Keys)
                 {

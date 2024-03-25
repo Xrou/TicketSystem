@@ -32,6 +32,21 @@ namespace TicketSystemDesktop
             }
         }
 
+        public RelayCommand UsersListDoubleClickCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    var user = obj as User;
+
+                    EditUserWindow editUserWindow = new EditUserWindow(user);
+                    editUserWindow.ShowDialog();
+                });
+            }
+        }
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

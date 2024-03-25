@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.JavaScript;
@@ -30,7 +31,9 @@ namespace TicketSystem.Controllers
 
         // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<List<SendTicket>>> GetTicketItems()
+        public async Task<ActionResult<List<SendTicket>>> GetTicketItems(
+            long? ticketId = null, long? topicId = null, long? senderUserId = null,
+            long? executorUserId = null, long? companyId = null, string? filterText = null)
         {
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
 
@@ -39,15 +42,31 @@ namespace TicketSystem.Controllers
                 return Problem("No user instance", statusCode: 500);
             }
 
-            List<SendTicket> tickets = new List<SendTicket>();
+            IQueryable<Ticket> tickets = context.Tickets;
 
-            foreach (var ticket in context.Tickets.OrderByDescending(t => t.Id))
+            if (ticketId != null)
             {
-                if (InternalActions.CanUserAccessTicket(user, ticket))
-                    tickets.Add(ticket.ToSend());
+                tickets = tickets.Where(x => x.Id == ticketId);
+            }
+            else
+            {
+                if (topicId != null)
+                    tickets = tickets.Where(x => x.TopicId == topicId);
+
+                if (senderUserId != null)
+                    tickets = tickets.Where(x => x.SenderUser.Id == senderUserId);
+
+                if (executorUserId != null)
+                    tickets = tickets.Where(x => x.ExecutorId == executorUserId);
+
+                if (companyId != null)
+                    tickets = tickets.Where(x => x.SenderUser.CompanyId == companyId);
+
+                if (filterText != null)
+                    tickets = tickets.Where(x => x.Text.ToLower().Contains(filterText));
             }
 
-            return tickets;
+            return tickets.ToList().Where(x => InternalActions.CanUserAccessTicket(user, x)).Select(x => x.ToSend()).OrderByDescending(x => x.Id).ToList();
         }
 
         // GET: api/Tickets/5
@@ -104,7 +123,7 @@ namespace TicketSystem.Controllers
                     newTicket.Files.Add(file);
                 }
             }
-            
+
             await context.SaveChangesAsync();
 
             return newTicket;

@@ -17,6 +17,8 @@ namespace TicketSystemDesktop.Models
         public long Id { get { return id; } set { id = value; OnPropertyChanged("Id"); } }
         public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
 
+        public object MainParameter { get { return name; } }
+
         public static Status ParseFromJson(JsonObject parseObject)
         {
             var id = parseObject["id"].GetValue<long>();

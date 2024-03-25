@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace TicketSystemDesktop.Models
 {
@@ -115,6 +116,8 @@ namespace TicketSystemDesktop.Models
                 OnPropertyChanged("TelegramId");
             }
         }
+
+        public object MainParameter { get { return fullName; } }
 
         public static User ParseFromJson(JsonObject user)
         {

@@ -29,7 +29,8 @@ namespace TicketSystemDesktop
         public TicketWindowViewModel(Ticket ticket)
         {
             Ticket = ticket;
-            LoadComments();
+            DeadlineDateTime = (DateTime)Ticket.DeadlineTime!;
+            Load();
         }
 
         public RelayCommand SendCommentCommand

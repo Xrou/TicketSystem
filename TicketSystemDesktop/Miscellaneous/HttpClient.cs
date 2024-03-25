@@ -47,7 +47,7 @@ namespace TicketSystemDesktop
             {
                 foreach (var parameter in parameters)
                 {
-                    request.AddParameter(parameter.Key, parameter.Value.ToString());
+                    request.AddParameter(parameter.Key, parameter.Value?.ToString());
                 }
             }
             if (auth)

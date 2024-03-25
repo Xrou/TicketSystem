@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop.Models
@@ -163,6 +164,9 @@ namespace TicketSystemDesktop.Models
             }
             set { files = value; OnPropertyChanged("Files"); }
         }
+
+        public object MainParameter { get { return Text; } }
+
 
         public static Ticket ParseFromJson(JsonObject ticket)
         {

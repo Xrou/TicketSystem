@@ -19,6 +19,7 @@ namespace TicketSystemDesktop.Models
         public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
         public string ShortName { get { return shortName; } set { shortName = value; OnPropertyChanged("ShortName"); } }
 
+        public object MainParameter { get { return name; } }
 
         public static Company ParseFromJson(JsonObject companyObject)
         {

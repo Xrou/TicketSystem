@@ -14,7 +14,23 @@ namespace TicketSystemDesktop
     {
         public void Load()
         {
+            LoadTicket();
             LoadComments();
+        }
+
+        public void LoadTicket()
+        {
+            var response = HttpClient.Get($"api/tickets/{Ticket.Id}");
+        
+            if (response.code == System.Net.HttpStatusCode.OK)
+            {
+                var ticketObject = JsonNode.Parse(response.response).AsObject();
+
+                Ticket = Ticket.ParseFromJson(ticketObject);
+
+                ItsMyTicket = Ticket.ExecutorUserId == long.Parse(LocalStorage.Get("MyId")!.ToString());
+                IsTicketClosed = Ticket.Status == "Завершена";
+            }
         }
 
         public void LoadComments()

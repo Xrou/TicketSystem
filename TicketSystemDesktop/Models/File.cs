@@ -12,6 +12,8 @@ namespace TicketSystemDesktop.Models
         public long Id { get; set; }
         public string Path { get; set; }
 
+        public object MainParameter { get { return Path; } }
+
         public static File ParseFromJson(JsonObject parseObject)
         {
             File file = new File();

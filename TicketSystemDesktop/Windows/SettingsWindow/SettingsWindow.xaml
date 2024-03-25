@@ -39,7 +39,7 @@
                         HorizontalScrollBarVisibility="Disabled">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDoubleClick">
-                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                                <i:InvokeCommandAction Command="{Binding UsersListDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
@@ -159,10 +159,9 @@
             </TabItem>
             <TabItem x:Name="UserAccessGroupsTab" Header="Права пользователей" Cursor="Hand">
                 <Grid Background="#FFE5E5E5">
-                    <Button Content="Сохранить" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+                    <Button Command="{Binding SaveUserAccessGroupsCommand}" Content="Сохранить" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
                     <DataGrid x:Name="UserRightsDataGrid" 
-                        ItemsSource="{Binding UserAccessGroups}"
-                        IsReadOnly="True"
+                        ItemsSource="{Binding UserAccessGroups, Mode=TwoWay}"
                         SelectionUnit="FullRow"
                         AutoGenerateColumns="False"
                         HeadersVisibility="Column"
@@ -178,21 +177,56 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ФИО" Width="*" Binding="{Binding FullName}"/>
-                            <DataGridCheckBoxColumn Header="Пользователь" Width="100"/>
-                            <DataGridCheckBoxColumn Header="Супервайзер" Width="100"/>
-                            <DataGridCheckBoxColumn Header="Линия 1" Width="100"/>
-                            <DataGridCheckBoxColumn Header="Линия 2" Width="100"/>
-                            <DataGridCheckBoxColumn Header="Админ" Width="100"/>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*" IsReadOnly="True"/>
+                            <DataGridCheckBoxColumn Header="Пользователь" Binding="{Binding IsUserAccessGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Супервайзер" Binding="{Binding IsSupervisorAccessGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Линия 1" Binding="{Binding IsLine1AccessGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Линия 2" Binding="{Binding IsLine2AccessGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <DataGridCheckBoxColumn Header="Админ" Binding="{Binding IsAdminAccessGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Группы пользователей" Cursor="Hand">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-            <TabItem Header="Права групп доступа" Cursor="Hand">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem x:Name="AccessGropusRightsTab" Header="Права групп доступа" Cursor="Hand">
+                <Grid Background="#FFE5E5E5">
+                    <Button Command="{Binding SaveUserAccessGroupsCommand}" Content="Сохранить" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+                    <DataGrid x:Name="AccessGroupsRights" 
+                        ItemsSource="{Binding AccessGroups, Mode=TwoWay}"
+                        SelectionUnit="FullRow"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserDeleteRows="False"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        SelectionMode="Single"
+                        FrozenColumnCount="1"
+                        HorizontalScrollBarVisibility="Visible" Margin="0,47,0,0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <!--<i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>-->
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="100"/>
+                            <DataGridCheckBoxColumn Header="canSubscribe" Binding="{Binding CanSubscribe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSeeHisTickets" Binding="{Binding CanSeeHisTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSeeCompanyTickets" Binding="{Binding CanSeeCompanyTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSeeAllTickets" Binding="{Binding CanSeeAllTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canEditTickets" Binding="{Binding CanEditTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canDeleteTickets" Binding="{Binding CanDeleteTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSeeServiceComments" Binding="{Binding CanSeeServiceComments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canRegisterUsers" Binding="{Binding CanRegisterUsers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSelectTopic" Binding="{Binding CanSelectTopic, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canEditUsers" Binding="{Binding CanEditUsers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canSelectUrgency" Binding="{Binding CanSelectUrgency, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canTakeTickets" Binding="{Binding CanTakeTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canAssignTickets" Binding="{Binding CanAssignTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canFinishTickets" Binding="{Binding CanFinishTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridCheckBoxColumn Header="canMoveTickets" Binding="{Binding CanMoveTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>                  
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

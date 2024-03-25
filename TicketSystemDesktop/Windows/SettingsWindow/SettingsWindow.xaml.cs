@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TicketSystemDesktop;
 
 namespace TicketSystemDesktop
 {
@@ -30,6 +31,7 @@ namespace TicketSystemDesktop
             TopicsTab.DataContext = new SettingsWindowTopicViewModel();
             StatusesTab.DataContext = new SettingsWindowStatusesViewModel();
             UserAccessGroupsTab.DataContext = new SettingsWindowUserRightsViewModel();
+            AccessGropusRightsTab.DataContext = new SettingsWindowAccessGroupRightsViewModel();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,7 +17,7 @@ namespace TicketSystemDesktop
     public partial class TicketsWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         public ObservableCollection<Ticket> Tickets { get; set; } = new ObservableCollection<Ticket>();
-
+            
         public RelayCommand MouseDoubleClickCommand
         {
             get
@@ -26,7 +27,7 @@ namespace TicketSystemDesktop
                     var ticket = obj as Ticket;
 
                     TicketWindow window = new TicketWindow(ticket);
-                    window.Show();
+                    window.ShowDialog();
                 });
             }
         }

@@ -10,6 +10,7 @@ namespace TicketSystemDesktop.Models
     public interface IDbEntity
     {
         public long Id { get; }
+        public object MainParameter { get; }
 
         public static IDbEntity ParseFromJson(JsonObject parseObject)
         {

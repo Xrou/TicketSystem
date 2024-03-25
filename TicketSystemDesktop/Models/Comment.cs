@@ -20,7 +20,7 @@ namespace TicketSystemDesktop.Models
         private string userName;
         private string fullName;
         private int commentTypeInt;
-        
+
         public long Id { get { return id; } set { id = value; OnPropertyChanged("Id"); } }
         public string Text { get { return text; } set { text = value; OnPropertyChanged("Text"); } }
         public DateTime Date { get { return date; } set { date = value; OnPropertyChanged("Date"); } }
@@ -30,10 +30,12 @@ namespace TicketSystemDesktop.Models
         public string FullName { get { return fullName; } set { fullName = value; OnPropertyChanged("FullName"); } }
         public int CommentTypeInt { get { return commentTypeInt; } set { commentTypeInt = value; OnPropertyChanged("CommentTypeInt"); } }
 
+        public object MainParameter { get { return text; } }
+
         public static Comment ParseFromJson(JsonObject parseObject)
         {
             Comment comment = new Comment();
-            
+
             comment.Id = parseObject["id"]!.GetValue<long>();
             comment.Text = parseObject["text"]!.GetValue<string>();
             comment.Date = parseObject["date"]!.GetValue<DateTime>();
