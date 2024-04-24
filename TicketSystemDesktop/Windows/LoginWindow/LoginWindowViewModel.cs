@@ -23,7 +23,7 @@ namespace TicketSystemDesktop
         {
             this.WindowInstance = window;
             // only debug
-            /*
+            
             var result = HttpClient.Post("api/users/login",
                         new Dictionary<string, object>() {
                             { "login", "SuperAdmin" },
@@ -42,7 +42,7 @@ namespace TicketSystemDesktop
                 newWindow.Show();
 
                 WindowInstance.Close();
-            }*/
+            }
         }
 
         private string username;
@@ -95,6 +95,19 @@ namespace TicketSystemDesktop
                     {
                         IncorrectAuthVisible = Visibility.Visible;
                     }
+                });
+            }
+        }
+
+        public RelayCommand RegistrationCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                   
+                    RegistrationWindow window = new RegistrationWindow();
+                    window.ShowDialog();
                 });
             }
         }

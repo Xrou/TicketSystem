@@ -8,7 +8,7 @@
         xmlns:converters="clr-namespace:TicketSystemDesktop.Miscellaneous.Converters"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="TicketsWindow" MinWidth="810" MinHeight="630" Width="810" Height="630">
+        Title="TicketsWindow" MinWidth="950" MinHeight="630">
     <Window.Resources>
         <ControlTemplate x:Key="ValidationFailedTemplate">
             <StackPanel Orientation="Horizontal">
@@ -19,70 +19,77 @@
         </ControlTemplate>
         <converters:StringToNumberConverter x:Key="StringToNumberConverter"/>
     </Window.Resources>
-    <Grid>
-        <Button Command="{Binding OpenCreateTicketWindowCommand}" Content="Создать заявку" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <Button Command="{Binding OpenSettingsWindowCommand}" Content="Настройки" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+    <Grid MinWidth="950" MinHeight="630">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="150" Width="*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
 
-        <WrapPanel Orientation="Horizontal" Margin="10,57,10,432">
-            <WrapPanel.Resources>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Setter Property="Margin" Value="0,0,10,0"/>
-                    <Setter Property="MinHeight" Value="49"/>
-                </Style>
-            </WrapPanel.Resources>
-            <StackPanel>
-                <Label Content="Компания"/>
-                <ComboBox SelectedItem="{Binding FilterCompany}" ItemsSource="{Binding FilterCompanies}" DisplayMemberPath="Name" Width="120"/>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="Тематика"/>
-                <ComboBox SelectedItem="{Binding FilterTopic}" ItemsSource="{Binding FilterTopics}" DisplayMemberPath="Name" Width="120"/>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="Отправитель"/>
-                <TextBox IsReadOnly="True" Text="{Binding FilterSenderUser.FullName, Mode=TwoWay}" Width="300">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding SelectSenderCommand}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="Исполнитель"/>
-                <TextBox IsReadOnly="True" Text="{Binding FilterExecutorUser.FullName, Mode=TwoWay}" Width="300">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding SelectExecutorCommand}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="Текст"/>
-                <TextBox Text="{Binding FilterText, Mode=TwoWay}" Width="250"/>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="Номер заявки"/>
-                <TextBox Width="100" Validation.ErrorTemplate="{StaticResource ValidationFailedTemplate}">
-                    <TextBox.Text>
-                        <Binding Path="FilterId" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource StringToNumberConverter}">
-                            <Binding.ValidationRules>
-                                <ExceptionValidationRule/>
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                    
-                </TextBox>
-            </StackPanel>
+        <StackPanel Margin="10,10,10,0" Height="50" VerticalAlignment="Top">
+            <Label Content="Компания"/>
+            <ComboBox SelectedItem="{Binding FilterCompany}" ItemsSource="{Binding FilterCompanies}" DisplayMemberPath="Name" MinWidth="133"/>
+        </StackPanel>
+        <StackPanel Height="50" VerticalAlignment="Top" Margin="10,60,10,0" >
+            <Label Content="Тематика"/>
+            <ComboBox SelectedItem="{Binding FilterTopic}" ItemsSource="{Binding FilterTopics}" DisplayMemberPath="Name" MinWidth="133"/>
+        </StackPanel>
+        <StackPanel Height="50" Margin="10,120,10,0" VerticalAlignment="Top" >
+            <Label Content="Статус"/>
+            <ComboBox SelectedItem="{Binding FilterStatus}" ItemsSource="{Binding FilterStatuses}" DisplayMemberPath="Name" MinWidth="133"/>
+        </StackPanel>
+        <StackPanel Height="50" Margin="10,180,10,0" VerticalAlignment="Top">
+            <Label Content="Отправитель"/>
+            <TextBox IsReadOnly="True" Text="{Binding FilterSenderUser.FullName, Mode=TwoWay}" MinWidth="133">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding SelectSenderCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+        </StackPanel>
+        <StackPanel Height="50" Margin="10,240,10,0" VerticalAlignment="Top">
+            <Label Content="Исполнитель"/>
+            <TextBox IsReadOnly="True" Text="{Binding FilterExecutorUser.FullName, Mode=TwoWay}" MinWidth="133">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding SelectExecutorCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+        </StackPanel>
+        <StackPanel Margin="10,300,10,0" Height="53" VerticalAlignment="Top">
+            <Label Content="Текст"/>
+            <TextBox Text="{Binding FilterText, Mode=TwoWay}" MinWidth="133"/>
+        </StackPanel>
+        <StackPanel Margin="10,360,10,0" VerticalAlignment="Top">
+            <Label Content="Номер заявки"/>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationFailedTemplate}" MinWidth="133">
+                <TextBox.Text>
+                    <Binding Path="FilterId" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource StringToNumberConverter}">
+                        <Binding.ValidationRules>
+                            <ExceptionValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </StackPanel>
 
-        </WrapPanel>
+        <Button Command="{Binding ClearFilters}" Content="Сброс" Margin="10,414,10,0" VerticalAlignment="Top"/>
+        <Button Command="{Binding ApplyFilters}" Content="Поиск" Margin="10,451,10,0" VerticalAlignment="Top" Height="32"/>
 
-        <Button Command="{Binding ClearFilters}" Content="Сброс" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top"/>
-        <Button Command="{Binding ApplyFilters}" Content="Поиск" HorizontalAlignment="Left" Margin="87,177,0,0" VerticalAlignment="Top"/>
-
+        <Button Command="{Binding OpenCreateTicketWindowCommand}" Content="Создать заявку" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="32" Width="132" Grid.Column="1"/>
+        <Button Command="{Binding OpenSettingsWindowCommand}" Content="Настройки" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Height="32" Width="103" Grid.Column="1"/>
+       
+        <Button Command="{Binding PageLeftCommand}" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="15" Height="24" Grid.Column="1">
+            <TextBlock Margin="-14,-3,0,0" Height="23">&lt;</TextBlock>
+        </Button>
+        <TextBox HorizontalAlignment="Left" Margin="28,64,0,0" Text="{Binding PageNumber, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="24" TextAlignment="Center" Grid.Column="1"/>
+        <Button Command="{Binding PageRightCommand}" HorizontalAlignment="Left" Margin="54,64,0,0" VerticalAlignment="Top" Width="15" Height="24" Grid.Column="1">
+            <TextBlock Margin="-14,-3,0,0" Height="23">></TextBlock>
+        </Button>
+        
         <DataGrid x:Name="TicketsDataGrid"
-                  Margin="0,214,0,0"
+                  Margin="10,93,10,10"
                   ItemsSource="{Binding Tickets}"
                   IsReadOnly="True"
                   SelectionUnit="FullRow"
@@ -92,7 +99,7 @@
                   CanUserAddRows="False"
                   CanUserReorderColumns="False"
                   CanUserResizeRows="False"
-                  SelectionMode="Single">
+                  SelectionMode="Single" Grid.Column="1">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding SelectedItem, ElementName=TicketsDataGrid}"/>
@@ -108,6 +115,7 @@
                 <DataGridTextColumn Header="Дата" Width="*" Binding="{Binding Date}"/>
             </DataGrid.Columns>
         </DataGrid>
+
 
     </Grid>
 </Window>

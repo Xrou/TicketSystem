@@ -8,6 +8,6 @@ namespace TicketSystemDesktop
 {
     public static class Constants
     {
-        public static readonly string BaseUrl = "http://localhost";
+        public static readonly string BaseUrl = "http://localhost/";
     }
 }

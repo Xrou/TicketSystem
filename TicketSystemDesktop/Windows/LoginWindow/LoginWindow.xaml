@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TicketSystemDesktop"
         mc:Ignorable="d"
         Title="LoginWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
-    <Grid Width="200" Height="200">
+    <Grid Width="200" Height="250">
         <Label Content="Авторизация" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
         <Label Content="Логин" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
         <TextBox Margin="59,45,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Username}"/>
@@ -14,6 +14,7 @@
         <TextBox Margin="59,76,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding Password}"/>
 
         <Button Content="Авторизация" HorizontalAlignment="Center" Margin="0,103,0,0" VerticalAlignment="Top" Command="{Binding AuthorizeCommand}" Width="180"/>
-        <Label Content="Неверно введены&#xD;&#xA;логин или пароль" Visibility="{Binding IncorrectAuthVisible}" HorizontalAlignment="Center" Margin="0,128,0,0" VerticalAlignment="Top" Height="48" FontSize="14"/>
+        <Label Content="Неверно введены&#xD;&#xA;логин или пароль" Visibility="{Binding IncorrectAuthVisible}" HorizontalAlignment="Center" Margin="0,140,0,0" VerticalAlignment="Top" Height="48" FontSize="14"/>
+        <Button Content="или регистрация" Command="{Binding RegistrationCommand}" HorizontalAlignment="Center" Margin="0,208,0,0" VerticalAlignment="Top" Width="180"/>
     </Grid>
 </Window>

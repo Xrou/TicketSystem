@@ -28,6 +28,8 @@ namespace TicketSystemDesktop
 
                 Ticket = Ticket.ParseFromJson(ticketObject);
 
+                IsRegisterTicket = Ticket.TicketType == 2;
+
                 ItsMyTicket = Ticket.ExecutorUserId == long.Parse(LocalStorage.Get("MyId")!.ToString());
                 IsTicketClosed = Ticket.Status == "Завершена";
             }

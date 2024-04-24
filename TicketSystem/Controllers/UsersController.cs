@@ -270,16 +270,32 @@ namespace TicketSystem.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SendUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<SendUser>>> GetUsers(int? page, string? login = null, 
+            string? phone = null, string? pcName = null, long? companyId = null)
         {
-            List<SendUser> sendUsers = new List<SendUser>();
-
-            foreach (var user in context.Users)
+            if (page <= 0)
             {
-                sendUsers.Add(user.ToSend());
+                return BadRequest("Page must be positive number");
             }
 
-            return sendUsers;
+            IQueryable<User> users = context.Users;
+
+            if (page == null)
+                page = 1;
+
+            if (login != null)
+                users = users.Where(x => x.Name == login);
+
+            if (phone != null)
+                users = users.Where(x => x.PhoneNumber == phone);
+
+            //if (pcName != null)
+            //    users.Where(x => x.PCName == pcName);
+
+            if (companyId != null)
+                users = users.Where(x => x.Company.Id == companyId);
+
+            return users.Select(x => x.ToSend()).Page((int)page, 5).ToList();
         }
 
         // POST: api/Users/getFilteredUsers

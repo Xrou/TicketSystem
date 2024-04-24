@@ -14,12 +14,46 @@ namespace TicketSystemDesktop
     public class SettingsWindowUsersListViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         public ObservableCollection<User> Users { get; set; } = new ObservableCollection<User>();
+        public ObservableCollection<Company> AvailableCompanies { get; set; } = new ObservableCollection<Company>();
 
-        public void Load()
+        private string? filterLogin;
+        public string? FilterLogin { get { return filterLogin; } set { filterLogin = value; OnPropertyChanged("FilterLogin"); } }
+
+        private string? filterPhone;
+        public string? FilterPhone { get { return filterPhone; } set { filterPhone = value; OnPropertyChanged("FilterPhone"); } }
+
+        private string? filterPCName;
+        public string? FilterPCName { get { return filterPCName; } set { filterPCName = value; OnPropertyChanged("FilterPCName"); } }
+
+        private Company? filterCompany;
+        public Company? FilterCompany { get { return filterCompany; } set { filterCompany = value; OnPropertyChanged("FilterCompany"); } }
+
+        private int pageNumber = 1;
+        public int PageNumber
+        {
+            get { return pageNumber; }
+            set
+            {
+                if (value > 0)
+                {
+                    pageNumber = value;
+                    LoadUsers();
+                    OnPropertyChanged("PageNumber");
+                }
+            }
+        }
+
+        private void LoadUsers()
         {
             Users.Clear();
-         
-            var response = HttpClient.Get("api/users");
+
+            var response = HttpClient.Get("api/users", new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("page", pageNumber),
+                new KeyValuePair<string, object>("login", filterLogin),
+                new KeyValuePair<string, object>("phone", filterPhone),
+                new KeyValuePair<string, object>("companyId", FilterCompany?.Id),
+            });
 
             if (response.code == System.Net.HttpStatusCode.OK)
             {
@@ -28,6 +62,26 @@ namespace TicketSystemDesktop
                 foreach (var u in array)
                 {
                     Users.Add(u);
+                }
+            }
+
+        }
+
+        public void Load()
+        {
+            LoadUsers();
+
+            AvailableCompanies.Clear();
+
+            var response = HttpClient.Get("api/companies");
+
+            if (response.code == System.Net.HttpStatusCode.OK)
+            {
+                var array = Company.ParseArrayFromJson(response.response);
+
+                foreach (var c in array)
+                {
+                    AvailableCompanies.Add(c);
                 }
             }
         }
@@ -42,6 +96,54 @@ namespace TicketSystemDesktop
 
                     EditUserWindow editUserWindow = new EditUserWindow(user);
                     editUserWindow.ShowDialog();
+                });
+            }
+        }
+
+        public RelayCommand ClearFiltersCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    FilterCompany = null;
+                    FilterLogin = null;
+                    FilterPCName = null;
+                    FilterPhone = null;
+                    LoadUsers();
+                });
+            }
+        }
+
+        public RelayCommand ApplyFiltersCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    LoadUsers();
+                });
+            }
+        }
+
+        public RelayCommand PageRightCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    PageNumber++;
+                });
+            }
+        }
+
+        public RelayCommand PageLeftCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    PageNumber--;
                 });
             }
         }

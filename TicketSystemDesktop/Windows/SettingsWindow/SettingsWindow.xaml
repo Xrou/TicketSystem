@@ -1,12 +1,12 @@
-﻿<Window x:Class="TicketSystemDesktop.SettingsWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:TicketSystemDesktop"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="TicketSystemDesktop.SettingsWindow"
         mc:Ignorable="d"
-        Title="SettingsWindows" Height="450" Width="800">
+        Title="SettingsWindows" MinHeight="400" MinWidth="700" Height="450" Width="800">
     <Grid>
         <TabControl TabStripPlacement="Left" SelectionChanged="TabControl_SelectionChanged" >
             <TabItem x:Name="AccountTab" Header="Аккаунт" Cursor="Hand">
@@ -24,7 +24,37 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="UsersTab" Header="Пользователи" Cursor="Hand">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
+                    <WrapPanel Margin="10,10,10,0" Height="64" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Логин"/>
+                            <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterLogin}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Телефон"/>
+                            <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterPhone}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Имя компьютера"/>
+                            <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterPCName}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Компания"/>
+                            <ComboBox Margin="10,0,0,0" ItemsSource="{Binding AvailableCompanies}" SelectedItem="{Binding FilterCompany, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" Width="120"/>
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <Button Command="{Binding PageLeftCommand}" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="15" Height="24">
+                        <TextBlock Margin="-14,-3,0,0" Height="23">&lt;</TextBlock>
+                    </Button>
+                    <TextBox HorizontalAlignment="Left" Margin="27,102,0,0" Text="{Binding PageNumber, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="24" TextAlignment="Center"/>
+                    <Button Command="{Binding PageRightCommand}" HorizontalAlignment="Left" Margin="54,103,0,0" VerticalAlignment="Top" Width="15" Height="24">
+                        <TextBlock Margin="-14,-3,0,0" Height="23">></TextBlock>
+                    </Button>
+
+                    <Button Command="{Binding ClearFiltersCommand}" Content="Сброс" Margin="0,79,106,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="89"/>
+                    <Button Command="{Binding ApplyFiltersCommand}" Content="Фильтр" Margin="0,79,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="90"/>
+
                     <DataGrid x:Name="UsersDataGrid" 
                         ItemsSource="{Binding Users}"
                         IsReadOnly="True"
@@ -36,20 +66,21 @@
                         CanUserReorderColumns="False"
                         CanUserResizeRows="False"
                         SelectionMode="Single"
-                        HorizontalScrollBarVisibility="Disabled">
+                        HorizontalScrollBarVisibility="Disabled" Cursor="Hand" Margin="0,128,0,0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDoubleClick">
-                                <i:InvokeCommandAction Command="{Binding UsersListDoubleClickCommand}" CommandParameter="{Binding ElementName=UsersDataGrid, Path=SelectedItem}"/>
+                                <i:InvokeCommandAction Command="{Binding UsersListDoubleClickCommand}" CommandParameter="{Binding SelectedItem, ElementName=UsersDataGrid}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
-                            <DataGridTextColumn Header="ФИО" Width="1.5*" Binding="{Binding Path=FullName}"/>
-                            <DataGridTextColumn Header="Компания" Width="*" Binding="{Binding Path=CompanyName}"/>
-                            <DataGridTextColumn Header="Почта" Width="*" Binding="{Binding Path=Email}"/>
-                            <DataGridTextColumn Header="Телефон" Width="*" Binding="{Binding Path=PhoneNumber}"/>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Id}"/>
+                            <DataGridTextColumn Header="ФИО" Width="1.5*" Binding="{Binding FullName}"/>
+                            <DataGridTextColumn Header="Компания" Width="*" Binding="{Binding CompanyName}"/>
+                            <DataGridTextColumn Header="Почта" Width="*" Binding="{Binding Email}"/>
+                            <DataGridTextColumn Header="Телефон" Width="*" Binding="{Binding PhoneNumber}"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    
                 </Grid>
             </TabItem>
             <TabItem x:Name="CompaniesTab" Header="Компании" Cursor="Hand">
@@ -72,9 +103,9 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
-                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
-                            <DataGridTextColumn Header="Короткое название" Width="*" Binding="{Binding Path=ShortName}"/>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Короткое название" Width="*" Binding="{Binding ShortName}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -99,8 +130,8 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
-                            <DataGridTextColumn Header="Название" Width="*" Binding="{Binding Path=Name}"/>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Id}"/>
+                            <DataGridTextColumn Header="Название" Width="*" Binding="{Binding Name}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -125,8 +156,8 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
-                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Name}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -151,8 +182,8 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Path=Id}"/>
-                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Path=Name}"/>
+                            <DataGridTextColumn Header="№" Width="75" Binding="{Binding Id}"/>
+                            <DataGridTextColumn Header="Название" Width="1.5*" Binding="{Binding Name}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -223,7 +254,7 @@
                             <DataGridCheckBoxColumn Header="canTakeTickets" Binding="{Binding CanTakeTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridCheckBoxColumn Header="canAssignTickets" Binding="{Binding CanAssignTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridCheckBoxColumn Header="canFinishTickets" Binding="{Binding CanFinishTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridCheckBoxColumn Header="canMoveTickets" Binding="{Binding CanMoveTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>                  
+                            <DataGridCheckBoxColumn Header="canMoveTickets" Binding="{Binding CanMoveTickets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

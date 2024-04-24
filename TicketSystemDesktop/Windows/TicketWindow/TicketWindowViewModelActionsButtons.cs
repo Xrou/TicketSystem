@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,9 @@ namespace TicketSystemDesktop
         private bool iSubscribedToTicket = false;
         public bool ISubscribedToTicket { get { return iSubscribedToTicket & isTicketOpen; } set { iSubscribedToTicket = value; OnPropertyChanged("ISubscribedToTicket"); OnPropertyChanged("INotSubscribedToTicket"); } }
         public bool INotSubscribedToTicket { get { return !iSubscribedToTicket & isTicketOpen; } set { iSubscribedToTicket = !value; OnPropertyChanged("ISubscribedToTicket"); OnPropertyChanged("INotSubscribedToTicket"); } }
+
+        private bool isRegisterTicket;
+        public bool IsRegisterTicket { get { return itsMyTicket & isTicketOpen & isRegisterTicket; } set { isRegisterTicket = value; OnPropertyChanged("isRegisterTicket"); } }
 
         private DateTime deadlineDateTime;
         public DateTime DeadlineDateTime { get { return deadlineDateTime; } set { deadlineDateTime = value; OnPropertyChanged("DeadlineDateTime"); } }
@@ -122,6 +126,23 @@ namespace TicketSystemDesktop
                 return new RelayCommand(obj =>
                 {
                     CloseTicketWindow window = new CloseTicketWindow(Ticket.Id);
+                    window.ShowDialog();
+
+                    if (window.GetResult())
+                    {
+                        Load();
+                    }
+                });
+            }
+        }
+
+        public RelayCommand RegisterUser
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    VerifyRegistrationWindow window = new VerifyRegistrationWindow(Ticket);
                     window.ShowDialog();
 
                     if (window.GetResult())

@@ -115,6 +115,7 @@
             <Button Grid.Column="2" Content="Назначить" Command="{Binding AssignTicket}" IsEnabled="{Binding ItsMyTicket}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Width="123"/>
             <Button Grid.Column="2" Content="Подписаться" Command="{Binding SubscribeToTicket}" IsEnabled="{Binding IsTicketOpen}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Width="123"/>
             <Button Grid.Column="2" Content="Завершить" Command="{Binding CloseTicket}" IsEnabled="{Binding ItsMyTicket}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Width="123"/>
+            <Button Grid.Column="2" Content="Зарегистрировать" Command="{Binding RegisterUser}" IsEnabled="{Binding IsRegisterTicket}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Width="123"/>
         </WrapPanel>
 
         <xctk:DateTimePicker Value="{Binding DeadlineDateTime}" Margin="10,0,10,47" Grid.Column="2" Height="32" VerticalAlignment="Bottom"/>

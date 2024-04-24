@@ -31,16 +31,25 @@ namespace TicketSystem.Controllers
 
         // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<List<SendTicket>>> GetTicketItems(
+        public async Task<ActionResult<List<SendTicket>>> GetTicketItems(int? page,
             long? ticketId = null, long? topicId = null, long? senderUserId = null,
-            long? executorUserId = null, long? companyId = null, string? filterText = null)
+            long? executorUserId = null, long? companyId = null, long? statusId = null,
+            string? filterText = null)
         {
+            if (page <= 0)
+            {
+                return BadRequest("Page must be positive number");
+            }
+
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
 
             if (user == null)
             {
                 return Problem("No user instance", statusCode: 500);
             }
+
+            if (page == null)
+                page = 1;
 
             IQueryable<Ticket> tickets = context.Tickets;
 
@@ -61,12 +70,15 @@ namespace TicketSystem.Controllers
 
                 if (companyId != null)
                     tickets = tickets.Where(x => x.SenderUser.CompanyId == companyId);
+                
+                if (statusId != null)
+                    tickets = tickets.Where(x => x.Status.Id == statusId);
 
                 if (filterText != null)
                     tickets = tickets.Where(x => x.Text.ToLower().Contains(filterText));
             }
 
-            return tickets.ToList().Where(x => InternalActions.CanUserAccessTicket(user, x)).Select(x => x.ToSend()).OrderByDescending(x => x.Id).ToList();
+            return tickets.ToList().Where(x => InternalActions.CanUserAccessTicket(user, x)).Select(x => x.ToSend()).Page((int)page, 5).OrderByDescending(x => x.Id).ToList();
         }
 
         // GET: api/Tickets/5

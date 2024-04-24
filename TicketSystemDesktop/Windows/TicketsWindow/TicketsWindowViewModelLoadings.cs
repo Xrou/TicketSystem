@@ -15,11 +15,13 @@ namespace TicketSystemDesktop
             Tickets.Clear();
             var response = HttpClient.Get("api/tickets", new KeyValuePair<string, object>[]
             {
+                        new KeyValuePair<string, object>("page", PageNumber),
                         new KeyValuePair<string, object>("ticketId", FilterId),
                         new KeyValuePair<string, object>("topicId", FilterTopic?.Id),
                         new KeyValuePair<string, object>("senderUserId", FilterSenderUser?.Id),
                         new KeyValuePair<string, object>("executorUserId", FilterExecutorUser?.Id),
                         new KeyValuePair<string, object>("companyId", FilterCompany?.Id),
+                        new KeyValuePair<string, object>("statusId", FilterStatus?.Id),
                         new KeyValuePair<string, object>("filterText", FilterText),
             });
 
@@ -63,6 +65,20 @@ namespace TicketSystemDesktop
                 foreach (var c in array)
                 {
                     FilterCompanies.Add(c);
+                }
+            }
+
+            FilterStatuses.Clear();
+
+            response = HttpClient.Get("api/statuses");
+
+            if (response.code == System.Net.HttpStatusCode.OK)
+            {
+                var array = Status.ParseArrayFromJson(response.response);
+
+                foreach (var s in array)
+                {
+                    FilterStatuses.Add(s);
                 }
             }
         }

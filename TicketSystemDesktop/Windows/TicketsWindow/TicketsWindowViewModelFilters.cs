@@ -13,6 +13,7 @@ namespace TicketSystemDesktop
     {
         public ObservableCollection<Topic> FilterTopics { get; set; } = new ObservableCollection<Topic>();
         public ObservableCollection<Company> FilterCompanies { get; set; } = new ObservableCollection<Company>();
+        public ObservableCollection<Status> FilterStatuses { get; set; } = new ObservableCollection<Status>();
         
         private User? filterSenderUser;
         public User? FilterSenderUser
@@ -70,6 +71,12 @@ namespace TicketSystemDesktop
             }
         }
 
+        private Status? filterStatus;
+        public Status? FilterStatus {
+            get { return filterStatus; } 
+            set { filterStatus = value; OnPropertyChanged("FilterStatus"); } 
+        }
+
         private string? filterText;
         public string? FilterText
         {
@@ -84,6 +91,41 @@ namespace TicketSystemDesktop
             set { filterId = value; OnPropertyChanged("FilterId"); }
         }
 
+        private int pageNumber = 1;
+        public int PageNumber
+        {
+            get { return pageNumber; }
+            set
+            {
+                if (value > 0)
+                {
+                    pageNumber = value;
+                    LoadTickets();
+                    OnPropertyChanged("PageNumber");
+                }
+            }
+        }
+
+        public RelayCommand PageRightCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    PageNumber++;
+                });
+            }
+        }
+        public RelayCommand PageLeftCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    PageNumber--;
+                });
+            }
+        }
         public RelayCommand SelectSenderCommand
         {
             get
@@ -115,7 +157,6 @@ namespace TicketSystemDesktop
                 });
             }
         }
-
         public RelayCommand SelectExecutorCommand
         {
             get
@@ -147,7 +188,6 @@ namespace TicketSystemDesktop
                 });
             }
         }
-
         public RelayCommand ClearFilters
         {
             get
@@ -159,11 +199,11 @@ namespace TicketSystemDesktop
                     FilterSenderUser = null;
                     FilterText = null;
                     FilterId = null;
+                    FilterStatus = null;
                     LoadTickets();
                 });
             }
         }
-
         public RelayCommand ApplyFilters
         {
             get

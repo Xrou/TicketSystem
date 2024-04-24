@@ -207,3 +207,12 @@
    at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
    at TicketSystem.Controllers.TicketsController.CreateTicket(Database context, HttpContext http, PostTicket ticket, Int64 senderId, Boolean registration) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\TicketsController.cs:line 107
    at TicketSystem.Controllers.TicketsController.PostTicket(PostTicket ticket) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\TicketsController.cs:line 135
+06.04.2024 15:36:31	System.Text.Json: An element of type 'Number' cannot be converted to a 'System.String'.    at System.Text.Json.Nodes.JsonValue`1.ConvertJsonElement[TypeToConvert]()
+   at System.Text.Json.Nodes.JsonValue`1.GetValue[T]()
+   at TicketSystem.Controllers.UsersController.ConfirmRegistration(JsonObject json) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\UsersController.cs:line 214
+06.04.2024 15:36:44	System.Text.Json: An element of type 'Number' cannot be converted to a 'System.String'.    at System.Text.Json.Nodes.JsonValue`1.ConvertJsonElement[TypeToConvert]()
+   at System.Text.Json.Nodes.JsonValue`1.GetValue[T]()
+   at TicketSystem.Controllers.UsersController.ConfirmRegistration(JsonObject json) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\UsersController.cs:line 214
+06.04.2024 15:37:09	System.Text.Json: An element of type 'Number' cannot be converted to a 'System.String'.    at System.Text.Json.Nodes.JsonValue`1.ConvertJsonElement[TypeToConvert]()
+   at System.Text.Json.Nodes.JsonValue`1.GetValue[T]()
+   at TicketSystem.Controllers.UsersController.ConfirmRegistration(JsonObject json) in C:\Users\royas\source\repos\TicketSystem\TicketSystem\Controllers\UsersController.cs:line 214

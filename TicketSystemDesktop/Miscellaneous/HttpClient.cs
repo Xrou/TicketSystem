@@ -16,7 +16,10 @@ namespace TicketSystemDesktop
         ///</summary>
         public static (string? response, HttpStatusCode code) Post(string url, Dictionary<string, object> body, bool auth = true)
         {
-            var options = new RestClientOptions(Constants.BaseUrl);
+            var options = new RestClientOptions(Constants.BaseUrl)
+            {
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
             var client = new RestClient(options);
             var request = new RestRequest(url, Method.Post);
 
@@ -39,7 +42,10 @@ namespace TicketSystemDesktop
         ///</summary>
         public static (string? response, HttpStatusCode code) Get(string url, KeyValuePair<string, object>[]? parameters = null, bool auth = true)
         {
-            var options = new RestClientOptions(Constants.BaseUrl);
+            var options = new RestClientOptions(Constants.BaseUrl)
+            {
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
             var client = new RestClient(options);
             var request = new RestRequest(url, Method.Get);
 

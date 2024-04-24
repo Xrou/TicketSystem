@@ -36,7 +36,7 @@ namespace TicketSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SendCompany>>> GetCompaniesItems()
         {
-            List<SendCompany> companies = context.Companies.Where(x => x.Id != 1).Select(x => x.ToSend()).ToList();
+            List<SendCompany> companies = context.Companies.Select(x => x.ToSend()).ToList();
 
             return companies;
         }
