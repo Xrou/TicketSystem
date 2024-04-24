@@ -78,7 +78,6 @@ namespace TicketSystem.Controllers
                     tickets = tickets.Where(x => x.Text.ToLower().Contains(filterText));
             }
 
-            // return tickets.Where(x => InternalActions.CanUserAccessTicket(user, x)).Select(x => x.ToSend()).Page((int)page, 5).ToList();
             return tickets
                 .OrderByDescending(x => x.Id)
                 .Where(x =>
