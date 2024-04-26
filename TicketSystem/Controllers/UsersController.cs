@@ -270,7 +270,7 @@ namespace TicketSystem.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SendUser>>> GetUsers(int? page, string? login = null, 
+        public async Task<ActionResult<IEnumerable<SendUser>>> GetUsers(int? page, string? login = null, string? name = null,
             string? phone = null, string? pcName = null, long? companyId = null)
         {
             if (page < 0)
@@ -281,13 +281,16 @@ namespace TicketSystem.Controllers
             IQueryable<User> users = context.Users;
 
             if (login != null)
-                users = users.Where(x => x.Name == login);
+                users = users.Where(x => x.Name.ToLower().Contains(login.ToLower()));
+
+            if (name != null)
+                users = users.Where(x => x.FullName.ToLower().Contains(name.ToLower()));
 
             if (phone != null)
-                users = users.Where(x => x.PhoneNumber == phone);
+                users = users.Where(x => x.PhoneNumber.ToLower().Contains(phone));
 
-            //if (pcName != null)
-            //    users.Where(x => x.PCName == pcName);
+            if (pcName != null)
+                users.Where(x => x.PCName.ToLower().Contains(pcName.ToLower()));
 
             if (companyId != null)
                 users = users.Where(x => x.Company.Id == companyId);
