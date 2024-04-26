@@ -31,12 +31,16 @@ namespace TicketSystemDesktop
         private string selectedFilesText = "";
         private Topic selectedTopic;
 
-        public string Text {
-            get { return text; } 
-            set { text = value; OnPropertyChanged("Text"); } }
-        public User SelectedSender {
-            get { return selectedSender; } 
-            set { 
+        public string Text
+        {
+            get { return text; }
+            set { text = value; OnPropertyChanged("Text"); }
+        }
+        public User SelectedSender
+        {
+            get { return selectedSender; }
+            set
+            {
                 selectedSender = value;
 
                 SelectedSenderCompany = AvailableCompanies.First(x => x.Id == value.CompanyId);
@@ -44,16 +48,20 @@ namespace TicketSystemDesktop
                 SelectedSenderEmail = value.Email;
                 SelectedSenderPCName = value.PCName;
 
-                OnPropertyChanged("SelectedSender"); 
-                OnPropertyChanged("CanEditInfo"); 
+                OnPropertyChanged("SelectedSender");
+                OnPropertyChanged("CanEditInfo");
             }
         }
-        public Company SelectedSenderCompany {
-            get { return selectedSenderCompany; } 
-            set { selectedSenderCompany = value; OnPropertyChanged("SelectedSenderCompany"); } }
-        public string SelectedSenderPhoneNumber { 
+        public Company SelectedSenderCompany
+        {
+            get { return selectedSenderCompany; }
+            set { selectedSenderCompany = value; OnPropertyChanged("SelectedSenderCompany"); }
+        }
+        public string SelectedSenderPhoneNumber
+        {
             get { return selectedSenderPhoneNumber; }
-            set { selectedSenderPhoneNumber = value; OnPropertyChanged("SelectedSenderPhoneNumber"); } }
+            set { selectedSenderPhoneNumber = value; OnPropertyChanged("SelectedSenderPhoneNumber"); }
+        }
         public string SelectedSenderEmail
         {
             get { return selectedSenderEmail; }
@@ -64,17 +72,24 @@ namespace TicketSystemDesktop
             get { return selectedSenderPCName; }
             set { selectedSenderPCName = value; OnPropertyChanged("SelectedSenderPCName"); }
         }
-        public bool[] Urgency { 
-            get { return urgency; } 
-            set { urgency = value; OnPropertyChanged("Urgency"); } }
-        public string SelectedFilesText { 
-            get { return selectedFilesText; } 
-            set { selectedFilesText = value; OnPropertyChanged("SelectedFilesText"); } }
-        public Topic SelectedTopic {
+        public bool[] Urgency
+        {
+            get { return urgency; }
+            set { urgency = value; OnPropertyChanged("Urgency"); }
+        }
+        public string SelectedFilesText
+        {
+            get { return selectedFilesText; }
+            set { selectedFilesText = value; OnPropertyChanged("SelectedFilesText"); }
+        }
+        public Topic SelectedTopic
+        {
             get { return selectedTopic; }
-            set { selectedTopic = value; OnPropertyChanged("SelectedTopic"); } }
-        
-        public bool CanEditInfo {
+            set { selectedTopic = value; OnPropertyChanged("SelectedTopic"); }
+        }
+
+        public bool CanEditInfo
+        {
             get { return SelectedSender != null; }
         }
 
@@ -114,6 +129,30 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
+                    var requestBody = new Dictionary<string, object>();
+
+                    if (SelectedSenderCompany.Id != SelectedSender.CompanyId)
+                    {
+                        requestBody.Add("companyId", SelectedSenderCompany.Id);
+                    }
+                    if (SelectedSenderPhoneNumber != SelectedSender.PhoneNumber)
+                    {
+                        requestBody.Add("phoneNumber", SelectedSenderPhoneNumber);
+                    }
+                    if (SelectedSenderEmail != SelectedSender.Email)
+                    {
+                        requestBody.Add("email", SelectedSenderEmail);
+                    }
+                    if (SelectedSenderPCName != SelectedSender.PCName)
+                    {
+                        requestBody.Add("pcName", SelectedSenderPCName);
+                    }
+
+                    if (requestBody.Count() != 0)
+                    {
+                        var editResult = HttpClient.Post($"api/users/{SelectedSender.Id}", requestBody);
+                    }
+
                     int urgencyInt = 0;
 
                     if (Urgency[1] == true)
@@ -132,7 +171,7 @@ namespace TicketSystemDesktop
                         senderId = SelectedSender.Id;
                     }
 
-                    var requestBody = new Dictionary<string, object> {
+                    requestBody = new Dictionary<string, object> {
                         { "userId", senderId },
                         { "text", Text },
                         { "urgency", urgencyInt.ToString() },
