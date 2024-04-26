@@ -290,7 +290,7 @@ namespace TicketSystem.Controllers
                 users = users.Where(x => x.PhoneNumber.ToLower().Contains(phone));
 
             if (pcName != null)
-                users = users.Where(x => x.PCName.ToLower().Contains(pcName.ToLower()да к));
+                users = users.Where(x => x.PCName.ToLower().Contains(pcName.ToLower()));
 
             if (companyId != null)
                 users = users.Where(x => x.Company.Id == companyId);
