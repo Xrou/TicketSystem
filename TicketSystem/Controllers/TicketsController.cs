@@ -48,8 +48,6 @@ namespace TicketSystem.Controllers
                 return Problem("No user instance", statusCode: 500);
             }
 
-            if (page == null)
-                page = 1;
 
             IQueryable<Ticket> tickets = context.Tickets;
 
@@ -87,7 +85,7 @@ namespace TicketSystem.Controllers
                     (user.AccessGroup.CanSeeCompanyTickets && user.CompanyId == x.User.CompanyId))
                 .Select(x => x.ToSend());
 
-            if (page != 0)
+            if (page != null)
             {
                 return filteredTickets
                     .Page((int)page, 5)
