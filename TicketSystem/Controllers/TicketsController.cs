@@ -36,9 +36,9 @@ namespace TicketSystem.Controllers
             long? executorUserId = null, long? companyId = null, long? statusId = null,
             string? filterText = null)
         {
-            if (page <= 0)
+            if (page < 0)
             {
-                return BadRequest("Page must be positive number");
+                return BadRequest("Page must be non negative number");
             }
 
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
@@ -78,16 +78,26 @@ namespace TicketSystem.Controllers
                     tickets = tickets.Where(x => x.Text.ToLower().Contains(filterText));
             }
 
-            return tickets
+            var filteredTickets = tickets
                 .OrderByDescending(x => x.Id)
                 .Where(x =>
                     (x.Finished && user.Id == x.UserId) ||
-                    (user.AccessGroup.CanSeeAllTickets) || 
+                    (user.AccessGroup.CanSeeAllTickets) ||
                     (user.AccessGroup.CanSeeHisTickets && user.Id == x.UserId) ||
                     (user.AccessGroup.CanSeeCompanyTickets && user.CompanyId == x.User.CompanyId))
-                .Select(x => x.ToSend())
-                .Page((int)page, 5)
-                .ToList();
+                .Select(x => x.ToSend());
+
+            if (page != 0)
+            {
+                return filteredTickets
+                    .Page((int)page, 5)
+                    .ToList();
+            }
+            else
+            {
+                return filteredTickets
+                    .ToList();
+            }
         }
 
         // GET: api/Tickets/5
