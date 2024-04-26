@@ -4,7 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -164,6 +167,45 @@ namespace TicketSystemDesktop
                         { "ticketId", ticket.Id.ToString() },
                         { "deadlineTime", DeadlineDateTime.ToString() }
                     });
+                });
+            }
+        }
+
+        public RelayCommand FileDownloadCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    if (SelectedFile != null)
+                    {
+                        string url = $"{Constants.DownloadUrl}/{SelectedFile}";
+
+                        try
+                        {
+                            Process.Start(url);
+                        }
+                        catch
+                        {
+                            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                            {
+                                url = url.Replace("&", "^&");
+                                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                            {
+                                Process.Start("xdg-open", url);
+                            }
+                            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                            {
+                                Process.Start("open", url);
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
                 });
             }
         }

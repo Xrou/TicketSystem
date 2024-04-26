@@ -23,7 +23,7 @@ namespace TicketSystemDesktop
         public TicketWindow(Ticket ticket)
         {
             InitializeComponent();
-            DataContext = new TicketWindowViewModel(ticket);
+            DataContext = new TicketWindowViewModel(ticket, this);
         }
     }
 }

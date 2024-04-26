@@ -15,21 +15,25 @@ namespace TicketSystemDesktop
     public partial class TicketWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         private Ticket ticket;
+        private Window window;
         private int selectedCommentTab = 0;
         private string commentText = "";
-        
+        private string? selectedFile;
+
         public Ticket Ticket { get { return ticket; } set { ticket = value; OnPropertyChanged("Ticket"); } }
         public string CommentText { get { return commentText; } set { commentText = value; OnPropertyChanged("CommentText"); } }
         public int SelectedCommentTab { get { return selectedCommentTab; } set { selectedCommentTab = value; OnPropertyChanged("SelectedCommentTab"); } }
+        public string? SelectedFile { get { return selectedFile; } set { selectedFile = value; OnPropertyChanged("SelectedFile"); } }
 
         public ObservableCollection<Comment> StandardComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> OfficialComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> ServiceComments { get; set; } = new ObservableCollection<Comment>();
-
-        public TicketWindowViewModel(Ticket ticket)
+        
+        public TicketWindowViewModel(Ticket ticket, Window window)
         {
             Ticket = ticket;
             DeadlineDateTime = (DateTime)Ticket.DeadlineTime!;
+            window.Title = $"Заявка {Ticket.Id}";
             Load();
         }
 

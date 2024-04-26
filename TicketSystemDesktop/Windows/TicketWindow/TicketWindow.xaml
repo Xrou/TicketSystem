@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicketSystemDesktop"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         x:Class="TicketSystemDesktop.TicketWindow"
         mc:Ignorable="d"
@@ -58,7 +59,17 @@
 
             </Grid>
         </Border>
-        <TextBox Margin="0,0,8,0" TextWrapping="Wrap" Text="{Binding Ticket.Text}" VerticalAlignment="Center" Height="256" Grid.Column="1"/>
+        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.Text}" Grid.Column="1" Margin="0,0,0,79"/>
+        <ScrollViewer Grid.Column="1" Margin="0,177,0,0" VerticalAlignment="Top" Height="79">
+            <ListView ItemsSource="{Binding Ticket.Files}" SelectedItem="{Binding SelectedFile}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding FileDownloadCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+        </ScrollViewer>
+
         <Label Content="Добавить комментарий" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="27" Width="173"/>
         <TextBox Margin="10,0,8,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding CommentText}" VerticalAlignment="Center" Height="90" Grid.ColumnSpan="3"/>
         <Button Command="{Binding SendCommentCommand}"  Content="Ответить" HorizontalAlignment="Left" Margin="10,139,0,0" Grid.Row="1" VerticalAlignment="Top" Height="32" Width="92"/>

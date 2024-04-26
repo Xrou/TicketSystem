@@ -413,7 +413,10 @@ namespace TicketSystem.Controllers
                 user.FullName = json["fullName"]!.GetValue<string>();
 
             if (json.ContainsKey("companyId"))
-                user.CompanyId = json["companyId"]!.GetValue<int>();
+                user.CompanyId = json["companyId"]!.GetValue<long>();
+
+            if (json.ContainsKey("pcName"))
+                user.PCName = json["pcName"]!.GetValue<string>();
 
             if (json.ContainsKey("phoneNumber"))
                 user.PhoneNumber = json["phoneNumber"]!.GetValue<string>();
