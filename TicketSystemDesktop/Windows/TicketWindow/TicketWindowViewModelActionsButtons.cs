@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
@@ -209,6 +210,43 @@ namespace TicketSystemDesktop
                 });
             }
         }
+
+        public RelayCommand FileDownloadFromCommentCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    string url = $"{Constants.DownloadUrl}/{obj}";
+
+                    try
+                    {
+                        Process.Start(url);
+                    }
+                    catch
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            url = url.Replace("&", "^&");
+                            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                        }
+                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        {
+                            Process.Start("xdg-open", url);
+                        }
+                        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        {
+                            Process.Start("open", url);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                });
+            }
+        }
+
 
     }
 }

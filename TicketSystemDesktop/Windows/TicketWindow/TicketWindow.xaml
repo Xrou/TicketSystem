@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         x:Class="TicketSystemDesktop.TicketWindow"
         mc:Ignorable="d"
-        Title="TicketWindow" Width="989" Height="810">
+        Title="TicketWindow" Width="989" Height="810" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="256"/>
@@ -75,19 +75,39 @@
         <Button Command="{Binding SendCommentCommand}"  Content="Ответить" HorizontalAlignment="Left" Margin="10,139,0,0" Grid.Row="1" VerticalAlignment="Top" Height="32" Width="92"/>
         <TabControl SelectedIndex="{Binding SelectedCommentTab}" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,8,10">
             <TabItem Header="Комментарии">
-                <ListBox HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,0" ItemsSource="{Binding StandardComments}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding FullName}" Margin="0,0,10,0"/>
-                                    <TextBlock Text="{Binding Date}"/>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding StandardComments}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding FullName}" Margin="0,0,10,0"/>
+                                        <TextBlock Text="{Binding Date}"/>
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Files}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Foreground="#0000EE" Text="{Binding}" MouseLeftButtonUp="HandleCommentFileClick" TextDecorations="Underline"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                    <TextBox IsReadOnly="True" Text="{Binding Text}" Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}" Margin="0,5,15,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <TextBox Text="{Binding Text}" Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}" Margin="0,5,15,0" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+
             </TabItem>
             <TabItem Header="Оффициальные комментарии">
                 <ListBox HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,0" ItemsSource="{Binding OfficialComments}">
