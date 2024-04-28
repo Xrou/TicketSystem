@@ -51,7 +51,7 @@ namespace TicketSystem.Models
 
             modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.Subscriptions);
-            
+
             modelBuilder.Entity<Ticket>()
                 .HasMany(e => e.Files)
                 .WithMany()
@@ -59,9 +59,19 @@ namespace TicketSystem.Models
                     l => l.HasOne(typeof(File)).WithMany().HasForeignKey("fileId"),
                     r => r.HasOne(typeof(Ticket)).WithMany().HasForeignKey("ticketId"));
 
+            modelBuilder.Entity<Comment>()
+                .HasMany(e => e.Files)
+                .WithMany()
+                .UsingEntity("commentfiles",
+                    l => l.HasOne(typeof(File)).WithMany().HasForeignKey("fileId"),
+                    r => r.HasOne(typeof(Comment)).WithMany().HasForeignKey("commentId"));
+
             modelBuilder.Entity<Ticket>()
                 .Navigation(e => e.Files);
-            
+
+            modelBuilder.Entity<Comment>()
+                .Navigation(e => e.Files);
+
             modelBuilder.Entity<Ticket>()
                 .HasOne(e => e.Topic)
                 .WithMany()
