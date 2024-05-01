@@ -36,7 +36,7 @@ namespace TicketSystem.Models
     }
 
     public record struct SendComment(long Id, string Text, DateTime Date, CommentType Type, long TicketId, long UserId, string UserName, string FullName, string[] Files);
-    public record struct PostComment(long TicketId, string Text, int type);
+    public record struct PostComment(long TicketId, string Text, int type, File[]? Files);
 
     public enum CommentType
     {

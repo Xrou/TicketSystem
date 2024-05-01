@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -135,6 +136,66 @@ namespace TicketSystemDesktop
                     if (window.GetResult())
                     {
                         Load();
+                    }
+                });
+            }
+        }
+
+        public RelayCommand SendCommentCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    if (CommentText.Trim() == "")
+                        return;
+
+                    var requestBody = new Dictionary<string, object>(new List<KeyValuePair<string, object>> {
+                            new KeyValuePair<string, object>("ticketId", Ticket.Id),
+                            new KeyValuePair<string, object>("text", CommentText),
+                            new KeyValuePair<string, object>("type", SelectedCommentTab + 1),
+                        }
+                    );
+
+                    if (CommentFiles.Count() != 0)
+                    {
+                        var filesResult = HttpClient.UploadFile("api/files", CommentFiles.ToArray());
+                        var uploadedFiles = Models.File.ParseArrayFromJson(filesResult.response);
+                        requestBody.Add("files", uploadedFiles);
+                    }
+
+                    var res = HttpClient.Post("api/comments", requestBody);
+
+                    if (res.code != System.Net.HttpStatusCode.Created)
+                    {
+                        MessageBox.Show($"Ошибка в отправлении комментария\n\n{res.code}\n{res.response}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.None);
+                    }
+                    else
+                    {
+                        CommentText = "";
+                        LoadComments();
+                    }
+                });
+            }
+        }
+
+        public RelayCommand AddFilesToCommentCommand
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    OpenFileDialog openFileDialog = new OpenFileDialog();
+                    openFileDialog.Multiselect = true;
+
+                    if (openFileDialog.ShowDialog() == true)
+                    {
+                        CommentFiles.Clear();
+
+                        foreach (string filepath in openFileDialog.FileNames)
+                        {
+                            CommentFiles.Add(filepath);
+                        }
                     }
                 });
             }

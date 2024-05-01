@@ -28,44 +28,14 @@ namespace TicketSystemDesktop
         public ObservableCollection<Comment> StandardComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> OfficialComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> ServiceComments { get; set; } = new ObservableCollection<Comment>();
-        
+        public ObservableCollection<string> CommentFiles { get; set; } = new ObservableCollection<string>();
+
         public TicketWindowViewModel(Ticket ticket, Window window)
         {
             Ticket = ticket;
             DeadlineDateTime = (DateTime)Ticket.DeadlineTime!;
             window.Title = $"Заявка {Ticket.Id}";
             Load();
-        }
-
-        public RelayCommand SendCommentCommand
-        {
-            get
-            {
-                return new RelayCommand(obj =>
-                {
-                    if (CommentText.Trim() == "")
-                        return;
-
-                    var res = HttpClient.Post("api/comments",
-                        new Dictionary<string, object>(new List<KeyValuePair<string, object>> {
-                            new KeyValuePair<string, object>("ticketId", Ticket.Id),
-                            new KeyValuePair<string, object>("text", CommentText),
-                            new KeyValuePair<string, object>("type", SelectedCommentTab + 1),
-                        }
-                      )
-                    );
-
-                    if (res.code != System.Net.HttpStatusCode.Created)
-                    {
-                        MessageBox.Show($"Ошибка в отправлении комментария\n\n{res.code}\n{res.response}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.None);
-                    }
-                    else
-                    {
-                        CommentText = "";
-                        LoadComments();
-                    }
-                });
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -73,6 +73,16 @@
         <Label Content="Добавить комментарий" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="27" Width="173"/>
         <TextBox Margin="10,0,8,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding CommentText}" VerticalAlignment="Center" Height="90" Grid.ColumnSpan="3"/>
         <Button Command="{Binding SendCommentCommand}"  Content="Ответить" HorizontalAlignment="Left" Margin="10,139,0,0" Grid.Row="1" VerticalAlignment="Top" Height="32" Width="92"/>
+        <Button Command="{Binding AddFilesToCommentCommand}" Content="Добавить файлы" HorizontalAlignment="Left" Margin="107,139,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <ScrollViewer Grid.Row="1" Margin="256,135,10,0" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ListBox ItemsSource="{Binding CommentFiles}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </ScrollViewer>
         <TabControl SelectedIndex="{Binding SelectedCommentTab}" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,8,10">
             <TabItem Header="Комментарии">
                 <ScrollViewer>
