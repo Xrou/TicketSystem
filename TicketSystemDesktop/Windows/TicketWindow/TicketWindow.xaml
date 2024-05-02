@@ -25,11 +25,23 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
                         <Label Content="Статус" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox Text="{Binding Ticket.Status}" VerticalAlignment="Top" TextWrapping="Wrap" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" Text="{Binding Ticket.Status}" VerticalAlignment="Top" TextWrapping="Wrap" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectStatusCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Заявитель" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="NoWrap" Text="{Binding Ticket.UserName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="NoWrap" Text="{Binding Ticket.UserName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectSenderCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Номер телефона" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -37,7 +49,13 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Компания" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.SenderCompany}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding Ticket.SenderCompany}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectCompanyCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Дата отправления" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -45,15 +63,33 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Срочность" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.Urgency}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding Ticket.UrgencyName, Mode=OneWay}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectUrgencyCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Тематика" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.TopicName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.TopicName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectTopicCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Назначенный&#xA;исполнитель" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.ExecutorUserName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.ExecutorUserName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectExecutorCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                 </StackPanel>
 

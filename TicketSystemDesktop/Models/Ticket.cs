@@ -140,6 +140,10 @@ namespace TicketSystemDesktop.Models
             }
             set { urgency = value; OnPropertyChanged("Urgency"); }
         }
+        public string UrgencyName
+        {
+            get { return Models.Urgency.GetUrgencies()[Urgency].Name; }
+        }
         public string TopicName
         {
             get

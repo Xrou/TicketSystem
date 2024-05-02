@@ -304,8 +304,36 @@ namespace TicketSystem.Controllers
                 return NotFound();
             }
 
-
             updateTicket.StatusId = statusId;
+
+            context.Update(updateTicket);
+            context.SaveChanges();
+
+            return Ok();
+        }
+
+        //api/tickets/setUrgency
+        [HttpPost("setUrgency")]
+        public async Task<IActionResult> SetUrgency([FromBody] JsonObject json)
+        {
+            int urgencyId;
+            long ticketId;
+
+            if (!(
+                json.ContainsKey("urgencyId") && int.TryParse(json["urgencyId"]!.GetValue<string>(), out urgencyId) &&
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (updateTicket == null)
+            {
+                return NotFound();
+            }
+
+            updateTicket.UrgencyInt = urgencyId;
 
             context.Update(updateTicket);
             context.SaveChanges();
@@ -444,6 +472,35 @@ namespace TicketSystem.Controllers
 
             return Ok();
         }
+
+        [HttpPost("changeTopic")]
+        public async Task<IActionResult> ChangeTopic([FromBody] JsonObject json)
+        {
+            long ticketId;
+            long topicId;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
+                json.ContainsKey("topicId") && long.TryParse(json["topicId"]!.GetValue<string>(), out topicId)))
+            {
+                return BadRequest();
+            }
+
+            Ticket? ticket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            ticket.TopicId = topicId;
+
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
 
         // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
