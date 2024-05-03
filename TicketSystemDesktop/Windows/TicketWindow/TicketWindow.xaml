@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicketSystemDesktop"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         x:Class="TicketSystemDesktop.TicketWindow"
         mc:Ignorable="d"
-        Title="TicketWindow" Width="989" Height="810">
+        Title="TicketWindow" Width="989" Height="810" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="256"/>
@@ -24,19 +25,37 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
                         <Label Content="Статус" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox Text="{Binding Ticket.Status}" VerticalAlignment="Top" TextWrapping="Wrap" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" Text="{Binding Ticket.Status}" VerticalAlignment="Top" TextWrapping="Wrap" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectStatusCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Заявитель" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="NoWrap" Text="{Binding Ticket.UserName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="NoWrap" Text="{Binding Ticket.UserName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectSenderCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Номер телефона" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.SenderPhone}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding SenderPhone, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Top" MinWidth="50"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Компания" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.SenderCompany}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding Ticket.SenderCompany}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectCompanyCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Дата отправления" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -44,39 +63,97 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Срочность" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.Urgency}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding Ticket.UrgencyName, Mode=OneWay}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectUrgencyCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Тематика" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.TopicName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.TopicName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectTopicCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Назначенный&#xA;исполнитель" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.ExecutorUserName}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.ExecutorUserName}" VerticalAlignment="Top" MinWidth="50">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectExecutorCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                     </StackPanel>
                 </StackPanel>
 
             </Grid>
         </Border>
-        <TextBox Margin="0,0,8,0" TextWrapping="Wrap" Text="{Binding Ticket.Text}" VerticalAlignment="Center" Height="256" Grid.Column="1"/>
+        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.Text}" Grid.Column="1" Margin="0,0,0,79"/>
+        <ScrollViewer Grid.Column="1" Margin="0,177,0,0" VerticalAlignment="Top" Height="79">
+            <ListView ItemsSource="{Binding Ticket.Files}" SelectedItem="{Binding SelectedFile}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding FileDownloadCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+        </ScrollViewer>
+
         <Label Content="Добавить комментарий" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Height="27" Width="173"/>
         <TextBox Margin="10,0,8,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding CommentText}" VerticalAlignment="Center" Height="90" Grid.ColumnSpan="3"/>
         <Button Command="{Binding SendCommentCommand}"  Content="Ответить" HorizontalAlignment="Left" Margin="10,139,0,0" Grid.Row="1" VerticalAlignment="Top" Height="32" Width="92"/>
+        <Button Command="{Binding AddFilesToCommentCommand}" Content="Добавить файлы" HorizontalAlignment="Left" Margin="107,139,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <ScrollViewer Grid.Row="1" Margin="256,135,10,0" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ListBox ItemsSource="{Binding CommentFiles}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </ScrollViewer>
         <TabControl SelectedIndex="{Binding SelectedCommentTab}" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,8,10">
             <TabItem Header="Комментарии">
-                <ListBox HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,0" ItemsSource="{Binding StandardComments}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding FullName}" Margin="0,0,10,0"/>
-                                    <TextBlock Text="{Binding Date}"/>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding StandardComments}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding FullName}" Margin="0,0,10,0"/>
+                                        <TextBlock Text="{Binding Date}"/>
+                                    </StackPanel>
+                                    <ItemsControl ItemsSource="{Binding Files}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Foreground="#0000EE" Text="{Binding}" MouseLeftButtonUp="HandleCommentFileClick" TextDecorations="Underline"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                    <TextBox IsReadOnly="True" Text="{Binding Text}" Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}" Margin="0,5,15,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <TextBox Text="{Binding Text}" Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}, Mode=FindAncestor}}" Margin="0,5,15,0" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+
             </TabItem>
             <TabItem Header="Оффициальные комментарии">
                 <ListBox HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,0" ItemsSource="{Binding OfficialComments}">

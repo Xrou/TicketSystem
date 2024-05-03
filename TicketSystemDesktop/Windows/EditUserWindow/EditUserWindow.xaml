@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TicketSystemDesktop"
         mc:Ignorable="d"
         Title="EditUserWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
-    <Grid Height="330" Width="330">
+    <Grid Height="380" Width="330">
         <Label Content="#" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Label Content="{Binding User.Id}" HorizontalAlignment="Left" Margin="25,10,0,0" VerticalAlignment="Top"/>
         <Label Content="ФИО" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top"/>
@@ -17,6 +17,8 @@
         <TextBox HorizontalAlignment="Right" Margin="0,171,10,0" TextWrapping="Wrap" Text="{Binding User.PhoneNumber, Mode=TwoWay}" VerticalAlignment="Top" Width="310"/>
         <Label Content="Компания" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top"/>
         <ComboBox ItemsSource="{Binding Companies}" DisplayMemberPath="Name" SelectedItem="{Binding UserCompany, Mode=TwoWay}" HorizontalAlignment="Right" Margin="0,230,10,0" VerticalAlignment="Top" Width="310"/>
+        <Label Content="Имя компьютера" HorizontalAlignment="Left" Margin="10,260,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Center" Margin="0,289,0,0" TextWrapping="Wrap" Text="{Binding User.PCName, Mode=TwoWay}" VerticalAlignment="Top" Width="310"/>
         <Button Command="{Binding SaveCommand}" Content="Сохранить" Margin="0,0,10,10" HorizontalAlignment="Right" Width="102" Height="32" VerticalAlignment="Bottom"/>
 
     </Grid>

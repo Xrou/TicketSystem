@@ -15,53 +15,48 @@ namespace TicketSystemDesktop
     public partial class TicketWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         private Ticket ticket;
+        private Window window;
         private int selectedCommentTab = 0;
         private string commentText = "";
-        
-        public Ticket Ticket { get { return ticket; } set { ticket = value; OnPropertyChanged("Ticket"); } }
-        public string CommentText { get { return commentText; } set { commentText = value; OnPropertyChanged("CommentText"); } }
-        public int SelectedCommentTab { get { return selectedCommentTab; } set { selectedCommentTab = value; OnPropertyChanged("SelectedCommentTab"); } }
+        private string? selectedFile;
+
+        public Ticket Ticket
+        {
+            get { return ticket; }
+            set { ticket = value; OnPropertyChanged("Ticket"); }
+        }
+        public string CommentText
+        {
+            get { return commentText; }
+            set { commentText = value; OnPropertyChanged("CommentText"); }
+        }
+        public int SelectedCommentTab
+        {
+            get { return selectedCommentTab; }
+            set { selectedCommentTab = value; OnPropertyChanged("SelectedCommentTab"); }
+        }
+        public string? SelectedFile
+        {
+            get { return selectedFile; }
+            set { selectedFile = value; OnPropertyChanged("SelectedFile"); }
+        }
+        public string SenderPhone // wrapper for catch text changing event
+        {
+            get { return Ticket.SenderPhone; }
+            set { Ticket.SenderPhone = value; OnPropertyChanged("SenderPhone"); ChangePhoneNumber.Execute(value); }
+        }
 
         public ObservableCollection<Comment> StandardComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> OfficialComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> ServiceComments { get; set; } = new ObservableCollection<Comment>();
+        public ObservableCollection<string> CommentFiles { get; set; } = new ObservableCollection<string>();
 
-        public TicketWindowViewModel(Ticket ticket)
+        public TicketWindowViewModel(Ticket ticket, Window window)
         {
             Ticket = ticket;
             DeadlineDateTime = (DateTime)Ticket.DeadlineTime!;
+            window.Title = $"Заявка {Ticket.Id}";
             Load();
-        }
-
-        public RelayCommand SendCommentCommand
-        {
-            get
-            {
-                return new RelayCommand(obj =>
-                {
-                    if (CommentText.Trim() == "")
-                        return;
-
-                    var res = HttpClient.Post("api/comments",
-                        new Dictionary<string, object>(new List<KeyValuePair<string, object>> {
-                            new KeyValuePair<string, object>("ticketId", Ticket.Id),
-                            new KeyValuePair<string, object>("text", CommentText),
-                            new KeyValuePair<string, object>("type", SelectedCommentTab + 1),
-                        }
-                      )
-                    );
-
-                    if (res.code != System.Net.HttpStatusCode.Created)
-                    {
-                        MessageBox.Show($"Ошибка в отправлении комментария\n\n{res.code}\n{res.response}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.None);
-                    }
-                    else
-                    {
-                        CommentText = "";
-                        LoadComments();
-                    }
-                });
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -34,6 +34,7 @@ namespace TicketSystemDesktop
                         { "phoneNumber", User.PhoneNumber },
                         { "email", User.Email },
                         { "telegram", User.TelegramId },
+                        { "pcName", User.PCName },
                     };
 
                     var result = HttpClient.Post($"api/users/{User.Id}", data);

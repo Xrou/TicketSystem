@@ -23,7 +23,12 @@ namespace TicketSystemDesktop
         public TicketWindow(Ticket ticket)
         {
             InitializeComponent();
-            DataContext = new TicketWindowViewModel(ticket);
+            DataContext = new TicketWindowViewModel(ticket, this);
+        }
+
+        private void HandleCommentFileClick(object sender, MouseButtonEventArgs e)
+        {
+            ((TicketWindowViewModel)DataContext).FileDownloadFromCommentCommand.Execute((sender as TextBlock).Text);
         }
     }
 }

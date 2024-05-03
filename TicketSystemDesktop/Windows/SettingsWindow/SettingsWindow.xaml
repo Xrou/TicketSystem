@@ -31,6 +31,10 @@
                             <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterLogin}" Width="120"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
+                            <Label Content="Имя"/>
+                            <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterName}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
                             <Label Content="Телефон"/>
                             <TextBox Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding FilterPhone}" Width="120"/>
                         </StackPanel>

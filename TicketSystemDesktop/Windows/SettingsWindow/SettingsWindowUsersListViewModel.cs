@@ -19,6 +19,9 @@ namespace TicketSystemDesktop
         private string? filterLogin;
         public string? FilterLogin { get { return filterLogin; } set { filterLogin = value; OnPropertyChanged("FilterLogin"); } }
 
+        private string? filterName;
+        public string? FilterName { get { return filterName; } set { filterName = value; OnPropertyChanged("FilterName"); } }
+
         private string? filterPhone;
         public string? FilterPhone { get { return filterPhone; } set { filterPhone = value; OnPropertyChanged("FilterPhone"); } }
 
@@ -50,6 +53,7 @@ namespace TicketSystemDesktop
             var response = HttpClient.Get("api/users", new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("page", pageNumber),
+                new KeyValuePair<string, object>("name", filterName),
                 new KeyValuePair<string, object>("login", filterLogin),
                 new KeyValuePair<string, object>("phone", filterPhone),
                 new KeyValuePair<string, object>("companyId", FilterCompany?.Id),

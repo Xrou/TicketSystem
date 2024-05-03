@@ -78,6 +78,13 @@ namespace TicketSystem.Controllers
             context.Comments.Add(newComment);
             await context.SaveChangesAsync();
 
+            foreach (var file in comment.Files)
+            {
+                newComment.Files.Add(file);
+            }
+
+            await context.SaveChangesAsync();
+
             return Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);
         }
     }

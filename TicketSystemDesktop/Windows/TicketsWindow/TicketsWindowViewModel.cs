@@ -27,7 +27,7 @@ namespace TicketSystemDesktop
                     var ticket = obj as Ticket;
 
                     TicketWindow window = new TicketWindow(ticket);
-                    window.ShowDialog();
+                    window.Show();
                 });
             }
         }

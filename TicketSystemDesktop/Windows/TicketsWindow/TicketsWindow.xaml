@@ -110,7 +110,7 @@
                 <DataGridTextColumn Header="Отправитель" Width="*" Binding="{Binding UserName}"/>
                 <DataGridTextColumn Header="Компания" Width="*" Binding="{Binding SenderCompany}"/>
                 <DataGridTextColumn Header="Тематика" Width="*" Binding="{Binding TopicName}"/>
-                <DataGridTextColumn Header="Тематика" Width="*" Binding="{Binding Status}"/>
+                <DataGridTextColumn Header="Статус" Width="*" Binding="{Binding Status}"/>
                 <DataGridTextColumn Header="Исполнитель" Width="*" Binding="{Binding ExecutorUserName}"/>
                 <DataGridTextColumn Header="Дата" Width="*" Binding="{Binding Date}"/>
             </DataGrid.Columns>

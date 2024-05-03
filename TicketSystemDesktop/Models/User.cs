@@ -16,6 +16,7 @@ namespace TicketSystemDesktop.Models
         private string fullName;
         private string email;
         private string phoneNumber;
+        private string? pcName;
         private long companyId;
         private string companyName;
         private string companyShortName;
@@ -66,6 +67,18 @@ namespace TicketSystemDesktop.Models
             {
                 phoneNumber = value;
                 OnPropertyChanged("PhoneNumber");
+            }
+        }
+        public string? PCName
+        {
+            get
+            {
+                return pcName;
+            }
+            set
+            {
+                pcName = value;
+                OnPropertyChanged("PCName");
             }
         }
         public long CompanyId
@@ -124,6 +137,7 @@ namespace TicketSystemDesktop.Models
             var id = user["id"].GetValue<long>();
             var companyId = user["companyId"].GetValue<long>();
             var companyName = user["companyName"].GetValue<string>();
+            var pcName = user["pcName"]?.GetValue<string>();
             var companyShortName = user["companyShortName"].GetValue<string>();
             var accessGroupName = user["accessGroupName"].GetValue<string>();
             var fullName = user["fullName"].GetValue<string>();
@@ -136,6 +150,7 @@ namespace TicketSystemDesktop.Models
                 Id = id,
                 FullName = fullName,
                 CompanyId = companyId,
+                PCName = pcName,
                 CompanyName = companyName,
                 CompanyShortName = companyShortName,
                 Email = email,

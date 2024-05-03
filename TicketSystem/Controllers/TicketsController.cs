@@ -36,9 +36,9 @@ namespace TicketSystem.Controllers
             long? executorUserId = null, long? companyId = null, long? statusId = null,
             string? filterText = null)
         {
-            if (page <= 0)
+            if (page < 0)
             {
-                return BadRequest("Page must be positive number");
+                return BadRequest("Page must be non negative number");
             }
 
             User? user = InternalActions.SelectUserFromContext(HttpContext, context);
@@ -48,8 +48,6 @@ namespace TicketSystem.Controllers
                 return Problem("No user instance", statusCode: 500);
             }
 
-            if (page == null)
-                page = 1;
 
             IQueryable<Ticket> tickets = context.Tickets;
 
@@ -78,7 +76,26 @@ namespace TicketSystem.Controllers
                     tickets = tickets.Where(x => x.Text.ToLower().Contains(filterText));
             }
 
-            return tickets.ToList().Where(x => InternalActions.CanUserAccessTicket(user, x)).Select(x => x.ToSend()).Page((int)page, 5).OrderByDescending(x => x.Id).ToList();
+            var filteredTickets = tickets
+                .OrderByDescending(x => x.Id)
+                .Where(x =>
+                    (x.Finished && user.Id == x.UserId) ||
+                    (user.AccessGroup.CanSeeAllTickets) ||
+                    (user.AccessGroup.CanSeeHisTickets && user.Id == x.UserId) ||
+                    (user.AccessGroup.CanSeeCompanyTickets && user.CompanyId == x.User.CompanyId))
+                .Select(x => x.ToSend());
+
+            if (page != null)
+            {
+                return filteredTickets
+                    .Page((int)page, 15)
+                    .ToList();
+            }
+            else
+            {
+                return filteredTickets
+                    .ToList();
+            }
         }
 
         // GET: api/Tickets/5
@@ -287,8 +304,36 @@ namespace TicketSystem.Controllers
                 return NotFound();
             }
 
-
             updateTicket.StatusId = statusId;
+
+            context.Update(updateTicket);
+            context.SaveChanges();
+
+            return Ok();
+        }
+
+        //api/tickets/setUrgency
+        [HttpPost("setUrgency")]
+        public async Task<IActionResult> SetUrgency([FromBody] JsonObject json)
+        {
+            int urgencyId;
+            long ticketId;
+
+            if (!(
+                json.ContainsKey("urgencyId") && int.TryParse(json["urgencyId"]!.GetValue<string>(), out urgencyId) &&
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId)))
+            {
+                return BadRequest();
+            }
+
+            var updateTicket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (updateTicket == null)
+            {
+                return NotFound();
+            }
+
+            updateTicket.UrgencyInt = urgencyId;
 
             context.Update(updateTicket);
             context.SaveChanges();
@@ -427,6 +472,35 @@ namespace TicketSystem.Controllers
 
             return Ok();
         }
+
+        [HttpPost("changeTopic")]
+        public async Task<IActionResult> ChangeTopic([FromBody] JsonObject json)
+        {
+            long ticketId;
+            long topicId;
+
+            if (!(
+                json.ContainsKey("ticketId") && long.TryParse(json["ticketId"]!.GetValue<string>(), out ticketId) &&
+                json.ContainsKey("topicId") && long.TryParse(json["topicId"]!.GetValue<string>(), out topicId)))
+            {
+                return BadRequest();
+            }
+
+            Ticket? ticket = context.Tickets.FirstOrDefault(t => t.Id == ticketId);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            ticket.TopicId = topicId;
+
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
 
         // DELETE: api/Tickets/5
         [HttpDelete("{id}")]

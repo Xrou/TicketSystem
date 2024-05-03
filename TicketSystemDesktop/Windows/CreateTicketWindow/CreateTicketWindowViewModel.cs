@@ -20,15 +20,82 @@ namespace TicketSystemDesktop
     public class CreateTicketWindowViewModel : INotifyPropertyChanged, ILoadableViewModel
     {
         private string text = "";
+
+        private User selectedSender;
+        private Company selectedSenderCompany;
+        private string selectedSenderPhoneNumber;
+        private string selectedSenderEmail;
+        private string selectedSenderPCName;
+
         private bool[] urgency = new bool[] { true, false, false };
         private string selectedFilesText = "";
         private Topic selectedTopic;
 
-        public string Text { get { return text; } set { text = value; OnPropertyChanged("Text"); } }
-        public bool[] Urgency { get { return urgency; } set { urgency = value; OnPropertyChanged("Urgency"); } }
-        public string SelectedFilesText { get { return selectedFilesText; } set { selectedFilesText = value; OnPropertyChanged("SelectedFilesText"); } }
-        public Topic SelectedTopic { get { return selectedTopic; } set { selectedTopic = value; OnPropertyChanged("SelectedTopic"); } }
+        public string Text
+        {
+            get { return text; }
+            set { text = value; OnPropertyChanged("Text"); }
+        }
+        public User SelectedSender
+        {
+            get { return selectedSender; }
+            set
+            {
+                selectedSender = value;
+
+                SelectedSenderCompany = AvailableCompanies.First(x => x.Id == value.CompanyId);
+                SelectedSenderPhoneNumber = value.PhoneNumber;
+                SelectedSenderEmail = value.Email;
+                SelectedSenderPCName = value.PCName;
+
+                OnPropertyChanged("SelectedSender");
+                OnPropertyChanged("CanEditInfo");
+            }
+        }
+        public Company SelectedSenderCompany
+        {
+            get { return selectedSenderCompany; }
+            set { selectedSenderCompany = value; OnPropertyChanged("SelectedSenderCompany"); }
+        }
+        public string SelectedSenderPhoneNumber
+        {
+            get { return selectedSenderPhoneNumber; }
+            set { selectedSenderPhoneNumber = value; OnPropertyChanged("SelectedSenderPhoneNumber"); }
+        }
+        public string SelectedSenderEmail
+        {
+            get { return selectedSenderEmail; }
+            set { selectedSenderEmail = value; OnPropertyChanged("SelectedSenderEmail"); }
+        }
+        public string SelectedSenderPCName
+        {
+            get { return selectedSenderPCName; }
+            set { selectedSenderPCName = value; OnPropertyChanged("SelectedSenderPCName"); }
+        }
+        public bool[] Urgency
+        {
+            get { return urgency; }
+            set { urgency = value; OnPropertyChanged("Urgency"); }
+        }
+        public string SelectedFilesText
+        {
+            get { return selectedFilesText; }
+            set { selectedFilesText = value; OnPropertyChanged("SelectedFilesText"); }
+        }
+        public Topic SelectedTopic
+        {
+            get { return selectedTopic; }
+            set { selectedTopic = value; OnPropertyChanged("SelectedTopic"); }
+        }
+
+        public bool CanEditInfo
+        {
+            get { return SelectedSender != null; }
+        }
+
         public ObservableCollection<Topic> AvailableTopics { get; set; } = new ObservableCollection<Topic>();
+        public ObservableCollection<User> AvailableSenders { get; set; } = new ObservableCollection<User>();
+        public ObservableCollection<Company> AvailableCompanies { get; set; } = new ObservableCollection<Company>();
         public ObservableCollection<string> SelectedFiles { get; set; } = new ObservableCollection<string>();
 
         public Window WindowInstance { get; set; }
@@ -62,6 +129,30 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
+                    var requestBody = new Dictionary<string, object>();
+
+                    if (SelectedSenderCompany.Id != SelectedSender.CompanyId)
+                    {
+                        requestBody.Add("companyId", SelectedSenderCompany.Id);
+                    }
+                    if (SelectedSenderPhoneNumber != SelectedSender.PhoneNumber)
+                    {
+                        requestBody.Add("phoneNumber", SelectedSenderPhoneNumber);
+                    }
+                    if (SelectedSenderEmail != SelectedSender.Email)
+                    {
+                        requestBody.Add("email", SelectedSenderEmail);
+                    }
+                    if (SelectedSenderPCName != SelectedSender.PCName)
+                    {
+                        requestBody.Add("pcName", SelectedSenderPCName);
+                    }
+
+                    if (requestBody.Count() != 0)
+                    {
+                        var editResult = HttpClient.Post($"api/users/{SelectedSender.Id}", requestBody);
+                    }
+
                     int urgencyInt = 0;
 
                     if (Urgency[1] == true)
@@ -73,8 +164,15 @@ namespace TicketSystemDesktop
                         urgencyInt = 2;
                     }
 
-                    var requestBody = new Dictionary<string, object> {
-                        { "userId", LocalStorage.Get("MyId") },
+                    long senderId = Convert.ToInt64(LocalStorage.Get("MyId")!);
+
+                    if (SelectedSender != null)
+                    {
+                        senderId = SelectedSender.Id;
+                    }
+
+                    requestBody = new Dictionary<string, object> {
+                        { "userId", senderId },
                         { "text", Text },
                         { "urgency", urgencyInt.ToString() },
                         { "topicId", selectedTopic.Id },
@@ -121,6 +219,30 @@ namespace TicketSystemDesktop
 
             if (AvailableTopics.Count > 0)
                 SelectedTopic = AvailableTopics[0];
+
+            response = HttpClient.Get("api/users");
+
+            if (response.code == System.Net.HttpStatusCode.OK)
+            {
+                var array = User.ParseArrayFromJson(response.response);
+
+                foreach (var t in array)
+                {
+                    AvailableSenders.Add(t);
+                }
+            }
+
+            response = HttpClient.Get("api/companies");
+
+            if (response.code == System.Net.HttpStatusCode.OK)
+            {
+                var array = Company.ParseArrayFromJson(response.response);
+
+                foreach (var t in array)
+                {
+                    AvailableCompanies.Add(t);
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
