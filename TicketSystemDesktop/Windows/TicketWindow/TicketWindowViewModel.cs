@@ -20,10 +20,31 @@ namespace TicketSystemDesktop
         private string commentText = "";
         private string? selectedFile;
 
-        public Ticket Ticket { get { return ticket; } set { ticket = value; OnPropertyChanged("Ticket"); } }
-        public string CommentText { get { return commentText; } set { commentText = value; OnPropertyChanged("CommentText"); } }
-        public int SelectedCommentTab { get { return selectedCommentTab; } set { selectedCommentTab = value; OnPropertyChanged("SelectedCommentTab"); } }
-        public string? SelectedFile { get { return selectedFile; } set { selectedFile = value; OnPropertyChanged("SelectedFile"); } }
+        public Ticket Ticket
+        {
+            get { return ticket; }
+            set { ticket = value; OnPropertyChanged("Ticket"); }
+        }
+        public string CommentText
+        {
+            get { return commentText; }
+            set { commentText = value; OnPropertyChanged("CommentText"); }
+        }
+        public int SelectedCommentTab
+        {
+            get { return selectedCommentTab; }
+            set { selectedCommentTab = value; OnPropertyChanged("SelectedCommentTab"); }
+        }
+        public string? SelectedFile
+        {
+            get { return selectedFile; }
+            set { selectedFile = value; OnPropertyChanged("SelectedFile"); }
+        }
+        public string SenderPhone // wrapper for catch text changing event
+        {
+            get { return Ticket.SenderPhone; }
+            set { Ticket.SenderPhone = value; OnPropertyChanged("SenderPhone"); ChangePhoneNumber.Execute(value); }
+        }
 
         public ObservableCollection<Comment> StandardComments { get; set; } = new ObservableCollection<Comment>();
         public ObservableCollection<Comment> OfficialComments { get; set; } = new ObservableCollection<Comment>();

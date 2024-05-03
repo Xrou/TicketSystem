@@ -584,5 +584,26 @@ namespace TicketSystemDesktop
                 });
             }
         }
+
+        public RelayCommand ChangePhoneNumber
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    var response = HttpClient.Post($"api/users/{Ticket.UserId}", new Dictionary<string, object>() {
+                        { "phoneNumber", obj }
+                    });
+
+                    if (response.code != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show(response.response, response.code.ToString(), MessageBoxButton.OK);
+                    }
+
+                    LoadTicket();
+                });
+            }
+        }
+
     }
 }

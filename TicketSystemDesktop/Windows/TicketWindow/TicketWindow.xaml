@@ -45,7 +45,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Номер телефона" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox TextWrapping="Wrap" Text="{Binding Ticket.SenderPhone}" VerticalAlignment="Top" MinWidth="50"/>
+                        <TextBox TextWrapping="Wrap" Text="{Binding SenderPhone, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Top" MinWidth="50"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                         <Label Content="Компания" HorizontalAlignment="Left" VerticalAlignment="Top"/>
