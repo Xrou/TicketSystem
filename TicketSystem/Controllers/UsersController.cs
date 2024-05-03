@@ -299,7 +299,7 @@ namespace TicketSystem.Controllers
 
             if (page != null)
             {
-                return filteredUsers.Page((int)page, 5).ToList();
+                return filteredUsers.Page((int)page, 15).ToList();
             }
             else
             {

@@ -88,7 +88,7 @@ namespace TicketSystem.Controllers
             if (page != null)
             {
                 return filteredTickets
-                    .Page((int)page, 5)
+                    .Page((int)page, 15)
                     .ToList();
             }
             else
