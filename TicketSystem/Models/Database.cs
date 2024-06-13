@@ -22,6 +22,7 @@ namespace TicketSystem.Models
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<File> Files { get; set; }
+        public DbSet<MergeEntity> Merge { get; set; }  // probably temp entity, used for migration
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

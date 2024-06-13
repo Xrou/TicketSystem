@@ -9,13 +9,13 @@ using System.Text;
 using TicketSystem.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TicketSystem;
+using MySql.Data.MySqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<Database>();
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
