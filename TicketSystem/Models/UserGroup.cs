@@ -21,6 +21,11 @@ namespace TicketSystem.Models
         {
             return new SendUserGroupShort() { Id = Id, Name = Name };
         }
+
+        public override string ToString()
+        {
+            return $"UserGroup id:{Id}, name:{Name}";
+        }
     }
 
     public record struct SendUserGroup(long Id, string Name, List<SendUser> Users, List<SendCompany> Companies, List<SendTopic> Topics);

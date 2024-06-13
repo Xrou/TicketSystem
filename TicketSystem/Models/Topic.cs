@@ -12,6 +12,11 @@ namespace TicketSystem.Models
         {
             return new() { id = Id, name = Name };
         }
+
+        public override string ToString()
+        {
+            return $"Topic id:{Id}, name:{Name}";
+        }
     }
 
     public record struct SendTopic(long id, string name);

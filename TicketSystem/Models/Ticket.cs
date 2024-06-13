@@ -104,6 +104,15 @@ namespace TicketSystem.Models
                 Files = fileNames
             };
         }
+
+        public override string ToString()
+        {
+            return $"Ticket id:{Id}, userId:{UserId}, " +
+                $"senderId:{SenderId}, executorId:{ExecutorId}, " +
+                $"type:{TypeInt}, date:{Date}, urgency:{UrgencyInt}, " +
+                $"status:{StatusId}, topic:{TopicId}, deadline:{DeadlineTime}, " +
+                $"finished:{Finished}, finish status:{FinishStatusInt}, text:{Text}";
+        }
     }
 
     public record struct SendTicket(

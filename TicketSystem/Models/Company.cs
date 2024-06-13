@@ -13,6 +13,11 @@ namespace TicketSystem.Models
         {
             return new SendCompany { id = Id, name = Name, shortName = ShortName };
         }
+
+        public override string ToString()
+        {
+            return $"Company id:{Id}, name: {Name}, short name: {ShortName}";
+        }
     }
 
     public record struct SendCompany(long id, string name, string shortName);

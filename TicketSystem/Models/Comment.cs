@@ -33,6 +33,11 @@ namespace TicketSystem.Models
         {
             return new SendComment { Id = Id, Text = Text, Date = Date, Type = CommentType, TicketId = TicketId, UserId = User.Id, UserName = User.Name, FullName = User.FullName, Files = Files.Select(x => x.Path).ToArray() };
         }
+
+        public override string ToString()
+        {
+            return $"Comment id:{Id}, date:{Date}, ticket:{TicketId}, user:{UserId}, type:{CommentTypeInt}, text:{Text}";
+        }
     }
 
     public record struct SendComment(long Id, string Text, DateTime Date, CommentType Type, long TicketId, long UserId, string UserName, string FullName, string[] Files);

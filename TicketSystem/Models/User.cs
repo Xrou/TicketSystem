@@ -38,6 +38,11 @@ namespace TicketSystem.Models
         {
             return new SendUserGroups(Id, FullName, Company.Name, UserGroups.Select(u => u.ToSendShort()).ToList());
         }
+
+        public override string ToString()
+        {
+            return $"User id:{Id}, company:{CompanyId}, name:{Name}, password hash:{PasswordHash}, access group:{AccessGroupId}, full name:{FullName}, email:{Email}, phone:{PhoneNumber}, pc name:{PCName}, telegram:{Telegram}, can login:{CanLogin}";
+        }
     }
 
     public record struct AuthorizeUser(string Login, string Password);

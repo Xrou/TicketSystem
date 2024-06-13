@@ -12,6 +12,11 @@ namespace TicketSystem.Models
         {
             return new SendFile() { Id = Id, Path = Path };
         }
+
+        public override string ToString()
+        {
+            return $"File id:{Id}, path: {Path}";
+        }
     }
 
     public record struct SendFile(long Id, string Path);

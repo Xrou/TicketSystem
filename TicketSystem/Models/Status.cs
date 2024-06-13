@@ -12,6 +12,11 @@ namespace TicketSystem.Models
         {
             return new SendStatus() { Id = Id, Name = Name };
         }
+
+        public override string ToString()
+        {
+            return $"Status id:{Id}, name: {Name}";
+        }
     }
 
     public record struct SendStatus(long Id, string Name);

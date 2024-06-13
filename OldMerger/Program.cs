@@ -14,7 +14,7 @@ namespace OldMerger
         private static void Load(MySqlConnection sourceConnection)
         {
             Database database = new Database();
-            /*{ // companies
+            { // companies
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.company;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -29,6 +29,7 @@ namespace OldMerger
                             database.SaveChanges();
 
                             database.Merge.Add(new MergeEntity() { NewId = company.Id, OldId = reader.GetInt64("id"), Entity = "company" });
+                            Console.WriteLine($"Merged company: {}");
                         }
                     }
                 }
@@ -121,9 +122,9 @@ namespace OldMerger
                 }
 
                 database.SaveChanges();
-            }*/
+            }
             {//tickets
-                MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.messages WHERE `delete`=0;", sourceConnection);
+                MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.messages WHERE `delete`=0 AND `status` != 3;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
                     while (reader.Read())
@@ -208,7 +209,7 @@ namespace OldMerger
 
         private static void Main(string[] args)
         {
-            string MySQLConnectionString = "server=cl-srv-hdsk.cl.local;user=xrouu;database=new_hdesk;password=1474545mimosH;";
+            string MySQLConnectionString = "server=cl-srv-hdsk.cl.local;user=xrouu;database=new_hdesk;password=1474545mimosH!;";
 
             using (MySqlConnection oldConnection = new MySqlConnection(MySQLConnectionString))
             {
