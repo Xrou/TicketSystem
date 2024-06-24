@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TicketSystemDesktop.Miscellaneous;
 
 namespace TicketSystemDesktop
 {
@@ -40,21 +41,37 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    var response = HttpClient.Post("api/users/register", new Dictionary<string, object>()
+                    try
                     {
-                        {"login", Login},
-                        {"password", Password},
-                        {"fullName", FullName},
-                        {"company", Company},
-                        {"phoneNumber", Phone},
-                        {"email", Email},
-                        {"verificationCode", Code}
-                    });
+                        var response = HttpClient.Post("api/users/register", new Dictionary<string, object>()
+                        {
+                            {"login", Login},
+                            {"password", Password},
+                            {"fullName", FullName},
+                            {"company", Company},
+                            {"phoneNumber", Phone},
+                            {"email", Email},
+                            {"verificationCode", Code}
+                        });
 
-                    if (response.code == System.Net.HttpStatusCode.Created)
+                        if (response.code == System.Net.HttpStatusCode.Created)
+                        {
+                            MessageBox.Show("Спасибо за регистрацию, вы сможете войти в учетную запись после подтверждения регистрации администратором.");
+                            window.Close();
+                            Logger.Log(LogStatus.Info, "RegistrationWindowViewModel.RegisterCommand",
+                                $"Successfully registered user");
+                        }
+                        else
+                        {
+                            Logger.Log(LogStatus.Info, "RegistrationWindowViewModel.RegisterCommand",
+                                $"Cant register user with data:\nlogin:{Login}\npassword:{Password}\nfullName:{FullName}\ncompany:{Company}\nphoneNumber:{Phone}\nemail:{Email}\nverificationCode:{Code}\n\nReturned code:{response.code}");
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        MessageBox.Show("Спасибо за регистрацию, вы сможете войти в учетную запись после подтверждения регистрации администратором.");
-                        window.Close();
+                        Logger.Log(LogStatus.Error, "RegistrationWindowViewModel.RegisterCommand",
+                            $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
                 });
             }

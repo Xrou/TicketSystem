@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -14,7 +15,7 @@ namespace TicketSystemDesktop
         public ObservableCollection<Topic> FilterTopics { get; set; } = new ObservableCollection<Topic>();
         public ObservableCollection<Company> FilterCompanies { get; set; } = new ObservableCollection<Company>();
         public ObservableCollection<Status> FilterStatuses { get; set; } = new ObservableCollection<Status>();
-        
+
         private User? filterSenderUser;
         public User? FilterSenderUser
         {
@@ -72,9 +73,10 @@ namespace TicketSystemDesktop
         }
 
         private Status? filterStatus;
-        public Status? FilterStatus {
-            get { return filterStatus; } 
-            set { filterStatus = value; OnPropertyChanged("FilterStatus"); } 
+        public Status? FilterStatus
+        {
+            get { return filterStatus; }
+            set { filterStatus = value; OnPropertyChanged("FilterStatus"); }
         }
 
         private string? filterText;
@@ -132,27 +134,44 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    ObservableCollection<IDbEntity> users = new ObservableCollection<IDbEntity>();
-                    var response = HttpClient.Get("api/users");
-
-                    if (response.code == System.Net.HttpStatusCode.OK)
+                    try
                     {
-                        var array = User.ParseArrayFromJson(response.response);
+                        ObservableCollection<IDbEntity> users = new ObservableCollection<IDbEntity>();
+                        var response = HttpClient.Get("api/users");
 
-                        foreach (var u in array)
+                        if (response.code == System.Net.HttpStatusCode.OK)
                         {
-                            users.Add(u);
+                            var array = User.ParseArrayFromJson(response.response);
+
+                            foreach (var u in array)
+                            {
+                                users.Add(u);
+                            }
+                            Logger.Log(LogStatus.Info, "TicketsWindowViewModel.SelectSenderCommand",
+                                $"Successfully loaded users");
+                        }
+                        else
+                        {
+                            Logger.Log(LogStatus.Warning, "TicketsWindowViewModel.SelectSenderCommand",
+                                $"Cant load users.\n\nReturn code: {response.code}");
+                            return;
+                        }
+
+                        SelectorWindow window = new SelectorWindow(users);
+                        window.ShowDialog();
+
+                        var user = window.GetSelectedEntity() as User;
+
+                        if (user != null)
+                        {
+                            FilterSenderUser = user!;
                         }
                     }
-
-                    SelectorWindow window = new SelectorWindow(users);
-                    window.ShowDialog();
-
-                    var user = window.GetSelectedEntity() as User;
-
-                    if (user != null)
+                    catch (Exception ex)
                     {
-                        FilterSenderUser = user!;
+                        Logger.Log(LogStatus.Error, "TicketsWindowViewModel.SelectSenderCommand",
+                            $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
                 });
             }
@@ -163,27 +182,44 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    ObservableCollection<IDbEntity> users = new ObservableCollection<IDbEntity>();
-                    var response = HttpClient.Get("api/users");
-
-                    if (response.code == System.Net.HttpStatusCode.OK)
+                    try
                     {
-                        var array = User.ParseArrayFromJson(response.response);
+                        ObservableCollection<IDbEntity> users = new ObservableCollection<IDbEntity>();
+                        var response = HttpClient.Get("api/users");
 
-                        foreach (var u in array)
+                        if (response.code == System.Net.HttpStatusCode.OK)
                         {
-                            users.Add(u);
+                            var array = User.ParseArrayFromJson(response.response);
+
+                            foreach (var u in array)
+                            {
+                                users.Add(u);
+                            }
+                            Logger.Log(LogStatus.Info, "TicketsWindowViewModel.SelectExecutorCommand",
+                                $"Successfully loaded users");
+                        }
+                        else
+                        {
+                            Logger.Log(LogStatus.Warning, "TicketsWindowViewModel.SelectExecutorCommand",
+                                $"Cant load users.\n\nReturn code: {response.code}");
+                            return;
+                        }
+
+                        SelectorWindow window = new SelectorWindow(users);
+                        window.ShowDialog();
+
+                        var user = window.GetSelectedEntity() as User;
+
+                        if (user != null)
+                        {
+                            FilterExecutorUser = user!;
                         }
                     }
-
-                    SelectorWindow window = new SelectorWindow(users);
-                    window.ShowDialog();
-
-                    var user = window.GetSelectedEntity() as User;
-
-                    if (user != null)
+                    catch (Exception ex)
                     {
-                        FilterExecutorUser = user!;
+                        Logger.Log(LogStatus.Error, "TicketsWindowViewModel.SelectExecutorCommand",
+                            $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
                 });
             }

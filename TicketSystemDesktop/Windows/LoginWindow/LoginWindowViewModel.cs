@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Reflection.Emit;
 using System.Windows.Controls;
 using System.Threading;
+using TicketSystemDesktop.Miscellaneous;
 
 namespace TicketSystemDesktop
 {
@@ -72,28 +73,42 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    var result = HttpClient.Post("api/users/login",
-                        new Dictionary<string, object>() {
+                    try
+                    {
+                        var result = HttpClient.Post("api/users/login",
+                            new Dictionary<string, object>() {
                             { "login", Username },
                             { "password", Password }
-                        }, false);
+                            }, false);
 
-                    if (result.code == System.Net.HttpStatusCode.OK)
-                    {
-                        var responseJson = JsonNode.Parse(result.response!);
+                        if (result.code == System.Net.HttpStatusCode.OK)
+                        {
+                            var responseJson = JsonNode.Parse(result.response!);
 
-                        LocalStorage.Set("AccessToken", responseJson["access_token"]!.GetValue<string>());
-                        LocalStorage.Set("MyUserName", responseJson["username"]!.GetValue<string>());
-                        LocalStorage.Set("MyId", responseJson["id"]!.GetValue<long>().ToString());
+                            LocalStorage.Set("AccessToken", responseJson["access_token"]!.GetValue<string>());
+                            LocalStorage.Set("MyUserName", responseJson["username"]!.GetValue<string>());
+                            LocalStorage.Set("MyId", responseJson["id"]!.GetValue<long>().ToString());
 
-                        Window newWindow = new TicketsWindow();
-                        newWindow.Show();
+                            Window newWindow = new TicketsWindow();
+                            newWindow.Show();
 
-                        WindowInstance.Close();
+                            WindowInstance.Close();
+                            Logger.Log(LogStatus.Info, "LoginWindowViewModel.AuthorizeCommand",
+                                $"Successfully authorized user");
+                        }
+                        else
+                        {
+                            IncorrectAuthVisible = Visibility.Visible;
+                            Logger.Log(LogStatus.Warning, "LoginWindowViewModel.AuthorizeCommand",
+                                $"Cant authorize user with data:\nlogin={Username}\npassword={Password}\n\nReturned code:{result.code}");
+
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        IncorrectAuthVisible = Visibility.Visible;
+                        Logger.Log(LogStatus.Error, "LoginWindowViewModel.AuthorizeCommand",
+                            $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
                 });
             }
@@ -105,7 +120,7 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                   
+
                     RegistrationWindow window = new RegistrationWindow();
                     window.ShowDialog();
                 });

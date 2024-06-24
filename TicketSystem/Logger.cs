@@ -4,7 +4,7 @@
     {
         public static void Log(string message)
         {
-            File.AppendAllText("./Log.txt", $"{DateTime.Now}\t{message}\n");
+            File.AppendAllText("Log.txt", $"{DateTime.Now}\t{message}\n");
         }
     }
 }

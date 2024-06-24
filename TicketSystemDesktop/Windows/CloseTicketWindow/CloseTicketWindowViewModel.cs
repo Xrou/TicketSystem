@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TicketSystemDesktop.Miscellaneous;
 
 namespace TicketSystemDesktop
 {
@@ -35,19 +37,30 @@ namespace TicketSystemDesktop
                 return new RelayCommand(obj =>
                 {
                     int finishStatus = CloseTypeIsChanges == true ? 1 : 0;
-
-                    var result = HttpClient.Post("api/tickets/closeTicket",
-                        new Dictionary<string, object>() {
+                    try
+                    {
+                        var result = HttpClient.Post("api/tickets/closeTicket",
+                            new Dictionary<string, object>() {
                             {"ticketId", ticketId},
                             {"finishStatus", finishStatus},
                             {"commentText", CloseCommentText}
-                        }
-                    );
+                            }
+                        );
 
-                    if (result.code == System.Net.HttpStatusCode.OK)
+                        if (result.code == System.Net.HttpStatusCode.OK)
+                        {
+                            window.Close();
+                            TicketClosed = true;
+                        }
+                        else
+                        {
+                            Logger.Log(LogStatus.Info, "CloseTicketWindowViewModel.CloseTicketCommand", "Request result is not OK");
+                        }
+                    }
+                    catch (Exception e)
                     {
-                        window.Close();
-                        TicketClosed = true;
+                        Logger.Log(LogStatus.Error, "CloseTicketWindowViewModel.CloseTicketCommand", e.Message);
+                        throw e;
                     }
                 });
             }

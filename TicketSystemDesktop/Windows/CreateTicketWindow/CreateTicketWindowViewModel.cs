@@ -14,6 +14,7 @@ using System.Windows;
 using TicketSystemDesktop.Models;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using TicketSystemDesktop.Miscellaneous;
 
 namespace TicketSystemDesktop
 {
@@ -129,70 +130,85 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    var requestBody = new Dictionary<string, object>();
-
-                    if (SelectedSenderCompany.Id != SelectedSender.CompanyId)
+                    try
                     {
-                        requestBody.Add("companyId", SelectedSenderCompany.Id);
+                        var requestBody = new Dictionary<string, object>();
+
+                        if (SelectedSenderCompany.Id != SelectedSender.CompanyId)
+                        {
+                            requestBody.Add("companyId", SelectedSenderCompany.Id);
+                        }
+                        if (SelectedSenderPhoneNumber != SelectedSender.PhoneNumber)
+                        {
+                            requestBody.Add("phoneNumber", SelectedSenderPhoneNumber);
+                        }
+                        if (SelectedSenderEmail != SelectedSender.Email)
+                        {
+                            requestBody.Add("email", SelectedSenderEmail);
+                        }
+                        if (SelectedSenderPCName != SelectedSender.PCName)
+                        {
+                            requestBody.Add("pcName", SelectedSenderPCName);
+                        }
+
+                        if (requestBody.Count() != 0)
+                        {
+                            var editResult = HttpClient.Post($"api/users/{SelectedSender.Id}", requestBody);
+                        }
+
+                        int urgencyInt = 0;
+
+                        if (Urgency[1] == true)
+                        {
+                            urgencyInt = 1;
+                        }
+                        else if (Urgency[2] == true)
+                        {
+                            urgencyInt = 2;
+                        }
+
+                        long senderId = Convert.ToInt64(LocalStorage.Get("MyId")!);
+
+                        if (SelectedSender != null)
+                        {
+                            senderId = SelectedSender.Id;
+                        }
+
+                        requestBody = new Dictionary<string, object> {
+                            { "userId", senderId },
+                            { "text", Text },
+                            { "urgency", urgencyInt.ToString() },
+                            { "topicId", selectedTopic.Id },
+                        };
+
+                        if (SelectedFiles.Count() != 0)
+                        {
+                            var filesResult = HttpClient.UploadFile("api/files", SelectedFiles.ToArray());
+                            var uploadedFiles = Models.File.ParseArrayFromJson(filesResult.response);
+                            requestBody.Add("files", uploadedFiles);
+                        }
+
+                        var result = HttpClient.Post("api/tickets", requestBody);
+
+                        if (result.code == System.Net.HttpStatusCode.Created)
+                        {
+                            Logger.Log(LogStatus.Info, "CreateTicketWindowViewModel.CreateTicketCommand",
+                                $"Ticket created with data:\nuserId={senderId}\ntext={Text}\nurgency={urgencyInt.ToString()}\ntopicId={selectedTopic.Id}");
+
+                            Notifications.CallTicketsChanged();
+                            WindowInstance.Close();
+                        }
+                        else
+                        {
+                            Logger.Log(LogStatus.Warning, "CreateTicketWindowViewModel.CreateTicketCommand",
+                                $"Ticket didn't created with data:\nuserId={senderId}\ntext={Text}\nurgency={urgencyInt.ToString()}\ntopicId={selectedTopic.Id}\n\nReturned code:{result.code}");
+                        }
                     }
-                    if (SelectedSenderPhoneNumber != SelectedSender.PhoneNumber)
+                    catch (Exception ex)
                     {
-                        requestBody.Add("phoneNumber", SelectedSenderPhoneNumber);
+                        Logger.Log(LogStatus.Error, "CreateTicketWindowViewModel.CreateTicketCommand", $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
-                    if (SelectedSenderEmail != SelectedSender.Email)
-                    {
-                        requestBody.Add("email", SelectedSenderEmail);
-                    }
-                    if (SelectedSenderPCName != SelectedSender.PCName)
-                    {
-                        requestBody.Add("pcName", SelectedSenderPCName);
-                    }
-
-                    if (requestBody.Count() != 0)
-                    {
-                        var editResult = HttpClient.Post($"api/users/{SelectedSender.Id}", requestBody);
-                    }
-
-                    int urgencyInt = 0;
-
-                    if (Urgency[1] == true)
-                    {
-                        urgencyInt = 1;
-                    }
-                    else if (Urgency[2] == true)
-                    {
-                        urgencyInt = 2;
-                    }
-
-                    long senderId = Convert.ToInt64(LocalStorage.Get("MyId")!);
-
-                    if (SelectedSender != null)
-                    {
-                        senderId = SelectedSender.Id;
-                    }
-
-                    requestBody = new Dictionary<string, object> {
-                        { "userId", senderId },
-                        { "text", Text },
-                        { "urgency", urgencyInt.ToString() },
-                        { "topicId", selectedTopic.Id },
-                    };
-
-                    if (SelectedFiles.Count() != 0)
-                    {
-                        var filesResult = HttpClient.UploadFile("api/files", SelectedFiles.ToArray());
-                        var uploadedFiles = Models.File.ParseArrayFromJson(filesResult.response);
-                        requestBody.Add("files", uploadedFiles);
-                    }
-
-                    var result = HttpClient.Post("api/tickets", requestBody);
-
-                    if (result.code == System.Net.HttpStatusCode.Created)
-                    {
-                        Notifications.CallTicketsChanged();
-                        WindowInstance.Close();
-                    }
-
                 });
             }
         }
@@ -205,43 +221,70 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            var response = HttpClient.Get("api/topics");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Topic.ParseArrayFromJson(response.response);
+                var response = HttpClient.Get("api/topics");
 
-                foreach (var t in array)
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    AvailableTopics.Add(t);
+                    var array = Topic.ParseArrayFromJson(response.response);
+
+                    foreach (var t in array)
+                    {
+                        AvailableTopics.Add(t);
+                    }
                 }
+
+                if (AvailableTopics.Count > 0)
+                    SelectedTopic = AvailableTopics[0];
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "CreateTicketWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
 
-            if (AvailableTopics.Count > 0)
-                SelectedTopic = AvailableTopics[0];
-
-            response = HttpClient.Get("api/users");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = User.ParseArrayFromJson(response.response);
+                var response = HttpClient.Get("api/users");
 
-                foreach (var t in array)
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    AvailableSenders.Add(t);
+                    var array = User.ParseArrayFromJson(response.response);
+
+                    foreach (var t in array)
+                    {
+                        AvailableSenders.Add(t);
+                    }
                 }
             }
-
-            response = HttpClient.Get("api/companies");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            catch (Exception ex)
             {
-                var array = Company.ParseArrayFromJson(response.response);
+                Logger.Log(LogStatus.Error, "CreateTicketWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+            }
 
-                foreach (var t in array)
+            try
+            {
+                var response = HttpClient.Get("api/companies");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    AvailableCompanies.Add(t);
+                    var array = Company.ParseArrayFromJson(response.response);
+
+                    foreach (var t in array)
+                    {
+                        AvailableCompanies.Add(t);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "CreateTicketWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
         }
 

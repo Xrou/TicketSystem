@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -38,6 +39,17 @@ namespace TicketSystemDesktop
                     };
 
                     var result = HttpClient.Post($"api/users/{User.Id}", data);
+
+                    if (result.code == System.Net.HttpStatusCode.OK)
+                    {
+                        Logger.Log(LogStatus.Info, "EditUserWindowViewModel.SaveCommand",
+                            $"Successfully edited user");
+                    }
+                    else
+                    {
+                        Logger.Log(LogStatus.Warning, "EditUserWindowViewModel.SaveCommand",
+                            $"Cant edit user with data:\nfullName={User.FullName}\ncompanyId={UserCompany.Id}\nphoneNumber={User.PhoneNumber}\nemail={User.Email}\ntelegram={User.TelegramId}\npcName={User.PCName}\n\nReturned code: {result.code}");
+                    }
                 });
             }
         }
@@ -45,21 +57,30 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            Companies.Clear();
-
-            var response = HttpClient.Get("api/companies");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Company.ParseArrayFromJson(response.response);
+                Companies.Clear();
 
-                foreach (var c in array)
+                var response = HttpClient.Get("api/companies");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    Companies.Add(c);
-                }
-            }
+                    var array = Company.ParseArrayFromJson(response.response);
 
-            UserCompany = Companies.First(x => x.Id == User.CompanyId);
+                    foreach (var c in array)
+                    {
+                        Companies.Add(c);
+                    }
+                }
+
+                UserCompany = Companies.First(x => x.Id == User.CompanyId);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "EditUserWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

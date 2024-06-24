@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -48,45 +49,63 @@ namespace TicketSystemDesktop
 
         private void LoadUsers()
         {
-            Users.Clear();
-
-            var response = HttpClient.Get("api/users", new KeyValuePair<string, object>[]
+            try
             {
+                Users.Clear();
+
+                var response = HttpClient.Get("api/users", new KeyValuePair<string, object>[]
+                {
                 new KeyValuePair<string, object>("page", pageNumber),
                 new KeyValuePair<string, object>("name", filterName),
                 new KeyValuePair<string, object>("login", filterLogin),
                 new KeyValuePair<string, object>("phone", filterPhone),
                 new KeyValuePair<string, object>("companyId", FilterCompany?.Id),
-            });
+                });
 
-            if (response.code == System.Net.HttpStatusCode.OK)
-            {
-                var array = User.ParseArrayFromJson(response.response);
-
-                foreach (var u in array)
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    Users.Add(u);
+                    var array = User.ParseArrayFromJson(response.response);
+
+                    foreach (var u in array)
+                    {
+                        Users.Add(u);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowUsersListViewModel.LoadUsers",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+            }
         }
 
         public void Load()
         {
-            LoadUsers();
-
-            AvailableCompanies.Clear();
-
-            var response = HttpClient.Get("api/companies");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Company.ParseArrayFromJson(response.response);
+                LoadUsers();
 
-                foreach (var c in array)
+                AvailableCompanies.Clear();
+
+                var response = HttpClient.Get("api/companies");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    AvailableCompanies.Add(c);
+                    var array = Company.ParseArrayFromJson(response.response);
+
+                    foreach (var c in array)
+                    {
+                        AvailableCompanies.Add(c);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowUsersListViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+
             }
         }
 

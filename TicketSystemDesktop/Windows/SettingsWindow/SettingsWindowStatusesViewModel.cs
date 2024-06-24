@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -17,18 +18,27 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            Statuses.Clear();
-
-            var response = HttpClient.Get("api/statuses");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Status.ParseArrayFromJson(response.response);
+                Statuses.Clear();
 
-                foreach (var s in array)
+                var response = HttpClient.Get("api/statuses");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    Statuses.Add(s);
+                    var array = Status.ParseArrayFromJson(response.response);
+
+                    foreach (var s in array)
+                    {
+                        Statuses.Add(s);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowStatusesViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
         }
 

@@ -12,7 +12,7 @@ namespace TicketSystemDesktop.Miscellaneous
         public static void Log(LogStatus status, string caller, string message)
         {
             DateTime now = DateTime.Now;
-            File.AppendAllText("./Log/", $"{now} {status}\nAt {caller}\n\nMessage:\n{message}");
+            File.AppendAllText("./Log.txt", $"{now} {status}\nAt {caller}\n\nMessage:\n{message}");
         }
     }
 

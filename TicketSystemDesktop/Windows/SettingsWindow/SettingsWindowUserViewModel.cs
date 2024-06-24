@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -17,13 +18,23 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            var response = HttpClient.Get($"api/users/{LocalStorage.Get("MyId")}");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var userObject = JsonNode.Parse(response.response).AsObject();
+                var response = HttpClient.Get($"api/users/{LocalStorage.Get("MyId")}");
 
-                User = User.ParseFromJson(userObject);
+                if (response.code == System.Net.HttpStatusCode.OK)
+                {
+                    var userObject = JsonNode.Parse(response.response).AsObject();
+
+                    User = User.ParseFromJson(userObject);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowUserViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+
             }
         }
 

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -18,20 +19,29 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            AccessGroups.Clear();
-            SourceAccessGroups.Clear();
-
-            var response = HttpClient.Get("api/AccessGroups");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = AccessGroup.ParseArrayFromJson(response.response);
+                AccessGroups.Clear();
+                SourceAccessGroups.Clear();
 
-                foreach (var u in array)
+                var response = HttpClient.Get("api/AccessGroups");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    AccessGroups.Add(u);
-                    SourceAccessGroups.Add(u.Clone() as AccessGroup);
+                    var array = AccessGroup.ParseArrayFromJson(response.response);
+
+                    foreach (var u in array)
+                    {
+                        AccessGroups.Add(u);
+                        SourceAccessGroups.Add(u.Clone() as AccessGroup);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowAccessGroupRightsViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
         }
 
@@ -41,78 +51,94 @@ namespace TicketSystemDesktop
             {
                 return new RelayCommand(obj =>
                 {
-                    Dictionary<string, object> changes = new Dictionary<string, object>();
-
-                    for (int accessGroupId = 0; accessGroupId < AccessGroups.Count; accessGroupId++)
+                    try
                     {
-                        changes[(accessGroupId + 1).ToString()] = new Dictionary<string, bool>();
+                        Dictionary<string, object> changes = new Dictionary<string, object>();
 
-                        if (AccessGroups[accessGroupId].CanSubscribe != SourceAccessGroups[accessGroupId].CanSubscribe)
+                        for (int accessGroupId = 0; accessGroupId < AccessGroups.Count; accessGroupId++)
                         {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSubscribe", AccessGroups[accessGroupId].CanSubscribe);
+                            changes[(accessGroupId + 1).ToString()] = new Dictionary<string, bool>();
+
+                            if (AccessGroups[accessGroupId].CanSubscribe != SourceAccessGroups[accessGroupId].CanSubscribe)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSubscribe", AccessGroups[accessGroupId].CanSubscribe);
+                            }
+                            if (AccessGroups[accessGroupId].CanSeeHisTickets != SourceAccessGroups[accessGroupId].CanSeeHisTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeHisTickets", AccessGroups[accessGroupId].CanSeeHisTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanSeeCompanyTickets != SourceAccessGroups[accessGroupId].CanSeeCompanyTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeCompanyTickets", AccessGroups[accessGroupId].CanSeeCompanyTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanSeeAllTickets != SourceAccessGroups[accessGroupId].CanSeeAllTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeAllTickets", AccessGroups[accessGroupId].CanSeeAllTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanEditTickets != SourceAccessGroups[accessGroupId].CanEditTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canEditTickets", AccessGroups[accessGroupId].CanEditTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanDeleteTickets != SourceAccessGroups[accessGroupId].CanDeleteTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canDeleteTickets", AccessGroups[accessGroupId].CanDeleteTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanSeeServiceComments != SourceAccessGroups[accessGroupId].CanSeeServiceComments)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeServiceComments", AccessGroups[accessGroupId].CanSeeServiceComments);
+                            }
+                            if (AccessGroups[accessGroupId].CanRegisterUsers != SourceAccessGroups[accessGroupId].CanRegisterUsers)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canRegisterUsers", AccessGroups[accessGroupId].CanRegisterUsers);
+                            }
+                            if (AccessGroups[accessGroupId].CanSelectTopic != SourceAccessGroups[accessGroupId].CanSelectTopic)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSelectTopic", AccessGroups[accessGroupId].CanSelectTopic);
+                            }
+                            if (AccessGroups[accessGroupId].CanEditUsers != SourceAccessGroups[accessGroupId].CanEditUsers)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canEditUsers", AccessGroups[accessGroupId].CanEditUsers);
+                            }
+                            if (AccessGroups[accessGroupId].CanSelectUrgency != SourceAccessGroups[accessGroupId].CanSelectUrgency)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSelectUrgency", AccessGroups[accessGroupId].CanSelectUrgency);
+                            }
+                            if (AccessGroups[accessGroupId].CanTakeTickets != SourceAccessGroups[accessGroupId].CanTakeTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canTakeTickets", AccessGroups[accessGroupId].CanTakeTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanAssignTickets != SourceAccessGroups[accessGroupId].CanAssignTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canAssignTickets", AccessGroups[accessGroupId].CanAssignTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanFinishTickets != SourceAccessGroups[accessGroupId].CanFinishTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canFinishTickets", AccessGroups[accessGroupId].CanFinishTickets);
+                            }
+                            if (AccessGroups[accessGroupId].CanMoveTickets != SourceAccessGroups[accessGroupId].CanMoveTickets)
+                            {
+                                (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canMoveTickets", AccessGroups[accessGroupId].CanMoveTickets);
+                            }
                         }
-                        if (AccessGroups[accessGroupId].CanSeeHisTickets != SourceAccessGroups[accessGroupId].CanSeeHisTickets)
+
+                        var result = HttpClient.Post("api/AccessGroups/UpdateAccessGroups", changes);
+                        if (result.code == System.Net.HttpStatusCode.OK)
                         {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeHisTickets", AccessGroups[accessGroupId].CanSeeHisTickets);
+                            Logger.Log(LogStatus.Info, "SettingsWindowAccessGroupRightsViewModel.SaveUserAccessGroupsCommand",
+                                $"Successfully updated access groups");
+                            Load();
                         }
-                        if (AccessGroups[accessGroupId].CanSeeCompanyTickets != SourceAccessGroups[accessGroupId].CanSeeCompanyTickets)
+                        else
                         {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeCompanyTickets", AccessGroups[accessGroupId].CanSeeCompanyTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanSeeAllTickets != SourceAccessGroups[accessGroupId].CanSeeAllTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeAllTickets", AccessGroups[accessGroupId].CanSeeAllTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanEditTickets != SourceAccessGroups[accessGroupId].CanEditTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canEditTickets", AccessGroups[accessGroupId].CanEditTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanDeleteTickets != SourceAccessGroups[accessGroupId].CanDeleteTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canDeleteTickets", AccessGroups[accessGroupId].CanDeleteTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanSeeServiceComments != SourceAccessGroups[accessGroupId].CanSeeServiceComments)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSeeServiceComments", AccessGroups[accessGroupId].CanSeeServiceComments);
-                        }
-                        if (AccessGroups[accessGroupId].CanRegisterUsers != SourceAccessGroups[accessGroupId].CanRegisterUsers)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canRegisterUsers", AccessGroups[accessGroupId].CanRegisterUsers);
-                        }
-                        if (AccessGroups[accessGroupId].CanSelectTopic != SourceAccessGroups[accessGroupId].CanSelectTopic)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSelectTopic", AccessGroups[accessGroupId].CanSelectTopic);
-                        }
-                        if (AccessGroups[accessGroupId].CanEditUsers != SourceAccessGroups[accessGroupId].CanEditUsers)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canEditUsers", AccessGroups[accessGroupId].CanEditUsers);
-                        }
-                        if (AccessGroups[accessGroupId].CanSelectUrgency != SourceAccessGroups[accessGroupId].CanSelectUrgency)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canSelectUrgency", AccessGroups[accessGroupId].CanSelectUrgency);
-                        }
-                        if (AccessGroups[accessGroupId].CanTakeTickets != SourceAccessGroups[accessGroupId].CanTakeTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canTakeTickets", AccessGroups[accessGroupId].CanTakeTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanAssignTickets != SourceAccessGroups[accessGroupId].CanAssignTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canAssignTickets", AccessGroups[accessGroupId].CanAssignTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanFinishTickets != SourceAccessGroups[accessGroupId].CanFinishTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canFinishTickets", AccessGroups[accessGroupId].CanFinishTickets);
-                        }
-                        if (AccessGroups[accessGroupId].CanMoveTickets != SourceAccessGroups[accessGroupId].CanMoveTickets)
-                        {
-                            (changes[(accessGroupId + 1).ToString()] as Dictionary<string, bool>).Add("canMoveTickets", AccessGroups[accessGroupId].CanMoveTickets);
+                            Logger.Log(LogStatus.Warning, "SettingsWindowAccessGroupRightsViewModel.SaveUserAccessGroupsCommand",
+                                $"Cant update AccessGroup");
                         }
                     }
-
-                    var result = HttpClient.Post("api/AccessGroups/UpdateAccessGroups", changes);
-                    if (result.code == System.Net.HttpStatusCode.OK)
+                    catch (Exception ex)
                     {
-                        Load();
+                        Logger.Log(LogStatus.Error, "SettingsWindowAccessGroupRightsViewModel.SaveUserAccessGroupsCommand",
+                            $"{ex.Message}\n\n{ex.StackTrace}");
+                        throw ex;
                     }
                 });
             }

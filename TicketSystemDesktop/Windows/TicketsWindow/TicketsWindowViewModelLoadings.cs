@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -12,9 +13,11 @@ namespace TicketSystemDesktop
     {
         public void LoadTickets()
         {
-            Tickets.Clear();
-            var response = HttpClient.Get("api/tickets", new KeyValuePair<string, object>[]
+            try
             {
+                Tickets.Clear();
+                var response = HttpClient.Get("api/tickets", new KeyValuePair<string, object>[]
+                {
                         new KeyValuePair<string, object>("page", PageNumber),
                         new KeyValuePair<string, object>("ticketId", FilterId),
                         new KeyValuePair<string, object>("topicId", FilterTopic?.Id),
@@ -23,63 +26,105 @@ namespace TicketSystemDesktop
                         new KeyValuePair<string, object>("companyId", FilterCompany?.Id),
                         new KeyValuePair<string, object>("statusId", FilterStatus?.Id),
                         new KeyValuePair<string, object>("filterText", FilterText),
-            });
+                });
 
-            if (response.code == System.Net.HttpStatusCode.OK)
-            {
-                var array = Ticket.ParseArrayFromJson(response.response);
-
-                foreach (var t in array)
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    Tickets.Add(t);
+                    var array = Ticket.ParseArrayFromJson(response.response);
+
+                    foreach (var t in array)
+                    {
+                        Tickets.Add(t);
+                    }
+                    Logger.Log(LogStatus.Info, "TicketsWindowViewModel.LoadTickets",
+                        $"Successfully loaded tickets");
                 }
+                else
+                {
+                    Logger.Log(LogStatus.Info, "TicketsWindowViewModel.LoadTickets",
+                        $"Cant load tickets with data:\npage={PageNumber}\nticketId={FilterId}\ntopicId={FilterTopic?.Id}\nsenderUserId={FilterSenderUser?.Id}\n" +
+                        $"executorUserId={FilterExecutorUser?.Id}\ncompanyId={FilterCompany}\nstatusId={FilterStatus}\nfilterText={FilterText}\n\nReturn code: {response.code}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "TicketsWindowViewModel.LoadTickets",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
         }
 
         public void Load()
         {
-            LoadTickets();
-
-            FilterTopics.Clear();
-
-            var response = HttpClient.Get("api/topics");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Topic.ParseArrayFromJson(response.response);
+                LoadTickets();
 
-                foreach (var t in array)
+                FilterTopics.Clear();
+
+                var response = HttpClient.Get("api/topics");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    FilterTopics.Add(t);
+                    var array = Topic.ParseArrayFromJson(response.response);
+
+                    foreach (var t in array)
+                    {
+                        FilterTopics.Add(t);
+                    }
                 }
             }
-
-            FilterCompanies.Clear();
-
-            response = HttpClient.Get("api/companies");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            catch (Exception ex)
             {
-                var array = Company.ParseArrayFromJson(response.response);
-
-                foreach (var c in array)
-                {
-                    FilterCompanies.Add(c);
-                }
+                Logger.Log(LogStatus.Error, "TicketsWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
 
-            FilterStatuses.Clear();
-
-            response = HttpClient.Get("api/statuses");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = Status.ParseArrayFromJson(response.response);
+                FilterCompanies.Clear();
 
-                foreach (var s in array)
+                var response = HttpClient.Get("api/companies");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    FilterStatuses.Add(s);
+                    var array = Company.ParseArrayFromJson(response.response);
+
+                    foreach (var c in array)
+                    {
+                        FilterCompanies.Add(c);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "TicketsWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+            }
+
+            try
+            {
+                FilterStatuses.Clear();
+
+                var response = HttpClient.Get("api/statuses");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
+                {
+                    var array = Status.ParseArrayFromJson(response.response);
+
+                    foreach (var s in array)
+                    {
+                        FilterStatuses.Add(s);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "TicketsWindowViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using TicketSystemDesktop.Miscellaneous;
 using TicketSystemDesktop.Models;
 
 namespace TicketSystemDesktop
@@ -17,20 +18,30 @@ namespace TicketSystemDesktop
 
         public void Load()
         {
-            UserGroups.Clear();
-
-            var response = HttpClient.Get("api/userGroups");
-
-            if (response.code == System.Net.HttpStatusCode.OK)
+            try
             {
-                var array = JsonArray.Parse(response.response);
+                UserGroups.Clear();
 
-                foreach (var t in array.AsArray())
+                var response = HttpClient.Get("api/userGroups");
+
+                if (response.code == System.Net.HttpStatusCode.OK)
                 {
-                    var userGroup = t.AsObject();
-                    
-                    UserGroups.Add(UserGroup.ParseFromJson(userGroup));
+                    var array = JsonArray.Parse(response.response);
+
+                    foreach (var t in array.AsArray())
+                    {
+                        var userGroup = t.AsObject();
+
+                        UserGroups.Add(UserGroup.ParseFromJson(userGroup));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogStatus.Error, "SettingsWindowUserGroupsViewModel.Load",
+                    $"{ex.Message}\n\n{ex.StackTrace}");
+                throw ex;
+
             }
         }
 
