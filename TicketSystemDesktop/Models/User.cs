@@ -141,7 +141,7 @@ namespace TicketSystemDesktop.Models
             var companyShortName = user["companyShortName"].GetValue<string>();
             var accessGroupName = user["accessGroupName"].GetValue<string>();
             var fullName = user["fullName"].GetValue<string>();
-            var email = user["email"].GetValue<string>();
+            var email = user["email"] is null ? "" : user["email"].GetValue<string>();
             var phoneNumber = user["phoneNumber"].GetValue<string>();
             var telegram = user["telegram"].GetValue<long>();
 

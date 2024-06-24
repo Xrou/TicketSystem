@@ -15,6 +15,7 @@ namespace OldMerger
         {
             Database database = new Database();
             { // companies
+                Console.WriteLine("Merging companies");
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.company;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -23,19 +24,20 @@ namespace OldMerger
                     {
                         if (!database.Merge.Any(m => m.OldId == reader.GetInt64("id") && m.Entity == "company"))
                         {
-                            var company = new Company() { Name = reader.GetString("name"), ShortName = reader.GetString("name") };
-                            database.Companies.Add(company);
+                            var entity = new Company() { Name = reader.GetString("name"), ShortName = reader.GetString("name") };
+                            database.Companies.Add(entity);
 
                             database.SaveChanges();
 
-                            database.Merge.Add(new MergeEntity() { NewId = company.Id, OldId = reader.GetInt64("id"), Entity = "company" });
-                            Console.WriteLine($"Merged company: {}");
+                            database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "company" });
+                            Console.WriteLine($"Merged company\n{entity}");
                         }
                     }
                 }
                 database.SaveChanges();
             }
             {//statuses
+                Console.WriteLine("Merging statuses");
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.status WHERE `delete`=0;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -49,12 +51,14 @@ namespace OldMerger
                             database.SaveChanges();
 
                             database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "status" });
+                            Console.WriteLine($"Merged status\n{entity}");
                         }
                     }
                 }
                 database.SaveChanges();
             }
             {//topics
+                Console.WriteLine("Merging topics");
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.subject WHERE `delete`=0;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -68,6 +72,7 @@ namespace OldMerger
                             database.SaveChanges();
 
                             database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "topic" });
+                            Console.WriteLine($"Merged topic\n{entity}");
                         }
                     }
                 }
@@ -75,6 +80,7 @@ namespace OldMerger
                 database.SaveChanges();
             }
             {//users
+                Console.WriteLine("Merging users");
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.users WHERE `delete`=0;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -117,6 +123,7 @@ namespace OldMerger
                             database.SaveChanges();
 
                             database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "user" });
+                            Console.WriteLine($"Merged user\n{entity}");
                         }
                     }
                 }
@@ -124,6 +131,7 @@ namespace OldMerger
                 database.SaveChanges();
             }
             {//tickets
+                Console.WriteLine("Merging tickets");
                 MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.messages WHERE `delete`=0 AND `status` != 3;", sourceConnection);
                 using (var reader = oldCommand.ExecuteReader())
                 {
@@ -199,12 +207,99 @@ namespace OldMerger
                             database.SaveChanges();
 
                             database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "ticket" });
+                            Console.WriteLine($"Merged ticket\n{entity}");
                         }
                     }
                 }
 
                 database.SaveChanges();
             }
+            
+            {//comments
+                Console.WriteLine("Merging comments");
+
+                List<Ticket> tickets = database.Tickets.ToList();
+                tickets.ForEach(t =>
+                {
+                    foreach (var ticket in tickets)
+                    {
+                        MySqlCommand oldCommand = new MySqlCommand("SELECT `id`, `message_id`, `user_id`, `comment`, `time_comment`, `visible` FROM new_hdesk.message_comment WHERE `message_id`=@mid;", sourceConnection);
+                        oldCommand.Parameters.AddWithValue("@mid", database.Merge.First(x => x.NewId == ticket.Id && x.Entity == "ticket").OldId);
+                        using (var reader = oldCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                if (!database.Merge.Any(m => m.OldId == reader.GetInt64("id") && m.Entity == "comment"))
+                                {
+                                    try
+                                    {
+                                        var userId = database.Merge.First(m => m.OldId == reader.GetInt64("user_id") && m.Entity == "user").NewId;
+                                        var ticketId = database.Merge.First(m => m.OldId == reader.GetInt64("message_id") && m.Entity == "ticket").NewId;
+                                        var entity = new Comment()
+                                        {
+                                            UserId = userId,
+                                            TicketId = ticketId,
+                                            CommentTypeInt = reader.GetInt32("visible"),
+                                            Date = reader.GetDateTime("time_comment"),
+                                            Text = reader.GetString("comment"),
+                                        };
+
+                                        database.Comments.Add(entity);
+
+                                        database.SaveChanges();
+
+                                        database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "comment" });
+                                        Console.WriteLine($"Merged ticket\n{entity}");
+                                    }
+                                    catch
+                                    {
+                                        Console.WriteLine("Comment from deleted user");
+                                    }
+                                }
+                            }
+                        }
+
+                        database.SaveChanges();
+                    }
+                });
+            }
+            { // usergroups
+                Console.WriteLine("Merging usergroups");
+                MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.user_group", sourceConnection);
+                using (var reader = oldCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (!database.Merge.Any(m => m.OldId == reader.GetInt64("id") && m.Entity == "usergroup"))
+                        {
+                            var entity = new UserGroup() { Name = reader.GetString("name") };
+                            database.UserGroups.Add(entity);
+
+                            database.SaveChanges();
+
+                            database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "usergroup" });
+                            Console.WriteLine($"Merged usergroup\n{entity}");
+                        }
+                    }
+                }
+
+                database.SaveChanges();
+            }
+            /*{ // user in groups
+                Console.WriteLine("Merging user in groups");
+                MySqlCommand oldCommand = new MySqlCommand("SELECT * FROM new_hdesk.users_in_group", sourceConnection);
+                using (var reader = oldCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (!database.Merge.Any(m => m.OldId == reader.GetInt64("id_user") && m.Entity == "useringroup"))
+                        {
+                        }
+                    }
+                }
+
+                database.SaveChanges();
+            }*/
         }
 
         private static void Main(string[] args)
