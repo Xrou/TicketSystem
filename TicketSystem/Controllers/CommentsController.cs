@@ -78,12 +78,36 @@ namespace TicketSystem.Controllers
             context.Comments.Add(newComment);
             await context.SaveChangesAsync();
 
-            foreach (var file in comment.Files)
+            if (comment.Files != null)
             {
-                newComment.Files.Add(file);
+                foreach (var file in comment.Files)
+                {
+                    newComment.Files.Add(file);
+                }
             }
 
             await context.SaveChangesAsync();
+
+            try
+            {
+                var oldUserId = context.Merge.FirstOrDefault(u => u.NewId == user.Id && u.Entity == "user")?.OldId;
+                var oldTicketId = context.Merge.FirstOrDefault(u => u.NewId == comment.TicketId && u.Entity == "ticket")?.OldId;
+
+                Task task = new Task(async () =>
+                {
+                    External.SUZApi api = new External.SUZApi();
+                    if (oldUserId is not null && oldTicketId is not null)
+                    {
+                        await api.SendCommentAsync(oldUserId.ToString(), user.Telegram.ToString(), oldTicketId.ToString(), comment.Text);
+                    }
+                });
+
+                task.Start();
+            }
+            catch
+            {
+
+            }
 
             return Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);
         }
