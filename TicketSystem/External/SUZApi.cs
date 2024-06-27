@@ -56,5 +56,32 @@ namespace TicketSystem.External
                 return null;
             }
         }
+
+        public async Task<long?> SendMessageAsync(long senderId, long telegramId, string message)
+        {
+            var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("sender_id", senderId.ToString()),
+                new KeyValuePair<string, string>("telegram", telegramId.ToString()),
+                new KeyValuePair<string, string>("subject_id", "1"),
+                new KeyValuePair<string, string>("message", message),
+            });
+
+            var response = await httpClient.PostAsync("telebotAPI/addMessage_telegram", content);
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            var text = await response.Content.ReadAsStringAsync();
+
+            string try_message_id = text.Substring(2);
+            long message_id;
+
+            if (long.TryParse(try_message_id, out message_id))
+            {
+                return message_id;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

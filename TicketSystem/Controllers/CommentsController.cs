@@ -104,9 +104,9 @@ namespace TicketSystem.Controllers
 
                 task.Start();
             }
-            catch
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return Created(new Uri("https://localhost:7177/api/comments"), newComment.Id);

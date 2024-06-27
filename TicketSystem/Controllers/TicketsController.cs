@@ -68,7 +68,7 @@ namespace TicketSystem.Controllers
 
                 if (companyId != null)
                     tickets = tickets.Where(x => x.SenderUser.CompanyId == companyId);
-                
+
                 if (statusId != null)
                     tickets = tickets.Where(x => x.Status.Id == statusId);
 
@@ -154,6 +154,37 @@ namespace TicketSystem.Controllers
             }
 
             await context.SaveChangesAsync();
+
+            Task callExternalApi = new Task(async () =>
+            {
+                try
+                {
+                    External.SUZApi api = new External.SUZApi();
+
+                    var oldSenderId = (context.Merge.FirstOrDefault(u => u.NewId == senderId && u.Entity == "user"))?.OldId;
+                    var oldTelegramId = (context.Users.FirstOrDefault(u => u.Id == senderId))?.Telegram;
+                    if (oldSenderId is not null && oldTelegramId is not null)
+                    {
+                        var oldMessageId = await api.SendMessageAsync((long)oldSenderId, (long)oldTelegramId, ticket.Text);
+                        if (oldMessageId is not null)
+                        {
+                            context.Merge.Add(new MergeEntity() { Entity = "ticket", NewId = newTicket.Id, OldId = (long)oldMessageId });
+                        }
+                        else
+                        {
+                            Console.WriteLine("Post ticket cant merge ticket to old suz");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Cant find user. senderId:{oldSenderId} tgId:{oldTelegramId}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{ex.Message} {ex.StackTrace}");
+                }
+            });
 
             return newTicket;
         }
