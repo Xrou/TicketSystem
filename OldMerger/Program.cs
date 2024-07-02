@@ -224,7 +224,12 @@ namespace OldMerger
                     foreach (var ticket in tickets)
                     {
                         MySqlCommand oldCommand = new MySqlCommand("SELECT `id`, `message_id`, `user_id`, `comment`, `time_comment`, `visible` FROM new_hdesk.message_comment WHERE `message_id`=@mid;", sourceConnection);
-                        oldCommand.Parameters.AddWithValue("@mid", database.Merge.First(x => x.NewId == ticket.Id && x.Entity == "ticket").OldId);
+                        try
+                        {
+                            oldCommand.Parameters.AddWithValue("@mid", database.Merge.First(x => x.NewId == ticket.Id && x.Entity == "ticket").OldId);
+                        }
+                        catch { Console.WriteLine("Comment from unmerged user"); continue; }
+
                         using (var reader = oldCommand.ExecuteReader())
                         {
                             while (reader.Read())
@@ -249,7 +254,7 @@ namespace OldMerger
                                         database.SaveChanges();
 
                                         database.Merge.Add(new MergeEntity() { NewId = entity.Id, OldId = reader.GetInt64("id"), Entity = "comment" });
-                                        Console.WriteLine($"Merged ticket\n{entity}");
+                                        Console.WriteLine($"Merged comment\n{entity}");
                                     }
                                     catch
                                     {
